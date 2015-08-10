@@ -1,0 +1,40 @@
+﻿{
+  "name": "BSCIMS",
+  "version": "0.0.1",
+  "author": {
+    "name": "Jose Rego : 140226",
+    "email": "jay.rego.14@gmail.com"
+  },
+  "private": true,
+  "main": "server.js",
+  "config": {
+    "port": "3002"
+  },
+  "dependencies": {
+    "annyang": "^1.0.1",
+    "body-parser": "latest",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "latest",
+    "debug": "^2.1.3",
+    "ejs": "^2.3.1",
+    "express": "latest",
+    "express-session": "latest",
+    "mime": "latest",
+    "node-mandrill": "^1.0.1",
+    "nodemon": "latest",
+    "sendgrid": "^1.6.0",
+    "serve-favicon": "latest",
+    "mongojs": "latest"
+  },
+  "scripts": {
+    "start": "nodemon ./bin/www"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bl1nk3r/BSCIMS.git"
+  },
+  "engines": {
+    "node": "0.10.36",
+    "npm": "1.4.28"
+  }
+}

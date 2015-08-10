@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<div class="tab-pane fade in" id="supervisorTab" ng-controller="supRoleController" ng-click="retrieveEmployees()">
+	<div class="container"> 
+			 
+		<div class="panel panel-inverse col-sm-12"> 
+				<div class="panel-heading">
+					<h3 class="panel-title">Supervisor Quick Actions</h3>
+				</div>
+			<div class="col-sm-6">
+				<div class="btn-group" role="group">
+					<a data-backdrop="static" data-keyboard="false" href="#viewEmpObjModal" role="button" class="btn btn-primary" data-toggle="modal"> 
+						<span class="glyphicon glyphicon-list"> </span> Analyse Objectives
+					</a> <!-- end View Objectives button link -->
+
+					<a data-backdrop="static" data-keyboard="false" href="#viewEmpSCModal" role="button" class="btn btn-primary" data-toggle="modal"> 
+						<span class="glyphicon glyphicon-list-alt"> </span> View Scorecards
+					</a> <!-- end View Scorecards button link -->
+
+					<a data-backdrop="static" data-keyboard="false" href="#evalEmpSCModal" role="button" class="btn btn-primary" data-toggle="modal"> 
+						<span class="glyphicon glyphicon-screenshot"> </span> Evaluate Employee
+					</a> <!-- end Evaluate Employee button link -->
+					
+					<hr>
+
+					<div class="list-group">
+						<a href="#" class="list-group-item" ng-click="toggleEmpKPA()"> 
+							<span class="badge" ng-model="empKPAVal"> {{empKPAVal}} </span> 
+							Employees KPAs in your tray 
+						</a>
+
+						<a href="#" class="list-group-item" ng-click="toggleApproved()"> 
+							<span class="badge" ng-model="empApprovedVal"> {{empApprovedVal}} </span> 
+							Objectives Approved 
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<!-- begin view emp objective modal-->
+			<div ng-controller="supEmpObjsCtrl">
+				<div class="modal fade" id="viewEmpObjModal">
+					<div id="viewEmpObjModalDialog" class="modal-dialog">
+						<div id="viewEmpObjModalContent" class="modal-content"> 
+							<div id="viewEmpObjModalHeader" class="modal-header">
+								<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+							  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+							  	<h3 class="modal-title">View Employee Objectives</h3>
+							</div> <!-- end createObjModal-header-->
+
+							<div id="viewEmpObjModalBody" class="modal-body">
+								<div class="panel panel-inverse" >
+									<div class="panel-heading">
+										<h3 class="panel-title">Employee Objectives</h3>
+									</div>
+									<div class="panel-body">
+										<table class="table table-striped table-bordered">
+											<thead>
+												<tr>
+													<th>Employee Name</th>
+													<th>PF Number</th>
+													<th>Position</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr ng-repeat="emp in emps | orderBy: 'empName' |filter: search |limitTo:10">
+													<td>
+														<a data-keyboard="false" data-backdrop="static" href="#empObjModal" 
+														role="button" data-toggle="modal" 
+														ng-click="retrieveEmpObjs(emp.PFNum, emp.empName)" >
+												  		{{emp.empName}}
+												  		</a>
+											  		</td>
+													<td>{{emp.PFNum}}</td>
+													<td>{{emp.position}}</td>
+												</tr>
+											</tbody>
+										</table> <!--end Employee Objectives Table-->
+
+										<!-- VIEW EMP OBJECTIVE MODAL-->
+									</div> <!--end panel-body-->
+									
+
+								</div> <!--end panel-->
+							</div> <!--end viewEmpObjModalBody-->
+
+								<div class="modal-footer">
+									<!--
+								  	<button onclick="$('#submitObjModal').modal({'backdrop': 'static'});" class="btn btn-success" type="button" ng-click="sendObjs()"> 
+								  		<span class="glyphicon glyphicon-ok"></span> 
+								  		Send Objectives
+								  	</button>-->
+											
+								  	<button class="btn btn-danger" type="button" data-dismiss="modal"> 
+								  		<span class="glyphicon glyphicon-remove"></span> Close
+								  	</button>
+
+								  	<div class="alert alert-success alert-block fade in" onclick="$('#submitObjModal').modal({'backdrop': 'static'});" id="successObjSubmit">
+										<button type="button" class="close" data-dismiss="alert">&times;</button>
+										<h5>Objective(s) Successfully Submitted!</h5>
+										<p>Click the 'x' in the corner to close...</p>
+									</div> <!--end alert-->	
+								</div> <!-- end modal-footer-->
+						</div> <!-- end viewEmpObjModal-content-->
+					</div> <!-- end viewEmpObjModal-dialog-->
+				</div> 
+
+				<!-- begin employee Objective Modal-->
+			    <div class="modal fade" id="empObjModalsss">
+
+					<div class="modal-dialog">
+
+						<div class="modal-content"> 
+
+							<div id="empObjModalsss" class="modal-header">
+						 		<button class="close" data-dismiss="modal">&times;</button>
+								<h4 class="modal-title" ng-model="empAlias">View {{empAlias.Name}}'s Objectives!</h4>
+							</div> <!-- end empObjModalsss-header-->
+
+							<div class="modal-body">
+									<h4> Select a perspective to view...</h4>
+
+									<hr>
+
+								<div id="objDropDown2" class="dropdown">
+
+								  <select id="objPerspDropdownMenu2" role="menu">
+								  	<option value="default2">-Select a Perspective-</option>
+								  	<option value="financeSelect2">Finance</option>
+								  	<option value="customerSelect2">Customer & Stakeholders</option>
+								  	<option value="internalSelect2">Internal Business Process</option>
+								  	<option value="learnSelect2">Learning & Growth</option>
+								  </select> <!-- end objPerspDropdownMenu-->
+									  
+								</div> <!-- end div objDropDown-->
+
+								&nbsp;
+
+								<div id="financePerspDiv2">
+									<button id="editFinanceObjButton" class="btn btn-warning pull-right" 
+										ng-click="editFinanceObjective()"> <span class="glyphicon glyphicon-pencil" 
+										ng-model="financeEditLabelText"> {{financeEditLabelText}}</span>
+									</button> <!-- end Edit Objective button-->
+
+									<form class="form-horizontal">
+										<div class="form-group">
+											<label class="col-lg-2 control-label" for="empFinObjDescr">
+												Objective (KPA)
+											</label> <!-- end financeObjectiveDescriptionlabel-->
+
+											<div id="financeObjDivInput2" class="col-lg-10" >
+
+												<input id="financeObjDescr2" class="form-control" 
+												placeholder="Enter the description of the finance objective..." 
+												ng-model="specificEmpFinObjs.description" ng-disabled="financeUnedittable">
+
+											</div> <!-- end financeObjDivInput-->
+
+										</div> <!--end financeObjDiv-->
+
+										<div class="form-group">
+											<label class="col-lg-2 control-label" for="financeDSODescription">
+												Desire Standard Output (KPI)
+											</label> <!-- end financeDSOlabel-->
+
+											&nbsp;
+											<div id="financeDSODivInput2" class="col-lg-10">
+
+												<textarea class="form-control" id="financeDSODescription2" 
+												placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+												ng-model="specificEmpFinObjs.DSO" ng-disabled="financeUnedittable"></textarea>
+
+											</div> <!-- end financeObjDiv-->
+
+											&nbsp;
+
+											<div id="performanceRatingDiv" class="form-group" >
+												&nbsp;
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													Performace Rating
+												</label> <!-- end performanceRatingLabel-->	
+
+												<div id="poorPerfDiv2" class="col-lg-10">
+													Poor Delivery (Score - 1):
+													<input class="form-control" id="poorPerfField2" 
+													placeholder="Set the lowest achievement..." type="text"  
+													ng-model="specificEmpFinObjs.metricOneDef" ng-disabled="financeUnedittable">
+												</div> <!-- end poorPerDiv-->
+
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->
+
+												<div id="unsatisfactoryPerfDiv2" class="col-lg-10">
+													Unsatisfactory (Score - 2):
+													<input class="form-control" id="unsatPerfField2" 
+													placeholder="Set the next lowest..." type="text" 
+													ng-model="specificEmpFinObjs.metricTwoDef" ng-disabled="financeUnedittable">
+												</div> <!-- end unsatisfactoryPerDiv-->
+
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->
+
+												<div id="targetMetPerfDiv2" class="col-lg-10">
+													Target Met (Score - 3):
+													<input class="form-control" id="targetPerfField2" 
+													placeholder="Set the expected goal..." type="text" 
+													ng-model="specificEmpFinObjs.metricThreeDef" ng-disabled="financeUnedittable">
+												</div> <!-- end targetMetPerDiv-->
+
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->
+
+												<div id="exceedingPerfDiv2" class="col-lg-10">
+													Exceed Target (Score - 4):
+													<input class="form-control" id="exceedPerfField2" 
+													placeholder="How far you can go..." type="text" 
+													ng-model="specificEmpFinObjs.metricFourDef" ng-disabled="financeUnedittable">
+												</div> <!-- end exceedingPerDiv-->
+
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->
+
+												<div id="outstandingPerfDiv2" class="col-lg-10">
+													Oustanding Performance (Score - 5):
+													<input class="form-control" id="outstandPerfField2" 
+													placeholder="Reach for the stars..." type="text" 
+													ng-model="specificEmpFinObjs.metricFiveDef" ng-disabled="financeUnedittable">
+												</div> <!-- end outstandingPerDiv-->
+
+											</div> <!--end performanceRatingDiv -->
+
+											<button id="rejectFinanceObjButton" class="btn btn-danger pull-right" 
+												ng-click="rejectFinanceObjective()"> <span class="glyphicon glyphicon-remove-circle"></span>
+												Reject Objective
+											</button> <!-- end Submit Objective button-->
+											
+											<button id="approveFinanceObjButton" class="btn btn-primary pull-right" 
+												ng-click="approveFinanceObjective(specificEmpFinObjs._id,specificEmpFinObjs.PFNum,specificEmpFinObjs.description, specificEmpFinObjs.DSO
+															,specificEmpFinObjs.metricOneDef,specificEmpFinObjs.metricTwoDef,specificEmpFinObjs.metricThreeDef
+															,specificEmpFinObjs.metricFourDef,specificEmpFinObjs.metricFiveDef)"> <span class="glyphicon glyphicon-ok"></span>
+												Approve Objective
+											</button> <!-- end Submit Objective button-->
+											
+										</div> <!--end financeObjDiv-->
+
+										<div class="alert alert-warning alert-block fade in" 
+										id="successObjAlertFinReject" ng-if="isRejected">
+											<button type="button" class="close" data-dismiss="alert">&times;</button>
+											<h4>Objective Rejected!</h4>
+											<p>Click the 'x' in the corner to close...</p>
+										</div> <!--end success alert-->
+										
+										<div class="alert alert-success alert-block fade in" id="successObjAlert12">
+											<button type="button" class="close" data-dismiss="alert">&times;</button>
+											<h4>Objective Successfully created!</h4>
+											<p>Click the 'x' in the corner to close...</p>
+										</div> <!--end success alert-->
+
+										<div class="alert alert-danger alert-dismissable" 
+											ng-if="hasCreateObjErrors"><button type="button" class="close" 
+											data-dismiss="alert">&times;</button><strong>Error:</strong>
+											<br>
+											<span ng-repeat='error in createObjectiveErrorMsgs'>
+												{{error}}
+											<br>
+											</span>
+			 								</div> <!--end danger alert -->
+									</form> <!-- end FinanceForm-->
+								</div> <!--end FinancePersp div-->
+
+								<div id="customerPerspDiv2">
+									<button id="editCustomerObjButton" class="btn btn-warning pull-right" 
+										ng-click="editCustomerObjective()"> <span class="glyphicon glyphicon-pencil" ng-model="customerEditLabelText"> {{customerEditLabelText}}
+										</span>
+									</button> <!-- end Edit Objective button-->
+									<form class="form-horizontal">
+										<div class="form-group">
+											<label class="col-lg-2 control-label" for="customerObjDescription">
+												Objective (KPA)
+											</label> <!-- end customerObjectiveDescriptionlabel-->
+
+											<div id="customerObjDivInput2" class="col-lg-10">
+												<input ng-model="specificEmpCustObjs.description" 
+												id="customerObjDescription" class="form-control" 
+												placeholder="Enter the description of the customer objective..." 
+												type="text" ng-disabled="customerUnedittable">
+											</div> <!-- end customerObjDivInput-->
+
+										</div> <!--end customerObjDiv-->
+
+										<div class="form-group">
+											<label class="col-lg-2 control-label" for="customerDSODescription">
+												Desire Standard Output (KPI)
+											</label> <!-- end customerDSOlabel-->
+
+											<div id="customerDSODivInput2" class="col-lg-10">
+
+												<textarea ng-model="specificEmpCustObjs.DSO" 
+												class="form-control" id="customerDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3"
+												ng-disabled="customerUnedittable">
+												</textarea>
+
+											</div> <!-- end customerObjDiv-->
+
+											&nbsp;
+
+											<div id="performanceRatingDiv2" class="form-group">
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													Perfomace Rating
+												</label> <!-- end performanceRatingLabel-->		
+
+												<div id="poorPerfDiv2" class="col-lg-10">
+													Poor Delivery (Score - 1):
+													<input ng-model="specificEmpCustObjs.metricOneDef" 
+													class="form-control" id="poorPerfField2" placeholder="Set the lowest achievement..."
+													type="text" ng-disabled="customerUnedittable">
+												</div> <!-- end poorPerDiv-->
+												<br><br>
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->		
+
+												<div id="unsatisfactoryPerfDiv2" class="col-lg-10">
+													Unsatisfactory (Score - 2):
+													<input ng-model="specificEmpCustObjs.metricTwoDef" 
+													class="form-control" id="unsatPerfField2" 
+													placeholder="Set the next lowest..." type="text" ng-disabled="customerUnedittable">
+												</div> <!-- end unsatisfactoryPerDiv-->
+
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->		
+
+												<div id="targetMetPerfDiv2" class="col-lg-10">
+													Target Met (Score - 3):
+													<input ng-model="specificEmpCustObjs.metricThreeDef" 
+													class="form-control" id="targetPerfField2" 
+													placeholder="Set the expected goal..." type="text" ng-disabled="customerUnedittable">
+												</div> <!-- end targetMetPerDiv-->
+
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->	
+
+												<div id="exceedingPerfDiv2" class="col-lg-10">
+													Exceed Target (Score - 4):
+													<input ng-model="specificEmpCustObjs.metricFourDef" 
+													class="form-control" id="exceedPerfField2" 
+													placeholder="How far you can go..." type="text" ng-disabled="customerUnedittable">
+												</div> <!-- end exceedingPerDiv-->
+
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->	
+
+												<div id="outstandingPerfDiv2" class="col-lg-10">
+													Oustanding Performance (Score - 5):
+													<input ng-model="specificEmpCustObjs.metricFiveDef" 
+													class="form-control" id="outstandPerfField2" 
+													placeholder="Reach for the stars..." type="text" ng-disabled="customerUnedittable">
+												</div> <!-- end outstandingPerDiv-->
+
+											</div> <!--end performanceRatingDiv -->
+
+											<button id="rejectCustomerObjButton" class="btn btn-danger pull-right" 
+												ng-click="rejectCustomerObjective(specificEmpCustObjs._id)"> <span class="glyphicon glyphicon-remove-circle"></span>
+												Reject Objective
+											</button> <!-- end Submit Objective button-->
+
+											<button id="approveCustomerObjButton" class="btn btn-primary pull-right" 
+												ng-click="approveCustomerObjective(specificEmpCustObjs._id,specificEmpCustObjs.PFNum,specificEmpCustObjs.description, specificEmpCustObjs.DSO
+															,specificEmpCustObjs.metricOneDef, specificEmpCustObjs.metricTwoDef, specificEmpCustObjs.metricThreeDef
+															,specificEmpCustObjs.metricFourDef, specificEmpCustObjs.metricFiveDef)"> <span class="glyphicon glyphicon-ok"></span>
+												Approve Objective
+											</button> <!-- end Submit Objective button-->
+
+										</div> <!--end customerObjDiv2-->
+										
+										<div class="alert alert-success alert-block fade in" id="successObjAlert22">
+											<button type="button" class="close" data-dismiss="alert"> &times; </button>
+											<h4>Objective Successfully created!</h4>
+											<p>Click the 'x' in the corner to close...</p>
+										</div> <!--end alert div-->
+
+										<div class="alert alert-danger alert-dismissable" 
+											ng-if="hasCreateObjErrors"><button type="button" class="close" 
+											data-dismiss="alert">&times;</button><strong>Error:</strong>
+											<br>
+											<span ng-repeat='error in createObjectiveErrorMsgs'>
+												{{error}}
+												<br>
+											</span>
+			 								</div> <!--end danger alert -->
+									</form> <!-- end customerForm-->
+								</div> <!--end customerPersp div-->
+
+								<div id="internalPerspDiv2" >
+									<button id="editInternalObjButton" class="btn btn-warning pull-right" 
+										ng-click="editInternalObjective()"> <span class="glyphicon glyphicon-pencil" ng-model="internalEditLabelText"> {{internalEditLabelText}}
+										</span>
+									</button> <!-- end Edit Objective button-->
+
+									<form class="form-horizontal">
+										<div id="internalObjDiv2" class="form-group">
+											<label class="col-lg-2 control-label" for="internalObjDescription">
+												Objective (KPA)
+											</label> <!-- end internalObjectiveDescriptionlabel-->
+
+										<div id="internalObjDivInput2" class="col-lg-10">
+											<input ng-model="specificEmpIntObjs.description" 
+											class="form-control" id="internalObjDescription2" 
+											placeholder="Enter the description of the internal objective..." 
+											type="text" ng-disabled="internalUnedittable">
+										</div> <!-- end internalObjDivInput-->
+
+										</div> <!--end internalObjDiv-->
+
+										<div class="form-group">
+											<label class="col-lg-2 control-label" for="internalDSODescription">
+												Desire Standard Output (KPI)
+											</label> <!-- end internalDSOlabel-->
+
+											<div id="internalDSODivInput2" class="col-lg-10">
+
+												<textarea ng-model="specificEmpIntObjs.DSO" 
+												class="form-control" id="internalDSODescription2" 
+												placeholder="Enter the Desired Standard Output..." 
+												type="text" rows="3" ng-disabled="internalUnedittable">
+												</textarea>
+
+											</div> <!-- end internalObjDiv-->
+
+											&nbsp;
+
+											<div id="performanceRatingDiv2" class="form-group">
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													Perfomace Rating
+												</label> <!-- end performanceRatingLabel-->	
+
+												<div id="poorPerfDiv2" class="col-lg-10">
+													Poor Delivery (Score - 1):
+													<input ng-model="specificEmpIntObjs.metricOneDef" 
+													class="form-control" id="poorPerfField2" 
+													placeholder="Set the lowest achievement..." type="text" ng-disabled="internalUnedittable">
+												</div> <!-- end poorPerDiv-->
+
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->		
+
+												<div id="unsatisfactoryPerfDiv2" class="col-lg-10">
+													Unsatisfactory (Score - 2):
+													<input ng-model="specificEmpIntObjs.metricTwoDef" 
+													class="form-control" id="unsatPerfField2" 
+													placeholder="Set the next lowest..." type="text" ng-disabled="internalUnedittable">
+												</div> <!-- end unsatisfactoryPerDiv-->
+
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->		
+
+												<div id="targetMetPerfDiv" class="col-lg-10">
+													Target Met (Score - 3):
+													<input ng-model="specificEmpIntObjs.metricThreeDef" 
+													class="form-control" id="targetPerfField2" 
+													placeholder="Set the expected goal..." type="text" ng-disabled="internalUnedittable">
+												</div> <!-- end targetMetPerDiv-->
+
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->	
+
+												<div id="exceedingPerfDiv2" class="col-lg-10">
+													Exceed Target (Score - 4):
+													<input ng-model="specificEmpIntObjs.metricFourDef" 
+													class="form-control" id="exceedPerfField2" 
+													placeholder="How far you can go..." type="text" ng-disabled="internalUnedittable">
+												</div> <!-- end exceedingPerDiv-->
+
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->	
+
+												<div id="outstandingPerfDiv2" class="col-lg-10">
+													Outstanding Performance (Score - 5):
+													<input ng-model="specificEmpIntObjs.metricFiveDef" 
+													class="form-control" id="outstandPerfField2" 
+													placeholder="Reach for the stars..." type="text" ng-disabled="internalUnedittable">
+												</div> <!-- end outstandingPerDiv-->
+
+											</div> <!--end performanceRatingDiv -->
+
+											<button id="rejectInternalObjButton" class="btn btn-danger pull-right" 
+												ng-click="rejectInternalObjective(specificEmpIntObjs._id)"> <span class="glyphicon glyphicon-remove-circle"></span>
+												Reject Objective
+											</button> <!-- end Submit Objective button-->
+
+											<button id="approveInternalObjButton" class="btn btn-primary pull-right" 
+												ng-click="approveInternalObjective(specificEmpIntObjs._id,specificEmpIntObjs.PFNum,specificEmpIntObjs.description, specificEmpIntObjs.DSO
+															,specificEmpIntObjs.metricOneDef, specificEmpIntObjs.metricTwoDef,specificEmpIntObjs.metricThreeDef
+															,specificEmpIntObjs.metricFourDef, specificEmpIntObjs.metricFiveDef)"> <span class="glyphicon glyphicon-ok"></span>
+												Approve Objective
+											</button> <!-- end Submit Objective button-->
+
+										</div> <!--end internalObjDiv-->
+										
+										<div class="alert alert-success alert-block fade in" id="successObjAlert32">
+											<button type="button" class="close" data-dismiss="alert">&times;</button>
+											<h4>Objective Successfully created!</h4>
+											<p>Click the 'x' in the corner to close...</p>
+										</div> <!--end alert-->
+
+										<div class="alert alert-danger alert-dismissable" 
+											ng-if="hasCreateObjErrors"><button type="button" class="close" 
+											data-dismiss="alert">&times;</button><strong>Error:</strong>
+											<br>
+											<span ng-repeat='error in createObjectiveErrorMsgs'>
+												{{error}}
+												<br>
+											</span>
+			 	 						</div> <!--end danger alert -->
+									</form> <!-- end internalForm-->
+								</div> <!-- end the internalPersp div-->
+
+								<div id="learnPerspDiv2">
+									<button id="editLearnObjButton" class="btn btn-warning pull-right" 
+										ng-click="editLearnObjective()"> <span class="glyphicon glyphicon-pencil" ng-model="learnEditLabelText"> {{learnEditLabelText}}</span>
+									</button> <!-- end Edit Objective button-->
+
+									<form class="form-horizontal">
+										<div id="learnObjDiv2" class="form-group">
+											<label class="col-lg-2 control-label" for="learnObjDescription">
+												Objective (KPA)
+											</label> <!-- end learnObjectiveDescriptionlabel-->
+
+											<div id="learnObjDivInput2" class="col-lg-10">
+												<input ng-model="specificEmpLearnObjs.description" 
+												class="form-control" id="learnObjDescription2" 
+												placeholder="Enter the description of the learn objective..." type="text" ng-disabled="learnUnedittable">
+											</div> <!-- end learnObjDivInput-->
+
+										</div> <!--end learnObjDiv-->
+
+										<div class="form-group">
+											<label class="col-lg-2 control-label" for="learnDSODescription">
+												Desire Standard Output (KPI)
+											</label> <!-- end learnDSOlabel-->
+
+											<div id="learnDSODivInput2" class="col-lg-10">
+												<textarea ng-model="specificEmpLearnObjs.DSO" 
+												class="form-control" id="learnDSODescription2" 
+												placeholder="Enter the Desired Standard Output..." type="text" rows="3" ng-disabled="learnUnedittable">
+												</textarea>
+											</div> <!-- end learnObjDiv-->
+
+											&nbsp;
+
+											<div id="performanceRatingDiv2" class="form-group">
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													Perfomace Rating
+												</label> <!-- end performanceRatingLabel-->	
+
+												<div id="poorPerfDiv2" class="col-lg-10">
+													Poor Delivery (Score - 1):
+													<input ng-model="specificEmpLearnObjs.metricOneDef" 
+													class="form-control" id="poorPerfField2" 
+													placeholder="Set the lowest achievement..." type="text" ng-disabled="learnUnedittable">
+												</div> <!-- end poorPerDiv-->
+
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->		
+
+												<div id="unsatisfactoryPerfDiv2" class="col-lg-10">
+													Unsatisfactory (Score - 2):
+													<input ng-model="specificEmpLearnObjs.metricTwoDef" 
+													class="form-control" id="unsatPerfField2" 
+													placeholder="Set the next lowest..." type="text" ng-disabled="learnUnedittable">
+												</div> <!-- end unsatisfactoryPerDiv-->
+
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->	
+
+												<div id="targetMetPerfDiv2" class="col-lg-10">
+													Target Met (Score - 3):
+													<input ng-model="specificEmpLearnObjs.metricThreeDef" 
+													class="form-control" id="targetPerfField2" 
+													placeholder="Set the expected goal..." type="text" ng-disabled="learnUnedittable">
+												</div> <!-- end targetMetPerDiv-->
+
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->	
+
+												<div id="exceedingPerfDiv2" class="col-lg-10">
+													Exceeding (Score - 4):
+													<input ng-model="specificEmpLearnObjs.metricFourDef" 
+													class="form-control" id="exceedPerfField2" 
+													placeholder="How far you can go..." type="text" ng-disabled="learnUnedittable">
+												</div> <!-- end exceedingPerDiv-->
+
+												<label id="performanceRatingLabel2" class="col-lg-2">
+													<!--leaving this label blank for indentation purposes -->
+												</label> <!-- end performanceRatingLabel-->		
+
+												<div id="outstandingPerfDiv2" class="col-lg-10">
+													Outstanding Performance (Score - 5):
+													<input ng-model="specificEmpLearnObjs.metricFiveDef" 
+													class="form-control" id="outstandPerfField2" 
+													placeholder="Reach for the stars..." type="text" ng-disabled="learnUnedittable">
+												</div> <!-- end outstandingPerDiv-->
+
+											</div> <!--end performanceRatingDiv -->
+
+											<button id="rejectLearnObjButton" class="btn btn-danger pull-right" 
+												ng-click="rejectLearnObjective(specificEmpLearnObjs._id)"> <span class="glyphicon glyphicon-remove-circle"></span>
+												Reject Objective
+											</button> <!-- end Submit Objective button-->
+
+											<button id="approveFinanceObjButton" class="btn btn-primary pull-right" 
+												ng-click="approveLearnObjective(specificEmpLearnObjs._id,specificEmpLearnObjs.PFNum,specificEmpLearnObjs.description, specificEmpLearnObjs.DSO
+															,specificEmpLearnObjs.metricOneDef, specificEmpLearnObjs.metricTwoDef, specificEmpLearnObjs.metricThreeDef
+															,specificEmpLearnObjs.metricFourDef,specificEmpLearnObjs.metricFiveDef)"> <span class="glyphicon glyphicon-ok"></span>
+												Approve Objective
+											</button> <!-- end Submit Objective button-->
+
+										</div> <!--end learnObjDiv-->
+										
+										<div class="alert alert-success alert-block fade in" 
+											onclick="$('#createObjModal').modal({'backdrop': 'static'});" id="successObjAlert42">
+											<button type="button" class="close" data-dismiss="alert">&times;</button>
+											<h4>Objective Successfully created!</h4>
+											<p>Click the 'x' in the corner to close...</p>
+										</div> <!--end alert-->
+
+										<div class="alert alert-danger alert-dismissable" 
+											ng-if="hasCreateObjErrors">
+											<button type="button" class="close"data-dismiss="alert">&times;</button>
+											<strong>Error:</strong>
+											<br>
+											<span ng-repeat='error in createObjectiveErrorMsgs'>
+												{{error}}
+												<br>
+											</span>
+			 	 						</div> <!--end danger alert -->
+									</form> <!-- end learnForm-->
+								</div> <!--end learnPersp div-->
+
+							</div> <!-- end empObjModalsss-body-->
+
+							<div class="modal-footer">
+
+								<button class="btn btn-default" type="button" data-dismiss="modal"> 
+									<span class="glyphicon glyphicon-remove"></span> 
+										Close
+								</button>
+								
+							</div> <!-- end modal-footer-->
+
+						</div> <!-- end empObjModalsss-content-->
+
+					</div> <!-- end empObjModalsss-dialog-->	
+				</div> <!-- end empObjModalsss-->
+
+				<div class="modal fade in" id="empObjModal" ng-controller="supRoleController">
+					<div id="scorecardModalDialog" class="modal-dialog" style="width:90%;">
+						<div id="scorecardModalContent" class="modal-content"> 
+							<div id="scorecardModalHeader" class="modal-header">
+								<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+							  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+							  	<h4 class="modal-title" ng-model="empAlias">View {{empAlias.Name}}'s Objectives!</h4>
+							</div> <!-- end compileSCModal-header-->
+							<div id="scorecardModalBody" class="modal-body" >
+								<div class="panel">
+									<div class="alert alert-info">
+							  			<button type="button" class="close" data-dismiss="alert">X</button>
+										<p>Enter Rating per Perfomance indicator under each Perspective and Comment or Attach files (Maximum 10 e.g PDF,Spreadsheet,Word Document) to support Rating</p>
+							  		</div>
+								<div class="alert alert-danger alert-dismissable" ng-if="hasSelfEvalErrors">
+								  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
+									<br>
+									<span ng-model='finSCErrorMsg'>
+									    {{selfEvalrrorMsg}}
+									    <br>
+									</span>
+								</div> <!--end danger alert -->
+								<button id="editFinanceObjButton" class="btn btn-warning pull-right" 
+									ng-click="editFinanceObjective(appFin._id)"> <span class="glyphicon glyphicon-pencil" ng-model="financeEditLabelText"> {{financeEditLabelText}}</span>
+								</button> <!-- end Edit Objective button-->
+
+									<table class="table table-hover" style="width:100%">
+										<caption><h5>Finance Objectives</h5></caption>
+										<thead>
+											<tr>
+											  	<th>Key Performance Area</th>
+											  	<th>Key Performance Indicator</th>
+											  	<th>Poor Performance</th>
+											  	<th>Unsatisfactory Performance</th>
+											  	<th>Target Met Performance</th>
+											  	<th>Exceptional Performance</th>
+											  	<th>Outstanding Performance</th>											  	
+											</tr>
+										</thead>
+										<form>	  									
+											<tbody>
+												<tr ng-repeat="appFin in specificEmpFinObjs | orderBy: 'description' | filter: search | limitTo:10">
+												  	<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+														ng-model="appFin.description" ng-disabled="financeUnedittable"></textarea></td>
+
+												  	<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+														ng-model="appFin.DSO" ng-disabled="financeUnedittable"></textarea></td>
+
+												  	<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+														ng-model="appFin.metricOneDef" ng-disabled="financeUnedittable"></textarea></td>
+
+												  	<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+														ng-model="appFin.metricTwoDef" ng-disabled="financeUnedittable"></textarea></td>
+
+												  	<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+														ng-model="appFin.metricThreeDef" ng-disabled="financeUnedittable"></textarea></td>
+
+												  	<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+														ng-model="appFin.metricFourDef" ng-disabled="financeUnedittable"></textarea></td>
+
+					  								<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+														ng-model="appFin.metricFiveDef" ng-disabled="financeUnedittable"></textarea></td>
+												</tr>
+											</tbody>
+										</form>	
+									</table> <!-- end Finance Approved-Objectives Table-->
+
+									<div class="alert alert-danger alert-dismissable" ng-if="hasFinSCErrors">
+									  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
+										<br>
+										<span ng-model='finSCErrorMsg'>
+										    {{finSCErrorMsg}}
+										    <br>
+										</span>
+									</div> <!--end danger alert -->
+
+									<button id="editFinanceObjButton" class="btn btn-warning pull-right" 
+										ng-click="editCustomerObjective()"> <span class="glyphicon glyphicon-pencil" ng-model="customerEditLabelText"> {{customerEditLabelText}}</span>
+									</button> <!-- end Edit Objective button-->
+
+									<table class="table table-hover"  style="width:100%">
+										<caption><h5>Customer Objectives</h5></caption>
+										<thead>
+											<tr>
+											  	<th>Key Performance Area</th>
+											  	<th>Key Performance Indicator</th>
+											  	<th>Poor Performance</th>
+											  	<th>Unsatisfactory Performance</th>
+											  	<th>Target Met Performance</th>
+											  	<th>Exceptional Performance</th>
+											  	<th>Outstanding Performance</th>
+											</tr>
+										</thead>
+
+										<tbody>
+												<tr ng-repeat="appCust in specificEmpCustObjs | orderBy: 'description' | filter: search | limitTo:10">
+												  	<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+														ng-model="appCust.description" ng-disabled="customerUnedittable"></textarea></td>
+
+												  	<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+														ng-model="appCust.DSO" ng-disabled="customerUnedittable"></textarea></td>
+
+												  	<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+														ng-model="appCust.metricOneDef" ng-disabled="customerUnedittable"></textarea></td>
+
+												  	<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+														ng-model="appCust.metricTwoDef" ng-disabled="customerUnedittable"></textarea></td>
+
+												  	<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+														ng-model="appCust.metricThreeDef" ng-disabled="customerUnedittable"></textarea></td>
+
+												  	<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+														ng-model="appCust.metricFourDef" ng-disabled="customerUnedittable"></textarea></td>
+
+					  								<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+														ng-model="appCust.metricFiveDef" ng-disabled="customerUnedittable"></textarea></td>
+												</tr>
+											</tbody>
+									</table> <!-- end Customer Approved-Objectives Table-->
+
+									<div class="alert alert-danger alert-dismissable" ng-if="hasCustSCErrors">
+									  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
+										<br>
+										<span ng-model='custSCErrorMsg'>
+										    {{custSCErrorMsg}}
+										    <br>
+										</span>
+									</div> <!--end danger alert -->
+
+									<button id="editInternalObjButton" class="btn btn-warning pull-right" 
+										ng-click="editInternalObjective()"> <span class="glyphicon glyphicon-pencil" ng-model="internalEditLabelText"> {{internalEditLabelText}}</span>
+									</button> <!-- end Edit Objective button-->
+
+									<table class="table table-hover" style="width:100%">
+										<caption><h5>Internal Business Objectives</h5></caption>
+										<thead>
+											<tr>
+											  	<th>Key Performance Area</th>
+											  	<th>Key Performance Indicator</th>
+											  	<th>Poor Performance</th>
+											  	<th>Unsatisfactory Performance</th>
+											  	<th>Target Met Performance</th>
+											  	<th>Exceptional Performance</th>
+											  	<th>Outstanding Performance</th>
+											</tr>
+										</thead>
+
+										<tbody>
+											<tr ng-repeat="appInt in specificEmpIntObjs | orderBy: 'description' | filter: search | limitTo:10">
+											  	<td><textarea class="form-control" id="internalDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+													ng-model="appInt.description" ng-disabled="internalUnedittable"></textarea></td>
+
+											  	<td><textarea class="form-control" id="internalDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+													ng-model="appInt.DSO" ng-disabled="internalUnedittable"></textarea></td>
+
+											  	<td><textarea class="form-control" id="internalDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+													ng-model="appInt.metricOneDef" ng-disabled="internalUnedittable"></textarea></td>
+
+											  	<td><textarea class="form-control" id="internalDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+													ng-model="appInt.metricTwoDef" ng-disabled="internalUnedittable"></textarea></td>
+
+											  	<td><textarea class="form-control" id="internalDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+													ng-model="appInt.metricThreeDef" ng-disabled="internalUnedittable"></textarea></td>
+
+											  	<td><textarea class="form-control" id="internalDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+													ng-model="appInt.metricFourDef" ng-disabled="internalUnedittable"></textarea></td>
+
+				  								<td><textarea class="form-control" id="internalDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+													ng-model="appInt.metricFiveDef" ng-disabled="internalUnedittable"></textarea></td>
+											</tr>
+										</tbody>
+									</table> <!-- end Internal Approved-Objectives Table-->
+
+									<div class="alert alert-danger alert-dismissable" ng-if="hasIntSCErrors">
+									  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
+										<br>
+										<span ng-model='intSCErrorMsg'>
+										    {{intSCErrorMsg}}
+										    <br>
+										</span>
+									</div> <!--end danger alert -->
+
+									<button id="editLearnObjButton" class="btn btn-warning pull-right" 
+										ng-click="editLearnObjective()"> <span class="glyphicon glyphicon-pencil" ng-model="learnEditLabelText"> {{learnEditLabelText}}</span>
+									</button> <!-- end Edit Objective button-->
+
+									<table class="table table-hover"  style="width:100%">
+										<caption><h5>Learning & Growth Objectives</h5></caption>
+										<thead>
+											<tr>
+											  	<th>Key Performance Area</th>
+											  	<th>Key Performance Indicator</th>
+											  	<th>Poor Performance</th>
+											  	<th>Unsatisfactory Performance</th>
+											  	<th>Target Met Performance</th>
+											  	<th>Exceptional Performance</th>
+											  	<th>Outstanding Performance</th>
+										</thead>
+
+										<tbody>
+											<tr ng-repeat="appLearn in specificEmpLearnObjs | orderBy: 'description' | filter: search | limitTo:10">
+											  	<td><textarea class="form-control" id="learnDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+													ng-model="appLearn.description" ng-disabled="learnUnedittable"></textarea></td>
+
+											  	<td><textarea class="form-control" id="learnDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+													ng-model="appLearn.DSO" ng-disabled="learnUnedittable"></textarea></td>
+
+											  	<td><textarea class="form-control" id="learnDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+													ng-model="appLearn.metricOneDef" ng-disabled="learnUnedittable"></textarea></td>
+
+											  	<td><textarea class="form-control" id="learnDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+													ng-model="appLearn.metricTwoDef" ng-disabled="learnUnedittable"></textarea></td>
+
+											  	<td><textarea class="form-control" id="learnDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+													ng-model="appLearn.metricThreeDef" ng-disabled="learnUnedittable"></textarea></td>
+
+											  	<td><textarea class="form-control" id="learnDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+													ng-model="appLearn.metricFourDef" ng-disabled="learnUnedittable"></textarea></td>
+
+				  								<td><textarea class="form-control" id="learnDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
+													ng-model="appLearn.metricFiveDef" ng-disabled="learnUnedittable"></textarea></td>
+											</tr>
+										</tbody>			
+									</table> <!-- end Learning Approved-Objectives Table-->
+
+									<div class="alert alert-danger alert-dismissable" ng-if="hasLearnSCErrors">
+									  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
+										<br>
+										<span ng-model='learnSCErrorMsg'>
+										    {{learnSCErrorMsg}}
+										    <br>
+										</span>
+									</div> <!--end danger alert -->
+								</div>
+							</div><!-- end modal body -->
+
+							<!--These Buttons Are Zombies -->				
+							<div class="modal-footer">
+								<button class="btn btn-danger" type="button" data-dismiss="modal">
+								  	<span class="glyphicon glyphicon-remove"> </span> 
+									  	Reject
+								</button>
+								
+								<button class="btn btn-success" type="button" ng-click="selfEvaluate()">
+								  	<span class="glyphicon glyphicon-ok"> </span> 
+									  	Approve
+								</button>
+								
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<!-- end employee Objective Modal-->
+			<!-- end view emp objective modal-->
+
+		<!-- begin view emp scorecard modal-->
+			<div class="modal fade" id="viewEmpSCModal">
+				<div id="viewEmpSCModalDialog" class="modal-dialog">
+					<div id="viewEmpSCModalContent" class="modal-content"> 
+						<div id="viewEmpSCModalHeader" class="modal-header">
+							<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+						  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+						  	<h3 class="modal-title">View Employee Scorecards</h3>
+						</div> <!-- end createObjModal-header-->
+
+						<div id="viewEmpObjModalBody" class="modal-body">
+							<div class="panel panel-inverse" ng-controller="supEmpObjsCtrl" >
+								<div class="panel-heading">
+									<h3 class="panel-title">Employee Scorecards</h3>
+								</div>
+								<div class="panel-body">
+									<table class="table table-striped table-bordered">
+										<thead>
+											<tr>
+												<th>Employee Name</th>
+												<th>PF Number</th>
+												<th>Position</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr ng-repeat="emp in emps | orderBy: 'empName' |filter: search |limitTo:10">
+												<td>
+													<a data-keyboard="false" data-backdrop="static" href="#empSCModal" role="button" data-toggle="modal" 
+													ng-click="retrieveApproved(emp.PFNum, emp.empName)">
+											  		{{emp.empName}}
+											  		</a>
+										  		</td>
+												<td>{{emp.PFNum}}</td>
+												<td>{{emp.position}}</td>
+											</tr>
+										</tbody>
+									</table> <!--end Employee Objectives Table-->
+
+									<!-- VIEW EMP OBJECTIVE MODAL-->
+								</div> <!--end panel-body-->
+							</div> <!--end panel-->
+						</div> <!--end viewEmpObjModalBody-->
+
+							<div class="modal-footer">
+								<!--
+							  	<button onclick="$('#submitObjModal').modal({'backdrop': 'static'});" class="btn btn-success" type="button" ng-click="sendObjs()"> 
+							  		<span class="glyphicon glyphicon-ok"></span> 
+							  		Send Objectives
+							  	</button>-->
+										
+							  	<button class="btn btn-danger" type="button" data-dismiss="modal"> 
+							  		<span class="glyphicon glyphicon-remove"></span> Close
+							  	</button>
+
+							</div> <!-- end modal-footer-->
+					</div> <!-- end viewEmpObjModal-content-->
+				</div> <!-- end viewEmpObjModal-dialog-->
+			</div> 
+		<!-- end view emp scorecard modal-->
+
+		<!-- begin scorecardModal-->
+		<div class="modal fade in" id="empSCModal" >
+			<div id="empSCModalDialog" class="modal-dialog" style="width:90%">
+				<div id="empSCModalContent" class="modal-content"> 
+					<div id="empSCModalHeader" class="modal-header">
+						<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+					  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+					  	<h4 class="modal-title" ng-model="empAlias">View {{empAlias.Name}}'s Objectives!</h4>
+					</div> <!-- end compileSCModal-header-->
+
+					<div id="scorecardModalBody" class="modal-body" >
+					<div class="panel">
+					  	<table class="hlk" style="width:100%;">
+							<tr>
+								<th class="hlk-wrek2"> </th>
+								<th class="hlk-drop" colspan="10">Perfomance Contract  : Key Perfomance Areas &amp; Key Perfomance Indicators</th>
+							</tr>
+
+							<tr>
+								<!--td class="hlk-drop" ng-model="scorecardHeight" rowspan={{scorecardHeight}} >BALANCED SCORE CARD FOR SWAZILAND ELECTRICITY COMPANY</td-->
+								<td class="hlk-drop" ng-model="scorecardHeight" rowspan="20" >BALANCED SCORE CARD FOR SWAZILAND ELECTRICITY COMPANY</td>
+								<td class="hlk-suit">Perspective</td>
+								<td class="hlk-kurasaki">Key Performance Area       (KPA)</td>
+								<td class="hlk-kurasaki">Key Performance Indicator (KPI)</td>
+								<!--td class="hlk-kurasaki">Broad Category Weightings</td>
+								<td class="hlk-kurasaki">Detailed Weightings</td-->
+								<td class="hlk-kurasaki">Poor performance - Rating of 1</td>
+								<td class="hlk-kurasaki">Unsatisfactory - Rating of 2</td>
+								<td class="hlk-kurasaki">Target met- rating of 3</td>
+								<td class="hlk-kurasaki">Exceeding : rating of 4</td>
+								<td class="hlk-kurasaki">Outstanding- Rating of 5</td>
+							</tr>
+
+							<tr> </tr>
+
+							<tr ng-repeat="appFin in appFinObj">
+								<td class="hlk-nl5m" ng-model="sc_persp">{{appFin.perspective}}</td>
+								<td class="hlk-me" >{{appFin.description}} </td>
+								<td class="hlk-me" >{{appFin.DSO}} </td>
+								<!--td class="hlk-suit" ng-model="finRowSpan" rowspan={{finRowSpan}}>10%</td>
+								<td class="hlk-suit">5%</td>
+								<td class="hlk-suit">5%</td-->
+								<td class="hlk-truk" > {{appFin.metricOneDef}} </td>
+								<td class="hlk-me" >   {{appFin.metricTwoDef}}</td>
+								<td class="hlk-nl5m" > {{appFin.metricThreeDef}}</td>
+								<td class="hlk-me" >   {{appFin.metricFourDef}}</td>
+								<td class="hlk-me" >   {{appFin.metricFiveDef}}</td>
+							</tr>
+
+							<tr> </tr>
+
+							<tr ng-repeat="appCust in appCustObj">
+								<td class="hlk-nl5m">{{appCust.perspective}}</td>
+								<td class="hlk-me" >{{appCust.description}} </td>
+								<td class="hlk-me" >{{appCust.DSO}} </td>
+								<!--td class="hlk-suit" ng-model="finRowSpan" rowspan={{finRowSpan}}>10%</td>
+								<td class="hlk-suit">5%</td>
+								<td class="hlk-suit">5%</td-->
+								<td class="hlk-truk" > {{appCust.metricOneDef}} </td>
+								<td class="hlk-me" >   {{appCust.metricTwoDef}}</td>
+								<td class="hlk-nl5m" > {{appCust.metricThreeDef}}</td>
+								<td class="hlk-me" >   {{appCust.metricFourDef}}</td>
+								<td class="hlk-me" >   {{appCust.metricFiveDef}}</td>
+							</tr>
+
+							<tr> </tr>
+
+							<tr ng-repeat="appInt in appIntObj">
+								<td class="hlk-nl5m">{{appInt.perspective}}</td>
+								<td class="hlk-me" >{{appInt.description}} </td>
+								<td class="hlk-me" >{{appInt.DSO}} </td>
+								<!--td class="hlk-suit" ng-model="finRowSpan" rowspan={{finRowSpan}}>10%</td>
+								<td class="hlk-suit">5%</td>
+								<td class="hlk-suit">5%</td-->
+								<td class="hlk-truk" > {{appInt.metricOneDef}} </td>
+								<td class="hlk-me" >   {{appInt.metricTwoDef}}</td>
+								<td class="hlk-nl5m" > {{appInt.metricThreeDef}}</td>
+								<td class="hlk-me" >   {{appInt.metricFourDef}}</td>
+								<td class="hlk-me" >   {{appInt.metricFiveDef}}</td>
+							</tr>
+
+							<tr> </tr>
+
+							<tr ng-repeat="appLearn in appLearnObj">
+								<td class="hlk-nl5m">{{appLearn.perspective}}</td>
+								<td class="hlk-me" >{{appLearn.decription}} </td>
+								<td class="hlk-me" >{{appLearn.DSO}} </td>
+								<!--td class="hlk-suit" ng-model="finRowSpan" rowspan={{finRowSpan}}>10%</td>
+								<td class="hlk-suit">5%</td>
+								<td class="hlk-suit">5%</td-->
+								<td class="hlk-truk" > {{appLearn.metricOneDef}} </td>
+								<td class="hlk-me" >   {{appLearn.metricTwoDef}}</td>
+								<td class="hlk-nl5m" > {{appLearn.metricThreeDef}}</td>
+								<td class="hlk-me" >   {{appLearn.metricFourDef}}</td>
+								<td class="hlk-me" >   {{appLearn.metricFiveDef}}</td>
+							</tr>
+						</table>
+					</div>	  						
+					</div> <!--end scorecardModalBody-->
+
+					<div id="scorecardModalFooter" class="modal-footer">
+
+						<button onclick="$('#scorecardodal').modal({'backdrop': 'static'});" class="btn btn-success" type="button"> 
+							<span class="glyphicon glyphicon-circle-arrow-right"> </span> 
+							  	Export Scorecard
+						</button>
+
+						<button onclick="$('#scorecardodal').modal({'backdrop': 'static'});" class="btn btn-warning" type="button"> 
+						  	<span class="glyphicon glyphicon-print"> </span> 
+						  		Print Scorecard
+						</button>
+						  											  									
+						<button class="btn btn-danger" type="button" data-dismiss="modal"> 
+						  	<span class="glyphicon glyphicon-remove"> </span> 
+						  	Close
+						</button>		
+					</div> <!-- end scorecardModal-footer-->
+				</div> <!-- end scorecardModal-content-->
+			</div> 
+		<!-- end scorecardModal-dialog-->
+		</div> 
+		<!-- end scorecardModal-->
+
+		
+		<!-- begin evaluate employee modal-->
+			<div class="modal fade" id="evalEmpSCModal">
+				<div id="viewEmpObjModalDialog" class="modal-dialog">
+					<div id="viewEmpObjModalContent" class="modal-content"> 
+						<div id="viewEmpObjModalHeader" class="modal-header">
+							<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+						  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+						  	<h3 class="modal-title">Evaluate Employee</h3>
+						</div> <!-- end createObjModal-header-->
+
+						<div id="viewEmpObjModalBody" class="modal-body">
+							<div class="panel panel-inverse" ng-controller="supEmpObjsCtrl" >
+								<div class="panel-heading">
+									<h3 class="panel-title">Employee Objectives</h3>
+								</div>
+								<div class="panel-body">
+									<table class="table table-striped table-bordered">
+										<thead>
+											<tr>
+												<th>Employee Name</th>
+												<th>PF Number</th>
+												<th>Position</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr ng-repeat="emp in emps | orderBy: 'empName' |filter: search |limitTo:10">
+												<td>
+													<a data-keyboard="false" data-backdrop="static" href="#empEvalModal" role="button" data-toggle="modal" 
+													ng-click="retrieveEmpObjs(emp.PFNum, emp.empName)">
+											  		{{emp.empName}}
+											  		</a>
+										  		</td>
+												<td>{{emp.PFNum}}</td>
+												<td>{{emp.position}}</td>
+											</tr>
+										</tbody>
+									</table> <!--end Employee Objectives Table-->
+
+									<!-- VIEW EMP OBJECTIVE MODAL-->
+								</div> <!--end panel-body-->
+							</div> <!--end panel-->
+						</div> <!--end viewEmpObjModalBody-->
+
+							<div class="modal-footer">
+								<!--
+							  	<button onclick="$('#submitObjModal').modal({'backdrop': 'static'});" class="btn btn-success" type="button" ng-click="sendObjs()"> 
+							  		<span class="glyphicon glyphicon-ok"></span> 
+							  		Send Objectives
+							  	</button>-->
+										
+							  	<button class="btn btn-danger" type="button" data-dismiss="modal"> 
+							  		<span class="glyphicon glyphicon-remove"></span> Close
+							  	</button>
+	
+							</div> <!-- end modal-footer-->
+					</div> <!-- end viewEmpObjModal-content-->
+				</div> <!-- end viewEmpObjModal-dialog-->
+			</div> 
+		<!-- end evaluate employee modal-->
+
+		<!-- begin employee evaluation -->
+			<div class="modal fade in" id="empEvalModal" ng-controller="supRoleController">
+				<div id="empEvalModalDialog" class="modal-dialog" style="width:90%;">
+					<div id="empEvalModalContent" class="modal-content"> 
+						<div id="empEvalModalHeader" class="modal-header">
+							<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+						  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+						  	<h4 class="modal-title" ng-model="empAlias">Evaluate {{empAlias.Name}}'s Performance!</h4>
+						</div> <!-- end compileSCModal-header-->
+						<div id="scorecardModalBody" class="modal-body" >
+							<div class="panel">
+								<div class="alert alert-info">
+						  			<button type="button" class="close" data-dismiss="alert">X</button>
+									<p>Enter Rating per Perfomance indicator under each Perspective and Comment or Attach files (Maximum 10 e.g PDF,Spreadsheet,Word Document) to support Rating</p>
+						  		</div>
+							<div class="alert alert-danger alert-dismissable" ng-if="hasSelfEvalErrors">
+								  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
+									<br>
+									<span ng-model='finSCErrorMsg'>
+									    {{selfEvalrrorMsg}}
+									    <br>
+									</span>
+								</div> <!--end danger alert -->
+								<table class="table table-hover" style="width:100%">
+									<caption><h5>Finance Objectives</h5></caption>
+									<thead>
+										<tr>
+										  	<th>Key Performance Area</th>
+										  	<th>Key Performance Indicator</th>
+										  	<th>Detailed Weightings</th>
+										  	<th>Attachment(s)(Optional)</th>
+										  	<th>Comment(s)</th>
+										  	<th>Rating</th>
+										  	
+										</tr>
+									</thead>
+									<form>	  									
+									<tbody>
+										<tr ng-repeat="appFin in appFinObj | orderBy: 'description' | filter: search | limitTo:10">
+										  	<td>{{appFin.description | uppercase}}</td>
+										  	<td>{{appFin.DSO}}</td>
+										  	<td>{{appFin.DSO}}</td>
+										  	<td><input id="kpiAttachment" type="file" multiple="true"></td>
+										  	<td>
+										  		<textarea class="form-control" type="text" ng-model="appFin.comment" id="kpiComment" placeholder="(Optional)" ng-keyup="captureComment(appFin)"></textarea>
+										  	</td>
+										  	<td>
+										  		<div class="input-group">
+										          	<span class="input-group-btn">
+										              <button type="button" class="btn btn-danger btn-number" ng-click="decrementObjRating(appFin)"  data-type="minus" data-field="quant[2]">
+										                <span class="glyphicon glyphicon-minus"></span>
+										              </button>
+										          	</span>
+										          	<input type="text" name="quant[2]" class="form-control input-number" ng-model="appFin.rating" value="0" min="0" max="5">
+										          	<span class="input-group-btn">
+										              <button type="button" class="btn btn-success btn-number" ng-click="incrementObjRating(appFin)" data-type="plus" data-field="quant[2]">
+										                  <span class="glyphicon glyphicon-plus"></span>
+										              </button>
+										          </span>
+										      </div>
+			  								</td>
+										</tr>
+									</tbody>
+									</form>	
+								</table> <!-- end Finance Approved-Objectives Table-->
+
+								<div class="alert alert-danger alert-dismissable" ng-if="hasFinSCErrors">
+								  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
+									<br>
+									<span ng-model='finSCErrorMsg'>
+									    {{finSCErrorMsg}}
+									    <br>
+									</span>
+								</div> <!--end danger alert -->
+
+								<table class="table table-hover"  style="width:100%">
+									<caption><h5>Customer Objectives</h5></caption>
+									<thead>
+										<tr>
+										  	<th>Key Performance Area</th>
+										  	<th>Key Performance Indicator</th>
+										  	<th>Detailed Weightings</th>
+										  	<th>Attachment(s)(Optional)</th>
+										  	<th>Comment(s)</th>
+										  	<th>Rating</th>
+										</tr>
+									</thead>
+
+									<tbody>
+										<tr ng-repeat="appCust in appCustObj | orderBy: 'description' | filter: search | limitTo:10">
+										  	<td>{{appCust.description | uppercase}}</td>
+										  	<td>{{appCust.DSO}}</td>
+										  	<td>{{appCust.DSO}}</td>
+										  	<td><input id="kpiAttachment" type="file" multiple="true"></td>
+										  	<td>
+										  		<textarea class="form-control" type="text" ng-model="appCust.comment" id="kpiComment" placeholder="(Optional)"></textarea>
+										  	</td>
+										  	<td>
+										  		<div class="input-group">
+										          	<span class="input-group-btn">
+										              <button type="button" class="btn btn-danger btn-number" ng-click="decrementObjRating(appCust)"  data-type="minus" data-field="quant[2]">
+										                <span class="glyphicon glyphicon-minus"></span>
+										              </button>
+										          	</span>
+										          	<input type="text" name="quant[2]" class="form-control input-number" ng-model="appCust.rating" value="0" min="0" max="5">
+										          	<span class="input-group-btn">
+										              <button type="button" class="btn btn-success btn-number" ng-click="incrementObjRating(appCust)" data-type="plus" data-field="quant[2]">
+										                  <span class="glyphicon glyphicon-plus"></span>
+										              </button>
+										          </span>
+										      	</div>
+			  								</td>
+										</tr>
+									</tbody>
+								</table> <!-- end Customer Approved-Objectives Table-->
+
+								<div class="alert alert-danger alert-dismissable" ng-if="hasCustSCErrors">
+								  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
+									<br>
+									<span ng-model='custSCErrorMsg'>
+									    {{custSCErrorMsg}}
+									    <br>
+									</span>
+								</div> <!--end danger alert -->
+
+								<table class="table table-hover" style="width:100%">
+									<caption><h5>Internal Business Objectives</h5></caption>
+									<thead>
+										<tr>
+										  	<th>Key Performance Area</th>
+										  	<th>Key Performance Indicator</th>
+										  	<th>Detailed Weightings</th>
+										  	<th>Attachment(s)(Optional)</th>
+										  	<th>Comment(s)</th>
+										  	<th>Rating</th>
+										</tr>
+									</thead>
+
+									<tbody>
+										<tr ng-repeat="appInt in appIntObj | orderBy: 'description' |filter: search |limitTo:10">
+										  	<td>{{appInt.description | uppercase}}</td>
+										  	<td>{{appInt.DSO}}</td>
+										  	<td>{{appInt.DSO}}</td>
+										  	<td><input id="kpiAttachment" type="file" multiple="true"></td>
+										  	<td>
+										  		<textarea class="form-control" type="text" ng-model="appInt.comment" id="kpiComment" placeholder="(Optional)"></textarea>
+										  	</td>
+										  	<td>
+										  		<div class="input-group">
+										          	<span class="input-group-btn">
+										              <button type="button" class="btn btn-danger btn-number" ng-click="decrementObjRating(appInt)"  data-type="minus" data-field="quant[2]">
+										                <span class="glyphicon glyphicon-minus"></span>
+										              </button>
+										          	</span>
+										          	<input type="text" name="quant[2]" class="form-control input-number" ng-model="appInt.rating" value="0" min="0" max="5">
+										          	<span class="input-group-btn">
+										              <button type="button" class="btn btn-success btn-number" ng-click="incrementObjRating(appInt)" data-type="plus" data-field="quant[2]">
+										                  <span class="glyphicon glyphicon-plus"></span>
+										              </button>
+										          </span>
+										      	</div>
+			  								</td>
+										</tr>
+									</tbody>
+								</table> <!-- end Internal Approved-Objectives Table-->
+
+								<div class="alert alert-danger alert-dismissable" ng-if="hasIntSCErrors">
+								  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
+									<br>
+									<span ng-model='intSCErrorMsg'>
+									    {{intSCErrorMsg}}
+									    <br>
+									</span>
+								</div> <!--end danger alert -->
+
+								<table class="table table-hover"  style="width:100%">
+									<caption><h5>Learning & Growth Objectives</h5></caption>
+									<thead>
+										<tr>
+										  	<th>Key Performance Area</th>
+										  	<th>Key Performance Indicator</th>
+										  	<th>Detailed Weightings</th>
+										  	<th>Attachment(s)(Optional)</th>
+										  	<th>Comment(s)</th>
+										  	<th>Rating</th>
+										</tr>
+									</thead>
+
+									<tbody>
+										<tr ng-repeat="appLearn in appLearnObj | orderBy: 'description' |filter: search |limitTo:10">
+										  	<td>{{appLearn.description}}</td>
+										  	<td>{{appLearn.DSO}}</td>
+										  	<td>{{appLearn.DSO}}</td>
+										  	<td><input  id="kpiAttachment" type="file" multiple="true"></td>
+										  	<td>
+										  		<textarea class="form-control" type="text" ng-model="appLearn.comment" id="kpiComment" placeholder="(Optional)"></textarea>
+										  	</td>
+										  	<td>
+										  		<div class="input-group">
+										          	<span class="input-group-btn">
+										              <button type="button" class="btn btn-danger btn-number" ng-click="decrementObjRating(appLearn)"  data-type="minus" data-field="quant[2]">
+										                <span class="glyphicon glyphicon-minus"></span>
+										              </button>
+										          	</span>
+										          	<input type="text" name="quant[2]" class="form-control input-number" ng-model="appLearn.rating" value="0" min="0" max="5">
+										          	<span class="input-group-btn">
+										              <button type="button" class="btn btn-success btn-number" ng-click="incrementObjRating(appLearn)" data-type="plus" data-field="quant[2]">
+										                  <span class="glyphicon glyphicon-plus"></span>
+										              </button>
+										          </span>
+										      	</div>
+			  								</td>
+										</tr>
+									</tbody>			
+								</table> <!-- end Learning Approved-Objectives Table-->
+
+								<div class="alert alert-danger alert-dismissable" ng-if="hasLearnSCErrors">
+								  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
+									<br>
+									<span ng-model='learnSCErrorMsg'>
+									    {{learnSCErrorMsg}}
+									    <br>
+									</span>
+								</div> <!--end danger alert -->
+							</div>
+						</div><!-- end modal body -->				
+						<div class="modal-footer">
+							<button class="btn btn-danger" type="button" data-dismiss="modal">
+							  	<span class="glyphicon glyphicon-remove"> </span> 
+								  	Close
+							</button>
+							<!--
+							<button class="btn btn-success" type="button" ng-click="selfEvaluate()"
+							  	<span class="glyphicon glyphicon-save"> </span> 
+								  	Save
+							</button>
+							-->
+							<a onclick="$('#evalModal').modal('hide');$('#scorecardModalB').modal('show');" ng-click="selfEvaluate()" type="button" data-toggle="modal" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-right" > </span>Next</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		<!-- end employee evaluation -->
+
+			<div class="panel panel-primary col-sm-6 col-sm-offset-1">
+				<div class="panel-heading">			
+					<h4 class="panel-title"> <span class="glyphicon glyphicon-resize-small"> </span>Supervisory Mini-Dash</h4>
+				</div>
+				<div class="panel-body">
+					<div class="btn-group ">
+						<button class="btn btn-info" href="#">Last Month</button>
+						<button class="btn" href="#">This year</button>
+						<button class="btn" href="#">Supervisee Rating</button>
+					</div>
+					<hr>
+					<div class="alert alert-danger">
+						<button type="button" class="close" data-dismiss="alert">×</button>
+						<p>No Data Found!</p>
+					</div>				
+				</div>
+				<div class="panel-footer">
+					<button class="btn  btn-small btn-danger" href="#"><span class="glyphicon glyphicon-remove"></span>&nbsp;Clear</button>
+					<button class="btn btn-small btn-success" href="#" ><span class="glyphicon glyphicon-ok"></span>&nbsp;Save Dashboard</button>
+				</div>
+			</div>
+		
+		</div>
+
+	</div>
+</div> <!-- end supervisorTab div-->
