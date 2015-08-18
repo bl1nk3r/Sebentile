@@ -574,7 +574,7 @@ var bsc = angular.module('BSCIMS', []);
 	annyang.debug();
 	annyang.start();
 })
- 
+
 	.controller('adminController',['$scope','$http','manageEmployeeData', function ($scope, $http, manageEmployeeData){
  	}]) // end adminController
 
@@ -1491,6 +1491,12 @@ var bsc = angular.module('BSCIMS', []);
 	$scope.appCustArr = [];
 	$scope.appIntArr = [];
 	$scope.appLearnArr = [];
+
+	$scope.showSCardErr = false;
+	$scope.showSCardMsg = "Your Perfomance contract is not ready yet. There are no Approved Objectives to work on for now ... Please Contact your supervisor or try again later.";
+
+	$scope.showEvalErr = true;
+	$scope.showEvalMsg = "There are no Approved Objectives to evaluate for now ... Please try again later.";
 	//end
 	$scope.finRowSpan = 0;
 	$scope.custRowSpan = 0;
@@ -1520,32 +1526,36 @@ var bsc = angular.module('BSCIMS', []);
 			$scope.appIntObj = [];
 			$scope.appLearnObj = [];
 
-
-			for (var i = 0; i<res.length; i++) {
-				if (res[i].perspective == "finance") {
-					$scope.appFinObj.push(res[i]);
-					
-				}
-				else if (res[i].perspective == "customer") {
-					$scope.appCustObj.push(res[i]);
-				}
-				else if (res[i].perspective == "internal") {
-					$scope.appIntObj.push(res[i]);
-				}
-				else if (res[i].perspective == "learn") {
-					$scope.appLearnObj.push(res[i]);
+			if (res.length > 0) {
+				for (var i = 0; i<res.length; i++) {
+					if (res[i].perspective == "finance") {
+						$scope.appFinObj.push(res[i]);
+						
+					}
+					else if (res[i].perspective == "customer") {
+						$scope.appCustObj.push(res[i]);
+					}
+					else if (res[i].perspective == "internal") {
+						$scope.appIntObj.push(res[i]);
+					}
+					else if (res[i].perspective == "learn") {
+						$scope.appLearnObj.push(res[i]);
+					}
 				}
 			}
+			else if (res.length <= 0){
+				$scope.showSCardErr = true;
+			}
 
-		 	for (var k =0; k<$scope.appFinObj.length; k++) {
-		 		console.log($scope.appFinObj[k]._id);
-		 	}
+			
 		})
 		.error(function () {
 			console.log('There is an error with compile socrecard! (BUG FOUND)');
 		});		
 	};	
+
 	$scope.scorecardCreate = function() {
+
 		for (var index = 0; index < $scope.appFinObj.length; index++){
 			console.log($scope.appFinObj);
 			$http.post("/createScoreCardRoute:/" + $scope.appFinObj[index]._id , $scope.compileController)
@@ -1718,118 +1728,30 @@ var bsc = angular.module('BSCIMS', []);
 			$scope.appCustObj = [];
 			$scope.appIntObj = [];
 			$scope.appLearnObj = [];
-			//$scope.kpi = [];
-			/*
-			$scope.finMetrics = [];
-			$scope.custMetrics = [];
-			$scope.intBusMetrics = [];
-			$scope.learnMetrics = [];
-
-			$scope.metricOne = {};
-			$scope.metricTwo = {};
-			$scope.metricThree = {};
-			$scope.metricFour = {};
-			$scope.metricFive = {};
-			$scope.perspective = "";*/
-
-			res.forEach(function (kpi) {
-	        	if (kpi.perspective == "finance") {
-	          		$scope.appFinObj.push(kpi);	  
-	          		/*      		
-					$scope.perspective = kpi.perspective;	
-					$scope.metricOne = kpi.metricOne;
-					$scope.metricTwo = kpi.metricTwo;
-					$scope.metricThree = kpi.metricThree;
-					$scope.metricFour = kpi.metricFour;
-					$scope.metricFive = kpi.metricFive;
-					
-	  				a = { perspective: $scope.perspective, metric: $scope.metricOne };
-	  				b = { perspective: $scope.perspective, metric: $scope.metricTwo };
-	  				c = { perspective: $scope.perspective, metric: $scope.metricThree };
-	  				d = { perspective: $scope.perspective, metric: $scope.metricFour };
-	  				e = { perspective: $scope.perspective, metric: $scope.metricFive };
-	  				f = { perspective: "spacer", metric: {value:'---', label:"--------------"} };
-
-	  				$scope.finMetrics.push(a);
-	  				$scope.finMetrics.push(b);
-	  				$scope.finMetrics.push(c);
-	  				$scope.finMetrics.push(d);
-	  				$scope.finMetrics.push(e);
-	  				$scope.finMetrics.push(f);*/         		
-	        	} 
-	        	else if (kpi.perspective == "customer") {
-					$scope.appCustObj.push(kpi);
-					/*
-					$scope.perspective = kpi.perspective;	
-					$scope.metricOne = kpi.metricOne;
-					$scope.metricTwo = kpi.metricTwo;
-					$scope.metricThree = kpi.metricThree;
-					$scope.metricFour = kpi.metricFour;
-					$scope.metricFive = kpi.metricFive;
-					
-	  				a = { perspective: $scope.perspective, metric: $scope.metricOne };
-	  				b = { perspective: $scope.perspective, metric: $scope.metricTwo };
-	  				c = { perspective: $scope.perspective, metric: $scope.metricThree };
-	  				d = { perspective: $scope.perspective, metric: $scope.metricFour };
-	  				e = { perspective: $scope.perspective, metric: $scope.metricFive };
-	  				f = { perspective: "spacer", metric: {value:'---', label:"--------------"} };
-
-	  				$scope.custMetrics.push(a);
-	  				$scope.custMetrics.push(b);
-	  				$scope.custMetrics.push(c);
-	  				$scope.custMetrics.push(d);
-	  				$scope.custMetrics.push(e);
-	  				$scope.custMetrics.push(f);*/
-				}
-				else if (kpi.perspective == "internal") {
-					$scope.appIntObj.push(kpi);
-					/*
-					$scope.perspective = kpi.perspective;	
-					$scope.metricOne = kpi.metricOne;
-					$scope.metricTwo = kpi.metricTwo;
-					$scope.metricThree = kpi.metricThree;
-					$scope.metricFour = kpi.metricFour;
-					$scope.metricFive = kpi.metricFive;
-					
-	  				a = { perspective: $scope.perspective, metric: $scope.metricOne };
-	  				b = { perspective: $scope.perspective, metric: $scope.metricTwo };
-	  				c = { perspective: $scope.perspective, metric: $scope.metricThree };
-	  				d = { perspective: $scope.perspective, metric: $scope.metricFour };
-	  				e = { perspective: $scope.perspective, metric: $scope.metricFive };
-	  				f = { perspective: "spacer", metric: {value:'---', label:"--------------"} };
-
-	  				$scope.intBusMetrics.push(a);
-	  				$scope.intBusMetrics.push(b);
-	  				$scope.intBusMetrics.push(c);
-	  				$scope.intBusMetrics.push(d);
-	  				$scope.intBusMetrics.push(e);
-	  				$scope.intBusMetrics.push(f);*/
-				}
-				else if (kpi.perspective == "learn") {
-					$scope.appLearnObj.push(kpi);
-					/*
-					$scope.perspective = kpi.perspective;	
-					$scope.metricOne = kpi.metricOne;
-					$scope.metricTwo = kpi.metricTwo;
-					$scope.metricThree = kpi.metricThree;
-					$scope.metricFour = kpi.metricFour;
-					$scope.metricFive = kpi.metricFive;
-					
-	  				a = { perspective: $scope.perspective, metric: $scope.metricOne };
-	  				b = { perspective: $scope.perspective, metric: $scope.metricTwo };
-	  				c = { perspective: $scope.perspective, metric: $scope.metricThree };
-	  				d = { perspective: $scope.perspective, metric: $scope.metricFour };
-	  				e = { perspective: $scope.perspective, metric: $scope.metricFive };
-	  				f = { perspective: "spacer", metric: {value:'---', label:"--------------"} };
-
-	  				$scope.learnMetrics.push(a);
-	  				$scope.learnMetrics.push(b);
-	  				$scope.learnMetrics.push(c);
-	  				$scope.learnMetrics.push(d);
-	  				$scope.learnMetrics.push(e);
-	  				$scope.learnMetrics.push(f);*/
-				}
-	      	})
+			console.log("Ran getAllKPAs finction");
+			console.log(res.length);
+			if(res.length > 0){
+				res.forEach(function (kpi) {
+		        	if (kpi.perspective == "finance") {
+		          		$scope.appFinObj.push(kpi);	        		
+		        	} 
+		        	else if (kpi.perspective == "customer") {
+						$scope.appCustObj.push(kpi);
+					}
+					else if (kpi.perspective == "internal") {
+						$scope.appIntObj.push(kpi);
+					}
+					else if (kpi.perspective == "learn") {
+						$scope.appLearnObj.push(kpi);
+					}
+	      		})
+			}
+			else if(res.length <= 0){
+				$scope.showEvalErr = false;
+				console.log("logging for result less than zero");
+				console.log($scope.showEvalErr);
+			}
+			
 		})
 	};
 	//By Mlandvo 
@@ -1949,8 +1871,7 @@ var bsc = angular.module('BSCIMS', []);
 	};	
 	//By Mlandvo
 	$scope.getEvalKPAs = function () {
-		
-		
+			
 		console.log("getting evaluated KPAs");
 		$http.post('/getEvalKPAs').success(function (data) {
 			console.log("got evaluated KPAs");
@@ -2180,37 +2101,39 @@ var bsc = angular.module('BSCIMS', []);
    		$scope.retrieveApproved = function (empPF, empName) {
 			approvedObjectives.getApproved()
 			.success(function (res) {
-				$scope.empAlias = {PF: empPF, Name: empName};
-				console.log($scope.empAlias);
-				console.log(res);
-				$scope.scorecardHeight = res.length + 1;
-				console.log("Score card height is:")
+				
+					$scope.empAlias = {PF: empPF, Name: empName};
+					console.log($scope.empAlias);
+					console.log(res);
+					$scope.scorecardHeight = res.length + 1;
+					console.log("Score card height is:")
 
-				console.log($scope.scorecardHeight);
-				$scope.appFinObj = [];
-				$scope.appCustObj = [];
-				$scope.appIntObj = [];
-				$scope.appLearnObj = [];
+					console.log($scope.scorecardHeight);
+					$scope.appFinObj = [];
+					$scope.appCustObj = [];
+					$scope.appIntObj = [];
+					$scope.appLearnObj = [];
 
-				for (var i = 0; i<res.length; i++) {
-					if (res[i].perspective == "finance") {
-						$scope.appFinObj.push(res[i]);
+					for (var i = 0; i<res.length; i++) {
+						if (res[i].perspective == "finance") {
+							$scope.appFinObj.push(res[i]);
+						}
+						else if (res[i].perspective == "customer") {
+							$scope.appCustObj.push(res[i]);
+						}
+						else if (res[i].perspective == "internal") {
+							$scope.appIntObj.push(res[i]);
+						}
+						else if (res[i].perspective == "learn") {
+							$scope.appLearnObj.push(res[i]);
+						}
 					}
-					else if (res[i].perspective == "customer") {
-						$scope.appCustObj.push(res[i]);
-					}
-					else if (res[i].perspective == "internal") {
-						$scope.appIntObj.push(res[i]);
-					}
-					else if (res[i].perspective == "learn") {
-						$scope.appLearnObj.push(res[i]);
-					}
-				}
-				console.log("Finance items :")
-			 	console.log($scope.appFinObj);
-			 	for (var k =0; k<$scope.appFinObj.length; k++) {
-			 		console.log($scope.appFinObj[k]._id);
-			 	}
+					console.log("Finance items :")
+				 	console.log($scope.appFinObj);
+				 	for (var k =0; k<$scope.appFinObj.length; k++) {
+				 		console.log($scope.appFinObj[k]._id);
+				 	}
+
 			})
 			.error(function () {
 	   			console.log("Could not retrieve Approved Objectives");

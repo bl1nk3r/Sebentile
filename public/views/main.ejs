@@ -31,7 +31,7 @@
 				</a>
 				<div>					
 					<h2 class="text-left"><strong><p class="text-primary">Sebentile&#8482;</p></strong></h2>	
-					<span class="label label-info">Fast, simple, Efficient. </span>&nbsp;&nbsp; 
+					<span class="label label-info">A Balanced Scorecard Perfomance Management System</span>&nbsp;&nbsp; 
 					<span class="badge"> v 0.0.1</span>				 							
 				</div>
 				&nbsp; 
@@ -39,7 +39,7 @@
 			<div class="panel with-nav-tabs panel-default">
                 <div class="panel-heading">
                     <ul class="nav nav-tabs">	
-                    	<li class="active" ng-if="isEmp"> 
+                    	<li class="active"> 
                     		<a href="#homeTab" data-toggle="tab"> 
                          		<span class = "glyphicon glyphicon-home"></span> 
                          		Home
@@ -115,25 +115,25 @@
 							<div class="panel with-nav-tabs panel-default">
 								<div class="panel-heading">
 									<ul class="nav nav-tabs">	
-										<li ng-if="isEmp"> 
+										<li ng-show="isEmp"> 
 											<a href="#employeeTab" data-toggle="tab" > 
 												<span class = "glyphicon glyphicon-user"></span>&nbsp; 
 												Employee
 											</a>
 										</li>
-										<li ng-if="isSup">
+										<li ng-show="isSup">
 											<a href="#supervisorTab" data-toggle="tab" > 
 												<span class = "glyphicon glyphicon-eye-open"></span>&nbsp; 
 												Supervisor
 											</a>
 										</li>
-										<li ng-if="isAdmin"> 
+										<li ng-show="isAdmin"> 
 											<a href="#adminTab" data-toggle="tab" ng-click="getDivisions()" > 
 												<span class = "glyphicon glyphicon-wrench"></span>&nbsp; 
 												Administrator
 											</a>
 										</li>
-										<li ng-controller="hrRolesController" ng-if="isHR">
+										<li ng-controller="hrRolesController" ng-show="isHR">
 											<a href="#HRTab" data-toggle="tab" ng-click="getDivisions()"> 
 												<span class = "glyphicon glyphicon-folder-open"></span> &nbsp;
 												Human Resources
