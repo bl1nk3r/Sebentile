@@ -25,7 +25,7 @@ var mongojs = require("mongojs")
 //use the default port for Mongo server/client connections			
     ,port = "27017"				
 //init BSCIMS (database) and Objectives (collection)
-    ,db = mongojs("BSCIMS", ["Objectives","Division","Transaction","Document","Employees", "Scorecard"]);
+    ,db = mongojs("sebentiledb", ["Objectives","Division","Transaction","Document","Employees", "Scorecard"]);
 
 //instantiate the server application 
 var bsc = express()
