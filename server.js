@@ -5,7 +5,8 @@
 var http  = require ('http') 												//built in module provides HTTP server and client functionality
    ,fs    = require ('fs')   												//built in fs module provides filesystem-related functionality
    ,path  = require ('path') 												//built in path module provides filesystem path-related functionality
-   ,cache = {};				 												//cache object is where the contents of cached files are stored
+   ,cache = {};	
+   			 												//cache object is where the contents of cached files are stored
  
 var express = require('express') 											//lightweight server framerwork
    ,session = require('express-session')	 								//client session manager for handling logged in users
@@ -22,7 +23,7 @@ var mongojs = require("mongojs")
 //localhost specified		
     ,host = "127.0.0.1"	
 //use the default port for Mongo server/client connections			
-    ,port = "27017"					
+    ,port = "27017"				
 //init BSCIMS (database) and Objectives (collection)
     ,db = mongojs("BSCIMS", ["Objectives","Division","Transaction","Document","Employees", "Scorecard"]);
 
@@ -35,7 +36,7 @@ var bsc = express()
  
 //Invoke all the extensions that Express will need to parse the app's body
    .use(bodyParser.urlencoded({ extended: false}))
-   .use(bodyParser.json()) 
+   .use(bodyParser.json())
    .use(bodyParser.text())
    .use(bodyParser.raw())
    .use(cookieParser())
@@ -147,7 +148,7 @@ var bsc = express()
 		req.session.destroy();
 		//req.session.userId = '';
 		res.redirect('/login');
-		console.log("***********************************************************logged out************************************************************");
+		console.log("***********************************************************logged out*********************************************");
 	})
 
 
@@ -193,28 +194,11 @@ var bsc = express()
 			});
 	})
 
-//******************************
-	/* FOR SELF EVALUATION*/
+	/* FOR SELF EVALUATION by Mlandvo*/
 	
-	// evaluate
-	.post("/empSelfEvaluate", function (req, res) {
-		var objectives = req.body;
-
-		for (var obj in objectives) {
-		  	if (objectives.hasOwnProperty(obj)) {
-		    	db.Objectives.update({ _id: mongojs.ObjectId(obj)}, {$set : {rating: objectives[obj][0], comment:objectives[obj][1]}}, {multi: false}, function (err, docs) {	
-					if (err) {
-						console.log("There is an error");
-					} else { 
-						res.json(docs);
-					}		
-				});
-		  	}
-		}
-	})
-
-	//get all KPAs
+	//get all KPAs by Mlandvo
 	.post("/getKPAs", function (req, res) {
+	   		console.log("Retrieving all aproved KPAs");
 			db.Objectives.find({status: "approved"}, function (err, data) {
 				if (err || !data) {
 					console.log("No Approved KPA's found");
@@ -227,17 +211,75 @@ var bsc = express()
 				//console.log("say!");		
 			});
 	})
-	//self evaluation
-	.put('/completeSelfEval/:id', function (req, res) {
-		var id = req.params.id;
+	/*By Mlandvo
+	.post('/completeSelfEval', function (req, res) {
+        var kpa = req.body;
+        var id = String(kpa.id);
+        var rating = Number(kpa.rating);
+        console.log(id);
+        console.log(typeof kpa.weightedRating);
+        db.Objectives.update({_id:id},{$set: {status:kpa.status, empComment:kpa.empComment, rating:rating, weightedRating:kpa.weightedRating, score:kpa.score}}, {multi: false}, function (err, saved) {
+            if (err) {
+                res.send("An error occured");    
+            } else {
+            	console.log("KPA updated");
+                res.send("KPA successfully updated");
+
+            }
+        });
+    })*/
+	//by Mlandvo
+    .post("/getEvalKPAs", function ( req, res) {
+	   		console.log("getting evaluated KPAs");
+	   		//var uname = req.body.loggedUserName;
+			db.Objectives.find({status: "evaluatedByEmp"}, function ( err, data) {
+				if ( err || !data) {
+					console.log("There is an error getting KPAs");
+					res.send("No Evaluated KPAs found");
+				} else { 
+					res.send(data);
+				}	
+			});
+	})
+	// by Mlandvo
+	.put('/completeSelfEval/', function (req, res) {
+		var kpa = req.body;
+		var id = String(kpa.id);
+        var rating = Number(kpa.rating);
 		console.log(req.body);
 		db.Objectives.findAndModify({query:{_id: mongojs.ObjectId(id)},
-			update: {$set: {kpiComment: req.body.kpiComment, kpiAttachment: req.body.kpiAttachment, kpiRating: req.body.kpiRating}},
+			update: {$set: {status:kpa.status, empComment:kpa.empComment, rating:rating, weightedRating:kpa.weightedRating, score:kpa.score}},
 			new: true}, function (err, data) {
-				res.send("Evaluationn completed for current KPI");
+				console.log("Rating saved");
+				res.send("Evaluationn completed for current KPA");
 			});
 		
 	})
+	//By Mlandvo
+	.post('/file-upload/', function (req, res, next) {
+    	console.log(req.body);
+    	console.log("server uploading");
+    	//console.log(req.file);
+		var filename    = req.files.file.name;
+        var tmpFilepath="./upload/"+ guid();
+        fs.rename(req.files.file.path,tmpFilepath);
+        fs.createReadStream(tmpFilepath)
+          .on('end', function() {
+         console.log("file Saved");
+      	})
+          .on('error', function() {
+           console.log("error encountered");
+           // res.send('ERR');
+          })
+          // and pipe it to gfs
+          .pipe(writestream);
+            writestream.on('close', function (file) {
+            fs.unlink(tmpFilepath);
+
+        });
+	})
+
+
 
 //********************************
 
@@ -284,13 +326,29 @@ var bsc = express()
 
 	.post("/getEmpObjectives", function (req, res) {
 		var pfnum = Number(req.body.pfno);
+		console.log(pfnum);
 		db.Objectives.find({PFNum: pfnum},function (err, doc){
 			if ( err || !doc) {
                 res.send("No objectives found");
             } else {
                 res.send(doc);
+                //console.log(doc);
             }
 		});
+	})
+
+    .post("/financePerspectiveController", function (req, res) {
+		
+		db.Objectives.insert(req.body, function (err, doc) {
+			//Update existing objectives and assert a 'status' field - set to unapproved
+			console.log("USER PF:");
+			console.log(req.session.loggdUser.PFNum);
+			db.Objectives.update({description: req.body.description}, {$set : {status: "unapproved", perspective: "finance", PFNum: req.session.loggdUser.PFNum}}, {multi: false}, 
+				function (err, doc) {
+					res.json(doc);
+					//console.log(doc);
+			});
+		})
 	})
 
 	// create finance objective : by Brian
@@ -339,7 +397,7 @@ var bsc = express()
 		})
 	})
 
-	// create objectives : Brian
+	// submit objectives : Brian
 	.post("/submitEmpObjectives", function (req, res) {
 		var objectives = req.body;
 		var length = objectives.length;
@@ -377,6 +435,7 @@ var bsc = express()
 
 	.delete("/financePerspectiveController/:id", function (req, res) {
 		var id = req.params.id;
+		console.log(id);
 		db.Objectives.remove({_id: mongojs.ObjectID(id)}, function (err, doc) {
 			res.json(doc);
 		});
@@ -470,7 +529,44 @@ var bsc = express()
 		db.Objectives.remove({_id: mongojs.ObjectID(id)}, function (err, doc) {
 			res.json(doc);
 		});
-	}) 
+	})
+
+/******************************************************************************************************************************************
+***********************************SUBMIT OBJECTIVE OPERATION (CHANGES STATUS OF OBJECTIVE)************************************************
+******************************************************************************************************************************************/
+
+	.post("/objectivesSubmitted_status_changed/:id", function (req, res) {
+		var ID = req.params.id;
+		console.log(ID);
+		
+		//Updating status of sent objectives to distinguish them from unsent in order for Supervisor to have access to them
+		db.Objectives.update({ _id: mongojs.ObjectId(ID)}, {$set : {status: "sent_for_approval"}}, {multi: false}, function (err, doc) {		
+			if (err) {																															
+				console.log(err);																												
+			} 
+			else {
+				res.json(doc);
+				console.log(doc);
+			}
+		});
+
+		mandrill('/messages/send', {
+			message: {
+			to: [{email: 'jay.rego.14@gmail.com', name: 'Mamba'}],
+			from_email: 'objectives@bscims.sec',
+			subject: "You have objectives!",
+			text: "An employee has sent you objectives for review... View : 127.0.0.1:3002/login.html"
+			}
+		}, function (error, response) {
+			if (error) {
+				console.log(JSON.stringify(error));
+			}
+			else {
+				console.log(response);
+			}
+		});		
+	})
+ 
  
 	.post('/getEmpsPendingObjs', function (req, res) {
 		db.Employees.find( function (err, cur) {

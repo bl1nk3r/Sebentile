@@ -1,6 +1,6 @@
-<<html>
+<!DOCTYPE html>
+<html>
 	<head>  	
-		<!-- WebApp Title & Description for Search Engine purposes -->
 		<link rel="SHORTCUT ICON" href="/images/favicon.ico"/>
 		<title>Sebentile | PMS</title>
 		<base href="/"> 
@@ -12,26 +12,13 @@
 		<link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 		<link href="/includes/css/bootstrap-glyphicons.css" rel="stylesheet">
 		<!--AngularJS script -->
-		<script> window.jQuery || document.write('<script src="includes/js/jquery-1.8.2.min.js"><\/script>')</script>
-		<script type="text/javascript" src="/js/angular.min.js"></script>
-		<script type="text/javascript" src="/bower_components/angular-route/angular-route.min.js"></script>
-		<script type="text/javascript" src="/bower_components/annyang/annyang.js"></script>
-		<script type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
-  		<script type="text/javascript" src="js/bootstrap-datetimepicker.fr.js"></script>
-		<script type="text/javascript" src="/js/features/ng_app.js"></script>
-		<script type="text/javascript" src="/js/features/services.js"></script>
-		<script type="text/javascript" src="/js/features/controllers.js"></script>	
-		
+		<!--script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.js"></script-->
 		<!-- Custom CSS -->
 		<link href="/includes/css/styles.css" rel="stylesheet">	
+		<link href="/includes/css/malhar-angular-dashboard.css" rel="stylesheet">	
+		
 		<!-- Include Modernizr in the head, before any other Javascript -->
 		<script src="/includes/js/modernizr-2.6.2.min.js"></script>
-		<style media="screen" rel="stylesheet">
-			@media screen and (min-width: 768px) {
-			 .modal-dialog  {width:900px;}
-			}
-		</style>
-		</link>
 		<link rel="stylesheet" href="/../bower_components/malhar-angular-dashboard/dist/angular-ui-dashboard.css">
 		<script src="/../bower_components/malhar-angular-dashboard/dist/angular-ui-dashboard.js"></script>
 	</head>
@@ -117,7 +104,7 @@
 											</div>
 										</div>
 									</div>
-							</div>
+								</div>
 							</li>
 						</ul> <!--end ul myAccount-->
                     </ul>
@@ -171,199 +158,192 @@
 							</div> <!--panel with-nav-tabs panel-default-->
 						</div><!--end home tab content-->
 						<div class="tab-pane fade in" id="dashboardTab">
-							<div class="tab-content">
+							<div class="tab-content" ng-controller="">
 								<div class="container">
 									<div class="panel" dashboard="dashboardOptions">
 										
 									</div>
 								</div>
 							</div>
-						</div>
-						
+						</div>						
 						<div class="tab-pane fade in" id="reportsTab">
-							
 							<div class="modal fade" id="sysAcessReport" tabindex="-1" role="dialog" aria-labelledby="panelLabel" aria-hidden="true" >
-									<div  class="modal-dialog">
-										<div  class="modal-content"> 
-											<div  class="modal-header">
-												<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-												<h4 class="modal-title">System Access Report</h4>
-											</div>
-											<div class="modal-body container-fluid">
-												<div class="alert alert-info">Select relevent parameters for system access report</div>
-											</div>
-											<div id="" class="modal-footer">
-												<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
-												<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
-											</div>
+								<div class="modal-dialog">
+									<div  class="modal-content"> 
+										<div  class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+											<h4 class="modal-title">System Access Report</h4>
+										</div>
+										<div class="modal-body container-fluid">
+											<div class="alert alert-info">Select relevent parameters for system access report</div>
+										</div>
+										<div id="" class="modal-footer">
+											<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
+											<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
 										</div>
 									</div>
-							</div>
-							
+								</div>
+							</div>						
 							<div class="modal fade" id="sysUsageReport" tabindex="-1" role="dialog" aria-labelledby="panelLabel" aria-hidden="true" >
-									<div  class="modal-dialog">
-										<div  class="modal-content"> 
-											<div  class="modal-header">
-												<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-												<h4 class="modal-title">System Usage Report</h4>
-											</div>
-											<div class="modal-body container-fluid">
-												<div class="alert alert-info">Select relevent parameters for system usage report</div>
-											</div>
-											<div id="" class="modal-footer">
-												<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
-												<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
-											</div>
+								<div  class="modal-dialog">
+									<div  class="modal-content"> 
+										<div  class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+											<h4 class="modal-title">System Usage Report</h4>
+										</div>
+										<div class="modal-body container-fluid">
+											<div class="alert alert-info">Select relevent parameters for system usage report</div>
+										</div>
+										<div id="" class="modal-footer">
+											<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
+											<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
 										</div>
 									</div>
+								</div>
 							</div>
 							<div class="modal fade" id="sysBackupReport" tabindex="-1" role="dialog" aria-labelledby="panelLabel" aria-hidden="true" >
-									<div  class="modal-dialog">
-										<div  class="modal-content"> 
-											<div  class="modal-header">
-												<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-												<h4 class="modal-title">System Backup Report</h4>
-											</div>
-											<div class="modal-body container-fluid">
-												<div class="alert alert-info">Select relevent parameters for system backup report</div>
-											</div>
-											<div id="" class="modal-footer">
-												<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
-												<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
-											</div>
+								<div  class="modal-dialog">
+									<div  class="modal-content"> 
+										<div  class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+											<h4 class="modal-title">System Backup Report</h4>
+										</div>
+										<div class="modal-body container-fluid">
+											<div class="alert alert-info">Select relevent parameters for system backup report</div>
+										</div>
+										<div id="" class="modal-footer">
+											<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
+											<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
 										</div>
 									</div>
+								</div>
 							</div>
 							<div class="modal fade" id="perfByEmpReport" tabindex="-1" role="dialog" aria-labelledby="panelLabel" aria-hidden="true" >
-									<div  class="modal-dialog">
-										<div  class="modal-content"> 
-											<div  class="modal-header">
-												<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-												<h4 class="modal-title">Perfomance By Employee Report</h4>
-											</div>
-											<div class="modal-body container-fluid">
-												<div class="alert alert-info">Select relevent parameters for Perfomance by Employee report</div>
-											</div>
-											<div id="" class="modal-footer">
-												<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
-												<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
-											</div>
+								<div  class="modal-dialog">
+									<div  class="modal-content"> 
+										<div  class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+											<h4 class="modal-title">Perfomance By Employee Report</h4>
+										</div>
+										<div class="modal-body container-fluid">
+											<div class="alert alert-info">Select relevent parameters for Perfomance by Employee report</div>
+										</div>
+										<div id="" class="modal-footer">
+											<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
+											<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
 										</div>
 									</div>
+								</div>
 							</div>
 							<div class="modal fade" id="perfBySecReport" tabindex="-1" role="dialog" aria-labelledby="panelLabel" aria-hidden="true" >
-									<div  class="modal-dialog">
-										<div  class="modal-content"> 
-											<div  class="modal-header">
-												<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-												<h4 class="modal-title">Perfomance by Section Report</h4>
-											</div>
-											<div class="modal-body container-fluid">
-												<div class="alert alert-info">Select relevent parameters for Perfomance by section report</div>
-											</div>
-											<div id="" class="modal-footer">
-												<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
-												<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
-											</div>
+								<div  class="modal-dialog">
+									<div  class="modal-content"> 
+										<div  class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+											<h4 class="modal-title">Perfomance by Section Report</h4>
+										</div>
+										<div class="modal-body container-fluid">
+											<div class="alert alert-info">Select relevent parameters for Perfomance by section report</div>
+										</div>
+										<div id="" class="modal-footer">
+											<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
+											<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
 										</div>
 									</div>
+								</div>
 							</div>
 							<div class="modal fade" id="perfByDepReport" tabindex="-1" role="dialog" aria-labelledby="panelLabel" aria-hidden="true" >
-									<div  class="modal-dialog">
-										<div  class="modal-content"> 
-											<div  class="modal-header">
-												<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-												<h4 class="modal-title">Perfomance By Department Report</h4>
-											</div>
-											<div class="modal-body container-fluid">
-												<div class="alert alert-info">Select relevent parameters for Peformance by department report</div>
-											</div>
-											<div id="" class="modal-footer">
-												<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
-												<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
-											</div>
+								<div  class="modal-dialog">
+									<div  class="modal-content"> 
+										<div  class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+											<h4 class="modal-title">Perfomance By Department Report</h4>
+										</div>
+										<div class="modal-body container-fluid">
+											<div class="alert alert-info">Select relevent parameters for Peformance by department report</div>
+										</div>
+										<div id="" class="modal-footer">
+											<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
+											<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
 										</div>
 									</div>
+								</div>
 							</div>
 							<div class="modal fade" id="perfByDivReport" tabindex="-1" role="dialog" aria-labelledby="panelLabel" aria-hidden="true" >
-									<div  class="modal-dialog">
-										<div  class="modal-content"> 
-											<div  class="modal-header">
-												<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-												<h4 class="modal-title">Peformance By Division Report</h4>
-											</div>
-											<div class="modal-body container-fluid">
-												<div class="alert alert-info">Select relevent parameters for Perfomance by division report</div>
-											</div>
-											<div id="" class="modal-footer">
-												<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
-												<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
-											</div>
+								<div  class="modal-dialog">
+									<div  class="modal-content"> 
+										<div  class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+											<h4 class="modal-title">Peformance By Division Report</h4>
+										</div>
+										<div class="modal-body container-fluid">
+											<div class="alert alert-info">Select relevent parameters for Perfomance by division report</div>
+										</div>
+										<div id="" class="modal-footer">
+											<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
+											<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
 										</div>
 									</div>
+								</div>
 							</div>
 							<div class="modal fade" id="coPerfByMoReport" tabindex="-1" role="dialog" aria-labelledby="panelLabel" aria-hidden="true" >
-									<div  class="modal-dialog">
-										<div  class="modal-content"> 
-											<div  class="modal-header">
-												<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-												<h4 class="modal-title">Company Perfomance By Month Report</h4>
-											</div>
-											<div class="modal-body container-fluid">
-												<div class="alert alert-info">Select relevent parameters for company performance by month report</div>
-											</div>
-											<div id="" class="modal-footer">
-												<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
-												<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
-											</div>
+								<div  class="modal-dialog">
+									<div  class="modal-content"> 
+										<div  class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+											<h4 class="modal-title">Company Perfomance By Month Report</h4>
+										</div>
+										<div class="modal-body container-fluid">
+											<div class="alert alert-info">Select relevent parameters for company performance by month report</div>
+										</div>
+										<div id="" class="modal-footer">
+											<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
+											<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
 										</div>
 									</div>
+								</div>
 							</div>
 							<div class="modal fade" id="coPerfByYrReport" tabindex="-1" role="dialog" aria-labelledby="panelLabel" aria-hidden="true" >
-									<div  class="modal-dialog">
-										<div  class="modal-content"> 
-											<div  class="modal-header">
-												<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-												<h4 class="modal-title">Company Perfomance By Year Report</h4>
-											</div>
-											<div class="modal-body container-fluid">
-												<div class="alert alert-info">Select relevent parameters for company peformance by year report</div>
-											</div>
-											<div id="" class="modal-footer">
-												<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
-												<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
-											</div>
+								<div  class="modal-dialog">
+									<div  class="modal-content"> 
+										<div  class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+											<h4 class="modal-title">Company Perfomance By Year Report</h4>
+										</div>
+										<div class="modal-body container-fluid">
+											<div class="alert alert-info">Select relevent parameters for company peformance by year report</div>
+										</div>
+										<div id="" class="modal-footer">
+											<button class="btn btn-info"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</button> &nbsp;
+											<button class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>&nbsp;Close</button>
 										</div>
 									</div>
-							</div>
-							
+								</div>
+							</div>							
 							<div class="panel">
-					
 								<div class="btn-block">
-										<button class="btn btn-large" href="#sysAcessReport" data-toggle="modal">System Access</button>&nbsp;&nbsp;&nbsp;   
-										<button class="btn btn-large" href="#sysUsageReport" data-toggle="modal">System Usage </button>&nbsp;&nbsp;&nbsp;   
-										<button class="btn btn-large" href="#sysBackupReport" data-toggle="modal">System Backup</button>&nbsp;&nbsp;&nbsp;   
+									<button class="btn btn-large" href="#sysAcessReport" data-toggle="modal">System Access</button>&nbsp;&nbsp;&nbsp;   
+									<button class="btn btn-large" href="#sysUsageReport" data-toggle="modal">System Usage </button>&nbsp;&nbsp;&nbsp;   
+									<button class="btn btn-large" href="#sysBackupReport" data-toggle="modal">System Backup</button>&nbsp;&nbsp;&nbsp;   
 								</div>
 								<hr>
 								<div class="btn-block">
-										<button class="btn btn-large" href="#perfByEmpReport" data-toggle="modal">Perfomance By Individual</button>&nbsp; &nbsp; &nbsp; 
-										<button class="btn btn-large" href="#perfBySecReport" data-toggle="modal">Perfomance By Section</button>&nbsp; &nbsp; &nbsp; 
-										<button class="btn btn-large" href="#perfByDepReport" data-toggle="modal">Perfomance By Department</button>&nbsp; &nbsp; &nbsp; 
+									<button class="btn btn-large" href="#perfByEmpReport" data-toggle="modal">Perfomance By Individual</button>&nbsp; &nbsp; &nbsp; 
+									<button class="btn btn-large" href="#perfBySecReport" data-toggle="modal">Perfomance By Section</button>&nbsp; &nbsp; &nbsp; 
+									<button class="btn btn-large" href="#perfByDepReport" data-toggle="modal">Perfomance By Department</button>&nbsp; &nbsp; &nbsp; 
 								</div>
 								<hr>
 								<div class="btn-block">
-										<button class="btn btn-large" href="#perfByDivReport" data-toggle="modal">Perfomance By Division</button>&nbsp; &nbsp; &nbsp; 
-										<button class="btn btn-large" href="#coPerfByMoReport" data-toggle="modal">Company Perfomance By Month</button>&nbsp; &nbsp; &nbsp; 
-										<button class="btn btn-large" href="#coPerfByYrReport" data-toggle="modal">Company Perfomance By Year</button>&nbsp; &nbsp; &nbsp;
+									<button class="btn btn-large" href="#perfByDivReport" data-toggle="modal">Perfomance By Division</button>&nbsp; &nbsp; &nbsp; 
+									<button class="btn btn-large" href="#coPerfByMoReport" data-toggle="modal">Company Perfomance By Month</button>&nbsp; &nbsp; &nbsp; 
+									<button class="btn btn-large" href="#coPerfByYrReport" data-toggle="modal">Company Perfomance By Year</button>&nbsp; &nbsp; &nbsp;
 								</div>
 							</div>
-						</div>
-					
+						</div>				
 					</div><!--end tab content-->
 				</div><!--end panel body-->
 			</div><!-- end panel-->
 		</div> <!--end container-->
-
 		<footer id="foot" style="position: fixed; bottom:0; left:0; height: 40px; width: 100%" >
 			<div class="container">
 				<div class="row">
@@ -374,11 +354,24 @@
 			</div> <!-- end container-->
 		</footer> <!-- end footer-->
 		
+		<script> window.jQuery || document.write('<script src="includes/js/jquery-1.8.2.min.js"><\/script>')</script>
+		<script type="text/javascript" src="/js/angular.min.js"></script>
+		<script type="text/javascript" src="/js/features/controller.js"></script>	
+		<!-- Bootstrap JS -->
+		<script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/js/malhar-angular-dashboard.js"></script>
+		
+		<script type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
+  		<script type="text/javascript" src="js/bootstrap-datetimepicker.fr.js"></script>
+		<!--Adding ref of ngfile upload -->
+		<script type="text/javascript" src="/js/ng-file-upload-all.min.js"></script>
+		<script type="text/javascript" src="/bower_components/angular-route/angular-route.min.js"></script>
+		<script type="text/javascript" src="/bower_components/annyang/annyang.js"></script>		
 		<script type="text/javascript" src="/js/effects.js"></script>
 		<script type="text/javascript" src="/js/mkActivePane.js"></script>		
 		<script type="text/javascript" src="/js/objData.js"></script>
 		<script type="text/javascript" src="/js/selfevalbtn.js"></script>
-		<script src="/bootstrap/js/bootstrap.min.js"></script>
+		
 		<script src="/includes/js/script.js"></script>
 	</body>
 </html>

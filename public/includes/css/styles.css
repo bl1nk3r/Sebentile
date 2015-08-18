@@ -164,3 +164,14 @@ th, td {
 .hlk .hlk-zion{font-weight:bold;background-color:#f8ff00;text-align:center}
 .hlk .hlk-jet{font-weight:bold;background-color:#f8ff00}
 .hlk .hlk-rhrj{background-color:#c4f93a}
+
+
+.button {
+   -moz-appearance: button;
+   /* Firefox */
+    -webkit-appearance: button;
+    /* Safari and Chrome */
+    padding: 12px;
+    margin: 10px;
+    width: 100px;
+}
