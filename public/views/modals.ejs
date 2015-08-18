@@ -515,71 +515,6 @@
 				  						
 		</div> 
 	<!-- end employee Objective Modal-->
-
-	<!-- begin view emp objective modal-->
-		<div class="modal fade" id="viewEmpObjModal">
-			<div id="viewEmpObjModalDialog" class="modal-dialog">
-				<div id="viewEmpObjModalContent" class="modal-content"> 
-					<div id="viewEmpObjModalHeader" class="modal-header">
-						<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
-					  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-					  	<h3 class="modal-title">View Employee Objectives</h3>
-					</div> <!-- end createObjModal-header-->
-
-					<div id="viewEmpObjModalBody" class="modal-body">
-						<div class="panel panel-inverse" ng-show="empKPAs" ng-controller="supEmpObjsCtrl" >
-							<div class="panel-heading">
-								<h3 class="panel-title">Employee Objectives</h3>
-							</div>
-							<div class="panel-body">
-								<table class="table table-striped table-bordered">
-									<thead>
-										<tr>
-											<th>Employee Name</th>
-											<th>PF Number</th>
-											<th>Position</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="emp in emps | orderBy: 'empName' |filter: search |limitTo:10">
-											<td>
-												<a data-keyboard="false" data-backdrop="static" href="#empObjModal" role="button" data-toggle="modal" 
-												ng-click="retrieveEmpObjs(emp.PFNum, emp.empName)">
-										  		{{emp.empName}}
-										  		</a>
-									  		</td>
-											<td>{{emp.PFNum}}</td>
-											<td>{{emp.position}}</td>
-										</tr>
-									</tbody>
-								</table> <!--end Employee Objectives Table-->
-
-								<!-- VIEW EMP OBJECTIVE MODAL-->
-							</div> <!--end panel-body-->
-						</div> <!--end panel-->
-					</div> <!--end viewEmpObjModalBody-->
-
-						<div class="modal-footer">
-							<!--
-						  	<button onclick="$('#submitObjModal').modal({'backdrop': 'static'});" class="btn btn-success" type="button" ng-click="sendObjs()"> 
-						  		<span class="glyphicon glyphicon-ok"></span> 
-						  		Send Objectives
-						  	</button>-->
-									
-						  	<button class="btn btn-danger" type="button" data-dismiss="modal"> 
-						  		<span class="glyphicon glyphicon-remove"></span> Close
-						  	</button>
-
-						  	<div class="alert alert-success alert-block fade in" onclick="$('#submitObjModal').modal({'backdrop': 'static'});" id="successObjSubmit">
-								<button type="button" class="close" data-dismiss="alert">&times;</button>
-								<h5>Objective(s) Successfully Submitted!</h5>
-								<p>Click the 'x' in the corner to close...</p>
-							</div> <!--end alert-->	
-						</div> <!-- end modal-footer-->
-				</div> <!-- end viewEmpObjModal-content-->
-			</div> <!-- end viewEmpObjModal-dialog-->
-		</div> 
-	<!-- end view emp objective modal-->
 		<!--EMPLOYEE TAB MODALS by Brian -->
 		<div ng-controller="empRoleController">
 			<!-- begin create objective modal-->
@@ -1291,10 +1226,10 @@
 			</div> <!-- end createObjModal-->
 			<!-- begin submit objective modal by Brian-->
 			<div class="modal fade" id="submitObjModal">
-				<div id="submitObjModalDialog" class="modal-dialog">
+				<div id="submitObjModalDialog" class="modal-dialog" style="width:75%">
 					<div id="submitObjModalContent" class="modal-content"> 
 						<div id="submitObjModalHeader" class="modal-header">
-							<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+							<img class="img-responsive" src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
 						  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
 						  	<h3 class="modal-title">Submit Objectives</h3>
 						</div> <!-- end createObjModal-header-->
@@ -1310,73 +1245,23 @@
 
 							<div>
 								<table class="table table-hover" style="width:100%">
-									<caption><h5>Finance Objectives</h5></caption>
 									<thead>
 										<tr>
+											<th>Perspective</th>
 										  	<th>Key Performance Area</th>
 										  	<th>Key Performance Indicator</th>
+										  	<th>Action</th>
 										</tr>
 									</thead>
 									<tbody>
-										<tr ng-repeat="objective in subFinObj | orderBy: 'description' |filter: search |limitTo:10">
+										<tr ng-repeat="objective in allObjectives | orderBy: 'perspective' |filter: search |limitTo:10">
+											<td>{{objective.perspective}}</td>
 										  	<td>{{objective.description | uppercase}}</td>
 										  	<td>{{objective.DSO}}</td>
+										  	<td></td>
 										</tr>
 									</tbody>					  										
 								</table> <!-- end Finance Objectives Table-->
-
-								<table class="table table-hover">
-									<caption><h5>Customer Objectives</h5></caption>
-									<thead>
-										<tr>
-										  	<th>Key Performance Area</th>
-										  	<th>Key Performance Indicator</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="objective in subCustObj | orderBy: 'description' |filter: search |limitTo:10">
-										  	<td>{{objective.description | uppercase}}</td>
-										  	<td>{{objective.DSO}}</td>
-										</tr>
-									</tbody>			
-								</table>
-
-								<table class="table table-hover">
-									<caption><h5>Internal Business Objectives</h5></caption>
-									<thead>
-										<tr>
-											<th>Key Performance Area</th>
-										  	<th>Key Performance Indicator</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="objective in subIntObj | orderBy: 'description' |filter: search |limitTo:10">
-										  	<td>{{objective.description | uppercase}}</td>
-										  	<td>{{objective.DSO}}</td>
-										</tr>
-									</tbody>				
-								</table> <!-- end Internal Objectives Table-->
-
-								<table class="table table-hover">
-									<caption><h5>Learning & Growth Objectives</h5></caption>
-									<thead>
-										<tr>
-										  	<th>Key Performance Area</th>
-										  	<th>Key Performance Indicator</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="objective in subLearnObj | orderBy: 'description' |filter: search |limitTo:10">
-										  	<td>{{objective.description | uppercase}}</td>
-										  	<td>{{objective.DSO}}</td>
-										</tr>
-									</tbody>
-								</table> <!-- end Learning Objectives Table-->
-
-								<div id="confirmEmailDiv">
-								  	<span>Confirm recipient's email:</span> <input type="email" class="form-control" placeholder="Enter Email Address"> <!--COME BACK & DROP IN AN NG-MODEL FOR SUP EMAIL-->
-								</div>
-
 							</div> <!-- end submitObjController div-->
 								  						
 							<div class="alert alert-danger alert-dismissable" ng-if="hasSendObjErrors">
@@ -1391,8 +1276,8 @@
 						</div> <!--end submitObjModal-Body-->
 
 						<div class="modal-footer">
-						  	<button onclick="$('#submitObjModal').modal({'backdrop': 'static'});" class="btn btn-success" type="button" ng-click="sendObjs()"> 
-						  		<span class="glyphicon glyphicon-ok"></span> Submit
+						  	<button class="btn btn-success" type="button" ng-click="sendObjs()">
+						  		<span class="glyphicon glyphicon-ok-circle"></span> Finish 
 						  	</button>
 									
 						  	<button class="btn btn-danger" type="button" data-dismiss="modal"> 
@@ -1473,171 +1358,7 @@
 
 				</div> <!-- end createPersModal-dialog-->				
 			</div> <!-- end createPersModal-->
-			<!-- begin CompileSCModal -->
-			<div class="modal fade" id="compileSCModal" >
-				<div id="compileSCModalDialog" class="modal-dialog">
-					<div id="compileSCModalContent" class="modal-content"> 
-						<div id="compileSCModalHeader" class="modal-header">
-							<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
-						  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-						  	<h3 class="modal-title">View Compiled Scorecard</h3>
-						</div> <!-- end compileSCModal-header-->
 
-						<div id="compileSCModalBody" class="modal-body" >
-							<div class="alert alert-info">
-					  			<button type="button" class="close" data-dismiss="alert">X</button>
-								<p>Select a Approved Objectives...</p>
-					  		</div>
-							  						
-							<form id="searchObj">
-								<input type="text" class="form-control pull-right" placeholder="Search objectives..." id="searchInput" ng-model="search.$">
-							</form> <!--end form search-->
-
-							&nbsp;
-
-							<br>
-
-							&nbsp;
-
-							<table class="table table-hover" id="financeApprovedObjectivesTable" style="width:90%">
-								<caption><h5>Finance Objectives</h5></caption>
-								<thead>
-									<tr>
-									  	<th>Key Performance Area</th>
-									  	<th>Key Performance Indicator</th>
-									</tr>
-								</thead>
-									  									
-								<tbody>
-									<tr ng-repeat="appFin in appFinObj | orderBy: 'description' | filter: search | limitTo:10">
-									  	<td><!--input type="checkbox" ng-click="captureFinApp(appFin._id, appFin.description, appFin.DSO, appFin.metricOneDef, appFin.metricTwoDef, appFin.metricThreeDef, appFin.metricFourDef, appFin.metricFiveDef)" ng-model="grabAppFin"-->
-									  		{{appFin.description | uppercase}}
-									  	</td>
-									  	<td>{{appFin.DSO}}</td>
-									</tr>
-								</tbody>	
-							</table> <!-- end Finance Approved-Objectives Table-->
-
-							<div class="alert alert-danger alert-dismissable" ng-if="hasFinSCErrors">
-							  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
-								<br>
-								<span ng-model='finSCErrorMsg'>
-								    {{finSCErrorMsg}}
-								    <br>
-								</span>
-							</div> <!--end danger alert -->
-
-							<table class="table table-hover" id="customerApprovedObjectivesTable" style="width:90%">
-								<caption><h5>Customer Objectives</h5></caption>
-								<thead>
-									<tr>
-									  	<th>Key Performance Area</th>
-									  	<th>Key Performance Indicator</th>
-									</tr>
-								</thead>
-
-								<tbody>
-									<tr ng-repeat="appCust in appCustObj | orderBy: 'description' | filter: search | limitTo:10">
-									  	<td><!--input type="checkbox" ng-click="captureCustApp(appCust._id, appCust.description, appCust.DSO, appCust.metricOneDef, appCust.metricTwoDef, appCust.metricThreeDef, appCust.metricFourDef, appCust.metricFiveDef)" ng-model="grabAppCust"-->
-									  		{{appCust.description | uppercase}}
-									  	</td>
-									  	<td>{{appCust.DSO}}</td>
-									</tr>
-								</tbody>
-							</table> <!-- end Customer Approved-Objectives Table-->
-
-							<div class="alert alert-danger alert-dismissable" ng-if="hasCustSCErrors">
-							  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
-								<br>
-								<span ng-model='custSCErrorMsg'>
-								    {{custSCErrorMsg}}
-								    <br>
-								</span>
-							</div> <!--end danger alert -->
-
-							<table class="table table-hover" id="internalApprovedObjectivesTable" style="width:90%">
-								<caption><h5>Internal Business Objectives</h5></caption>
-								<thead>
-									<tr>
-									  	<th>Key Performance Area</th>
-									  	<th>Key Performance Indicator</th>
-									</tr>
-								</thead>
-
-								<tbody>
-									<tr ng-repeat="appInt in appIntObj | orderBy: 'description' |filter: search |limitTo:10">
-									  	<td><!--input type="checkbox" ng-click="captureIntApp(appInt._id, appInt.description, appInt.DSO, appInt.metricOneDef, appInt.metricTwoDef,appInt.metricThreeDef, appInt.metricFourDef, appInt.metricFiveDef)" ng-model="grabAppInt"-->
-									  		{{appInt.description | uppercase}}
-									  	</td>
-									  	<td>{{appInt.DSO}}</td>
-									</tr>
-								</tbody>
-							</table> <!-- end Internal Approved-Objectives Table-->
-
-							<div class="alert alert-danger alert-dismissable" ng-if="hasIntSCErrors">
-							  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
-								<br>
-								<span ng-model='intSCErrorMsg'>
-								    {{intSCErrorMsg}}
-								    <br>
-								</span>
-							</div> <!--end danger alert -->
-
-							<table class="table table-hover" id="learningApprovedObjectivesTable" style="width:90%">
-								<caption><h5>Learning & Growth Objectives</h5></caption>
-								<thead>
-									<tr>
-									  	<th>Key Performance Area</th>
-									  	<th>Key Performance Indicator</th>
-									</tr>
-								</thead>
-
-								<tbody>
-									<tr ng-repeat="appLearn in appLearnObj | orderBy: 'description' |filter: search |limitTo:10">
-									  	<td><!--input type="checkbox" ng-click="captureLearnApp(appLearn._id, appLearn.description, appLearn.DSO, appLearn.metricOneDef, appLearn.metricTwoDef, appLearn.metricThreeDef, appLearn.metricFourDef, appLearn.metricFiveDef)" ng-model="grabAppLearn"-->
-									  		{{appLearn.description | uppercase}}
-									  	</td>
-									  	<td>{{appLearn.DSO}}</td>
-									</tr>
-								</tbody>			
-							</table> <!-- end Learning Approved-Objectives Table-->
-
-							<div class="alert alert-danger alert-dismissable" ng-if="hasLearnSCErrors">
-							  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
-								<br>
-								<span ng-model='learnSCErrorMsg'>
-								    {{learnSCErrorMsg}}
-								    <br>
-								</span>
-							</div> <!--end danger alert -->
-						</div> <!--end CompileSCModalBody-->
-
-						<div id="compileSCModalFooter" class="modal-footer">
-
-							<div class="alert alert-danger alert-dismissable" ng-if="hasCompileSCErrors">
-								<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
-								<br>
-								<span ng-model='generalErrorMsg'>
-									{{generalErrorMsg}}
-									br>
-								</span>
-							</div> <!--end danger alert -->
-
-							<a data-backdrop="static" data-keyboard="false" href="#scorecardModal" ng-click="scorecardCreate()" role="button" class="btn btn-success" 
-								data-toggle="modal">
-								<span class="glyphicon glyphicon-check"></span> 
-									Compile
-							</a>
-								  											  									
-							<button class="btn btn-danger" type="button" data-dismiss="modal"> 
-								<span class="glyphicon glyphicon-remove"></span> 
-								Close
-							</button>
-						</div> <!-- end CompileSCModal-footer-->
-					</div> <!-- end compileSCModal-content-->
-				</div> <!-- end compileSCModal-dialog-->
-			</div> 
-			<!-- end CompileSCModal-->
 			<!-- begin scorecardModal-->
 			<div class="modal fade" id="scorecardModal" >
 				<div id="scorecardModalDialog" class="modal-dialog" style="width:90%">
