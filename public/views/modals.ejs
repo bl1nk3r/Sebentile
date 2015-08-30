@@ -24,7 +24,7 @@
 					<div id="objDropDown2" class="dropdown">
 
 						<select id="objPerspDropdownMenu2" role="menu">
-							<option value="default2">-Select a Perspective-</option>
+							<option ng-selected="[Select]">-Select a Perspective-</option>
 							<option value="financeSelect2">Finance</option>
 							<option value="customerSelect2">Customer & Stakeholders</option>
 							<option value="internalSelect2">Internal Business Process</option>
@@ -538,7 +538,7 @@
 									<label class="col-sm-3 control-label" for="pespective">Perspective</label>
 									<div class="col-sm-8">
 										<select id="objPerspDropdownMenu" class="form-control" role="menu" ng-model="objPerspDropdownMenu">
-											<option value="default">--Select a Perspective--</option>
+											<option ng-selected="[Select]">--Select a Perspective--</option>
 											<option value="financeSelect">Finance</option>
 											<option value="customerSelect">Customer & Stakeholders</option>
 											<option value="internalSelect">Internal Business Process</option>
@@ -600,7 +600,7 @@
 										<label class="col-sm-3 control-label">Matrix</label>
 										<div class="col-sm-8">
 											<select id="objMatrixDropdownMenu" class="form-control" role="menu" ng-model="financeObjective.metrixType">
-												<option value="default">--Select matrix--</option>
+												<option ng-selected="[Select]">--Select matrix--</option>
 												<option value="percentage">Percentage</option>
 												<option value="time">Time</option>
 												<option value="number">Number</option>
@@ -1217,14 +1217,14 @@
 							</div> <!--end learnPersp div-->
 				  		</div> <!-- end createObjModal-body-->
 				  		<div class="modal-footer">
-			  				<button class="btn btn-danger" type="button" data-dismiss="modal" ng-click="closeObjCreation()"> 
-			  					<span class="glyphicon glyphicon-remove"></span> Close
+			  				<button class="btn btn-danger" type="button" data-dismiss="modal" ng-click="closeObjCreation();"> 
+			  					<span class="glyphicon glyphicon-close"></span> Close
 			  				</button>					
 				  		</div> <!-- end modal-footer-->
 				  	</div> <!-- end createObjModal-content-->
 				</div> <!-- end createObjModal-dialog-->				
 			</div> <!-- end createObjModal-->
-			<!-- begin submit objective modal by Brian-->
+			<!-- begin submit objective modal by Mlandvo-->
 			<div class="modal fade" id="submitObjModal">
 				<div id="submitObjModalDialog" class="modal-dialog" style="width:75%">
 					<div id="submitObjModalContent" class="modal-content"> 
@@ -1235,15 +1235,23 @@
 						</div> <!-- end createObjModal-header-->
 
 						<div id="submitObjModalBody" class="modal-body">
-							<div class="alert alert-info">
-					  			<button type="button" class="close" data-dismiss="alert">X</button>
-								<p>Select objectives to submit to supervisor for approval</p>
-					  		</div>
-							<form id="searchObj">
-								<input type="text" class="form-control pull-right" placeholder="Search objectives..." id="searchInput" ng-model="search.$">
-							</form> <!--end form search-->&nbsp;<hr>
-
-							<div>
+							<div ng-show="!showSubErr" class="alert alert-danger alert-dismissable" >
+							  	<button type="button" class="close" data-dismiss="alert">X</button>
+							  	<strong>Oops!:</strong>
+								&nbsp;
+								<span ng-model='showSubMsg' ng-show="!showSubErr">
+								    {{showSubMsg}}
+								    <br>
+								</span>
+							</div> 
+							<div ng-show="showSubErr">
+								<div class="alert alert-info">
+						  			<button type="button" class="close" data-dismiss="alert">X</button>
+									<p>Select Objectives to submit to supervisor for Approval or Delete Objective(s)</p>
+						  		</div>
+								<form id="searchObj">
+									<input type="text" class="form-control pull-right" placeholder="Search objectives..." id="searchInput" ng-model="search.$">
+								</form> <!--end form search-->&nbsp;<hr>
 								<table class="table table-hover" style="width:100%">
 									<thead>
 										<tr>
@@ -1254,39 +1262,40 @@
 										</tr>
 									</thead>
 									<tbody>
-										<tr ng-repeat="objective in allObjectives | orderBy: 'perspective' |filter: search |limitTo:10">
-											<td>{{objective.perspective}}</td>
-										  	<td>{{objective.description | uppercase}}</td>
+										<tr ng-repeat="objective in unactionedKPAs | orderBy: 'pespective' |filter: search |limitTo:10">
+											<td>{{objective.pespective}}</td>
+										  	<td>{{objective.description}}</td>
 										  	<td>{{objective.DSO}}</td>
-										  	<td></td>
+										  	<td width="40%">									
+										    	<select class="form-control"  ng-model="objective.send" ng-change="submitKPAs(objective)">
+			                                    	<option ng-selected="[Select]">[Select]</option>
+			                                    	<option value="true">Submit to Supervisor</option>
+			                                    	<option value="false">Delete</option>
+			                                  	</select>
+			      							</td>
 										</tr>
-									</tbody>					  										
-								</table> <!-- end Finance Objectives Table-->
-							</div> <!-- end submitObjController div-->
-								  						
-							<div class="alert alert-danger alert-dismissable" ng-if="hasSendObjErrors">
-								<button type="button" class="close" data-dismiss="alert">&times;</button>
-								<strong>Error:</strong>
-								<br>
-						        <span ng-model="sendObjErrorMsg">
-						        	{{sendObjErrorMsg}}
-						        	<br>
-						        </span>
-					   		</div> <!--end danger alert -->
-						</div> <!--end submitObjModal-Body-->
-
+										
+									</tbody>				  										
+								</table> <!-- end Finance Objectives Table-->	
+								<!--
+								<p ng-model="">Total Broad Category Weighting: </p>
+								<p ng-model="">Total Detailed Weighting:</p> -->
+								<hr>
+							</div>
+						</div>	
 						<div class="modal-footer">
-						  	<button class="btn btn-success" type="button" ng-click="sendObjs()">
-						  		<span class="glyphicon glyphicon-ok-circle"></span> Finish 
+							
+						  	<button ng-disabled="!showSubErr" class="btn btn-success" type="button" data-dismiss="modal" >
+						  		<span class="glyphicon glyphicon-ok-circle"></span>Finish
 						  	</button>
-									
 						  	<button class="btn btn-danger" type="button" data-dismiss="modal"> 
 						  		<span class="glyphicon glyphicon-remove"></span> Close
 						  	</button>
 						</div> <!--end submitObjModal-Footer-->
+					
 					</div>
-				</div>
-			</div> 
+				</div> 
+			</div>
 			<!-- end submit objective modal-->
 			<div class="modal fade" id="createPersModal">
 				<div class="modal-dialog" style="width:45%">
@@ -1559,12 +1568,12 @@
 											  	</td>
 											  	<td width="100%">									
 											    	<select class="form-control"  ng-model="appFin.value" ng-change="selfEvaluate();updateKPA(appFin);">
-				                                    	<option selected>-- Select Rating --</option>
-				                                    	<option value="{{appFin.metricOne.value}}">{{"RATING : "+appFin.metricOne.value+" | FOR "+appFin.metricOne.label}}</option>
-				                                    	<option value="{{appFin.metricTwo.value}}">{{"RATING : "+appFin.metricTwo.value+" | FOR "+appFin.metricTwo.label}}</option>
-				                                    	<option value="{{appFin.metricThree.value}}">{{"RATING : "+appFin.metricThree.value+" | FOR "+appFin.metricThree.label}}</option>
-				                                    	<option value="{{appFin.metricFour.value}}">{{"RATING : "+appFin.metricFour.value+" | FOR "+appFin.metricFour.label}}</option>
-				                                    	<option value="{{appFin.metricFive.value}}">{{"RATING : "+appFin.metricFive.value+" | FOR "+appFin.metricFive.label||appFin.metricFive.from+ to +appFin.metricFive.to}}</option>
+				                                    	<option ng-selected="[Select]">-- Select Rating --</option>
+				                                    	<option value="{{appFin.metricOne.value}}">{{appFin.metricOne.value+" |"+appFin.metricOne.label}}</option>
+				                                    	<option value="{{appFin.metricTwo.value}}">{{appFin.metricTwo.value+" |"+appFin.metricTwo.label}}</option>
+				                                    	<option value="{{appFin.metricThree.value}}">{{appFin.metricThree.value+" |"+appFin.metricThree.label}}</option>
+				                                    	<option value="{{appFin.metricFour.value}}">{{appFin.metricFour.value+" |"+appFin.metricFour.label}}</option>
+				                                    	<option value="{{appFin.metricFive.value}}">{{appFin.metricFive.value+" |"+appFin.metricFive.label||appFin.metricFive.from+ to +appFin.metricFive.to}}</option>
 				                                  	</select>
 			      								</td>
 											</tr>
@@ -1608,12 +1617,12 @@
 										  	</td>
 		      								<td width="100%">									
 										    	<select class="form-control"  ng-model="appCust.value" ng-change="selfEvaluate();updateKPA(appCust);">
-			                                    	<option selected>-- Select Rating --</option>
-			                                    	<option value="{{appCust.metricOne.value}}">{{"RATING : "+appCust.metricOne.value+" | FOR "+appCust.metricOne.label}}</option>
-			                                    	<option value="{{appCust.metricTwo.value}}">{{"RATING : "+appCust.metricTwo.value+" | FOR "+appCust.metricTwo.label}}</option>
-			                                    	<option value="{{appCust.metricThree.value}}">{{"RATING : "+appCust.metricThree.value+" | FOR "+appCust.metricThree.label}}</option>
-			                                    	<option value="{{appCust.metricFour.value}}">{{"RATING : "+appCust.metricFour.value+" | FOR "+appCust.metricFour.label}}</option>
-			                                    	<option value="{{appCust.metricFive.value}}">{{"RATING : "+appCust.metricFive.value+" | FOR "+appCust.metricFive.label}}</option>
+			                                    	<option ng-selected="[Select]">-- Select Rating --</option>
+			                                    	<option value="{{appCust.metricOne.value}}">{{appCust.metricOne.value+" |"+appCust.metricOne.label}}</option>
+			                                    	<option value="{{appCust.metricTwo.value}}">{{appCust.metricTwo.value+" |"+appCust.metricTwo.label}}</option>
+			                                    	<option value="{{appCust.metricThree.value}}">{{appCust.metricThree.value+" |"+appCust.metricThree.label}}</option>
+			                                    	<option value="{{appCust.metricFour.value}}">{{appCust.metricFour.value+" |"+appCust.metricFour.label}}</option>
+			                                    	<option value="{{appCust.metricFive.value}}">{{appCust.metricFive.value+" |"+appCust.metricFive.label}}</option>
 			                                  	</select>
 		      								</td>
 										</tr>
@@ -1655,12 +1664,12 @@
 										  	</td>
 										  	<td width="100%">									
 										    	<select class="form-control"  ng-model="appInt.value" ng-change="selfEvaluate();updateKPA(appInt);">
-			                                    	<option selected>-- Select Rating --</option>
-			                                    	<option value="{{appInt.metricOne.value}}">{{"RATING : "+appInt.metricOne.value+" | FOR "+appInt.metricOne.label}}</option>
-			                                    	<option value="{{appInt.metricTwo.value}}">{{"RATING : "+appInt.metricTwo.value+" | FOR "+appInt.metricTwo.label}}</option>
-			                                    	<option value="{{appInt.metricThree.value}}">{{"RATING : "+appInt.metricThree.value+" | FOR "+appInt.metricThree.label}}</option>
-			                                    	<option value="{{appInt.metricFour.value}}">{{"RATING : "+appInt.metricFour.value+" | FOR "+appInt.metricFour.label}}</option>
-			                                    	<option value="{{appInt.metricFive.value}}">{{"RATING : "+appInt.metricFive.value+" | FOR "+appInt.metricFive.label}}</option>
+			                                    	<option ng-selected="[Select]">-- Select Rating --</option>
+			                                    	<option value="{{appInt.metricOne.value}}">{{appInt.metricOne.value+" |"+appInt.metricOne.label}}</option>
+			                                    	<option value="{{appInt.metricTwo.value}}">{{appInt.metricTwo.value+" |"+appInt.metricTwo.label}}</option>
+			                                    	<option value="{{appInt.metricThree.value}}">{{appInt.metricThree.value+" |"+appInt.metricThree.label}}</option>
+			                                    	<option value="{{appInt.metricFour.value}}">{{appInt.metricFour.value+" |"+appInt.metricFour.label}}</option>
+			                                    	<option value="{{appInt.metricFive.value}}">{{appInt.metricFive.value+" |"+appInt.metricFive.label}}</option>
 			                                  	</select>
 		      								</td>
 										</tr>
@@ -1702,12 +1711,12 @@
 										  	</td>
 										  	<td width="100%">									
 										    	<select class="form-control"  ng-model="appLearn.value" ng-change="selfEvaluate();updateKPA(appLearn);">
-			                                    	<option selected>-- Select Rating --</option>
-			                                    	<option value="{{appLearn.metricOne.value}}">{{"RATING : "+appLearn.metricOne.value+" | FOR "+appLearn.metricOne.label}}</option>
-			                                    	<option value="{{appLearn.metricTwo.value}}">{{"RATING : "+appLearn.metricTwo.value+" | FOR "+appLearn.metricTwo.label}}</option>
-			                                    	<option value="{{appLearn.metricThree.value}}">{{"RATING : "+appLearn.metricThree.value+" | FOR "+appLearn.metricThree.label}}</option>
-			                                    	<option value="{{appLearn.metricFour.value}}">{{"RATING : "+appLearn.metricFour.value+" | FOR "+appLearn.metricFour.label}}</option>
-			                                    	<option value="{{appLearn.metricFive.value}}">{{"RATING : "+appLearn.metricFive.value+" | FOR "+appLearn.metricFive.label}}</option>
+			                                    	<option ng-selected="[Select]">-- Select Rating --</option>
+			                                    	<option value="{{appLearn.metricOne.value}}">{{appLearn.metricOne.value+" |"+appLearn.metricOne.label}}</option>
+			                                    	<option value="{{appLearn.metricTwo.value}}">{{appLearn.metricTwo.value+" |"+appLearn.metricTwo.label}}</option>
+			                                    	<option value="{{appLearn.metricThree.value}}">{{appLearn.metricThree.value+" |"+appLearn.metricThree.label}}</option>
+			                                    	<option value="{{appLearn.metricFour.value}}">{{appLearn.metricFour.value+" |"+appLearn.metricFour.label}}</option>
+			                                    	<option value="{{appLearn.metricFive.value}}">{{appLearn.metricFive.value+" |"+appLearn.metricFive.label}}</option>
 			                                  	</select>
 		      								</td>
 										</tr>
@@ -1726,7 +1735,7 @@
 						</div>			
 						<div class="modal-footer">
 							<a onclick="$('#evalModal').modal('hide');$('#scorecardModalB').modal('show');" ng-click="selfEvaluate();getEvalKPAs();" type="button" ng-disabled="!kpaUpdated" data-toggle="modal" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-right" > </span>Next</a>
-							<button class="btn btn-danger" type="button" ng-click="" data-dismiss="modal">
+							<button class="btn btn-danger" type="button" data-dismiss="modal">
 							  	<span class="glyphicon glyphicon-remove"> </span>&nbsp; 
 								Close
 							</button>

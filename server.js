@@ -156,7 +156,7 @@ var bsc = express()
 ******************************SERVER OPERATIONS FOR FINANCE PERSPECTIVES OBJECTIVES****************************************************
 **************************************************************************************************************************************/
     // Brian
-    .post("/getAllObjectives", function ( req, res) {
+    .post("/getAllObjectives", function (req, res) {
 		db.Objectives.find({status: "unactioned"}, function (err, docs) {
 			if (err) {
 				console.log("There is an error");
@@ -566,7 +566,23 @@ var bsc = express()
 			}
 		});		
 	})
- 
+ 	//By Mlandvo
+ 	.post("/deleteKPA/:id", function (req, res) {
+		var id = String(req.params.id);
+		console.log(id);
+		console.log(typeof(id));
+		db.Objectives.remove({_id: db.ObjectId(req.params.id)}, function (err, docs) {
+			if (err) {
+				console.log(err);
+				res.json(err);
+			}
+			else {
+				res.json(docs);
+				console.log("KPA deleted");
+			}
+			
+		});
+	})
  
 	.post('/getEmpsPendingObjs', function (req, res) {
 		db.Employees.find( function (err, cur) {

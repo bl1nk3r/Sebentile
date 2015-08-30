@@ -583,6 +583,9 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
    		$scope.financeObjective = {};
    		$scope.gotFinBCW = false;
    		$scope.BCWStat = "Lock";
+   		$scope.showSubErr = true;
+		$scope.showSubMsg = "There are no Approved Objectives to submit for now, Create Objectives or if this problem persists contact your IT Administrator.";
+   		
    		$scope.financeObjective.metrixType = '--Select matrix--';
    		$scope.objPerspDropdownMenu = '--Select a Perspective--';
    		$scope.finObjWeightSum = 0;
@@ -702,23 +705,62 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 	    	$scope.objPerspDropdownMenu = '--Select a Perspective--';
 	    }
 
-	    // retrieve Objectives : Brian
-	    $scope.retrieveObjectives = function () {
-			allObjectives.getObjectives().success(function (res) {
-				$scope.allObjectives = [];
-				$scope.empObjectives = res;
-				console.log(res);
-				for (var i = 0; i<res.length; i++) {
-						$scope.allObjectives.push(res[i]);
-				};				
+	    // retrieve Objectives : Mlandvo
+	    $scope.getObjectivez = function () {
+	    	$scope.unactionedKPAs = [];
+			allObjectives.getObjectives().success(function (res) {				
+				//$scope.empObjectives = res;
+				//console.log(res);
+				console.log(res.length);
+				if(res.length > 0){
+					for (var i = 0; i<res.length; i++) {
+						$scope.unactionedKPAs.push(res[i]);
+					};
+					console.log($scope.unactionedKPAs);	
+					console.log("KPAs in array");
+							
+				}
+				else if(res.length <= 0){
+					$scope.showSubErr = true;
+					console.log("logging for result less than zero");
+					console.log($scope.showSubErr);
+				}
+					
 			})
 			.error(function () {
 				console.log('There is an error');
-			});		
+			});	
 		}
+		$scope.getObjectivez();	
+		//By Mlandvo
+		$scope.submitKPAs = function(Obj) {
+			console.log("Function called");
+			//$scope.send = true;
+			var toBeSent = [];
+			var toBeDeleted = [];
+			var id = Obj._id;
+			console.log(Obj);
+			console.log(typeof(id));
+			if (Obj.send == "true") {
+				$http.post("/objectivesSubmitted_status_changed/" + id)
+					.success(function (res) {
+						//$('#successObjSubmit').slideDown();
+						console.log(res);
+						console.log("KPA uphanded");
+				})
+				.error(function (res) {
+					console.log(res);
+					});
+			}else if(Obj.send == "false"){
+				$http.post("/deleteKPA/" + id)
+					.success(function (response) {
+					console.log(response);
+				});
+			}	
+		}//end of function
 
-		$scope.retrieveObjectives();
-
+		//$scope.retrieveObjectives();
+		/*
 		//Brian
 		$scope.sendObjs = function() {
 			$http.post("/submitEmpObjectives", $scope.empObjectives).success(function (res) {
@@ -727,7 +769,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 			}).error(function (res) {
 				console.log(res);
 			});
-		};
+		};*/
 
 		$scope.renderFinancePerspective = function (response) {
 			$scope.financePerspective = response;
@@ -1203,7 +1245,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 	$scope.hasSendObjErrors = false;
 	$scope.capChecked = true;
 	$scope.sendObjErrorMsg = "Cannot send empty objectives - make sure you select from above!"
-
+/*
 	$scope.retrieveObjectives = function () {
 			allObjectives.getObjectives()
 			.success(function (res) {
@@ -1230,7 +1272,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 			.error(function () {
 				console.log('There is an error');
 			});		
-	}
+	}*/
 
 	//Checkbox invokes 'captureObj' function that pushes content into 'pendingObj' array [needs to toggle]
 	$scope.captureFinObj = function(objID, description, DSO) {
@@ -1250,28 +1292,8 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 		console.log($scope.capChecked);	
 	}
 	
-	var IDs = $scope.objIDArray;
+	//var IDs = $scope.objIDArray;
 
-	$scope.sendObjs = function() {
-		console.log($scope.objIDArray);
-
-		if ($scope.pendingObj.length == 0) {
-			$scope.hasSendObjErrors = true;
-		}
-		else {
-
-			$scope.hasSendObjErrors = false;
-			for (index = 0; index < $scope.objIDArray.length; index++){
-				$http.post("/objectivesSubmitted_status_changed/" + $scope.objIDArray[index] , $scope.submitObjController)
-					.success(function (res) {
-						$('#successObjSubmit').slideDown();
-					})
-					.error(function (res) {
-						console.log(res);
-					});
-			}	
-		}
-	}
 }])
 
 /***********************************************************************************************************************************************
