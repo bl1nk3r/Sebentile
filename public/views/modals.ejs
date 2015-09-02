@@ -2037,4 +2037,78 @@
 			</div> <!-- end empObjsWarlock-dialog-->
 		</div> 
 	<!-- end empObjsWarlock2 modal-->
+
+	<!-- user administration -->
+	<div class="modal fade" id="modifyUsersModal">
+		<div id="manageUsersModalDialog" class="modal-dialog" style="width:75%">
+			<div id="manageUsersModalContent" class="modal-content"> 
+				<div id="manageUsersModalHeader" class="modal-header">
+					<img class="img-responsive" src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+				  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+				  	<h3 class="modal-title">Manage Users</h3>
+				</div> <!-- end createObjModal-header-->
+
+				<div id="manageUsersModalBody" class="modal-body">
+					<div ng-show="!showSubErr" class="alert alert-danger alert-dismissable" >
+					  	<button type="button" class="close" data-dismiss="alert">X</button>
+					  	<strong>Oops!:</strong>
+						&nbsp;
+						<span ng-model='showSubMsg' ng-show="!showSubErr">
+						    {{showSubMsg}}
+						    <br>
+						</span>
+					</div> 
+					<div ng-show="showSubErr">
+						<div class="alert alert-info">
+				  			<button type="button" class="close" data-dismiss="alert">X</button>
+							<p>Select Objectives to submit to supervisor for Approval or Delete Objective(s)</p>
+				  		</div>
+						<form id="searchObj">
+							<input type="text" class="form-control pull-right" placeholder="Search objectives..." id="searchInput" ng-model="search.$">
+						</form> <!--end form search-->&nbsp;<hr>
+						<table class="table table-hover" style="width:100%">
+							<thead>
+								<tr>
+									<th>Perspective</th>
+								  	<th>Key Performance Area</th>
+								  	<th>Key Performance Indicator</th>
+								  	<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="objective in unactionedKPAs | orderBy: 'pespective' |filter: search |limitTo:10">
+									<td>{{objective.pespective}}</td>
+								  	<td>{{objective.description}}</td>
+								  	<td>{{objective.DSO}}</td>
+								  	<td width="40%">									
+								    	<select class="form-control"  ng-model="objective.send" ng-change="submitKPAs(objective)">
+	                                    	<option ng-selected="[Select]">[Select]</option>
+	                                    	<option value="true">Submit to Supervisor</option>
+	                                    	<option value="false">Delete</option>
+	                                  	</select>
+	      							</td>
+								</tr>
+								
+							</tbody>				  										
+						</table> <!-- end Finance Objectives Table-->	
+						<!--
+						<p ng-model="">Total Broad Category Weighting: </p>
+						<p ng-model="">Total Detailed Weighting:</p> -->
+						<hr>
+					</div>
+				</div>	
+				<div class="modal-footer">
+					
+				  	<button ng-disabled="!showSubErr" class="btn btn-success" type="button" data-dismiss="modal" >
+				  		<span class="glyphicon glyphicon-ok-circle"></span>Finish
+				  	</button>
+				  	<button class="btn btn-danger" type="button" data-dismiss="modal"> 
+				  		<span class="glyphicon glyphicon-remove"></span> Close
+				  	</button>
+				</div> <!--end submitObjModal-Footer-->
+			
+			</div>
+		</div> 
+	</div>
+	<!-- end of user admin modal-->
 	
