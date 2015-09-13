@@ -75,7 +75,12 @@ $(document).ready(function() {
    var chart = {      
       type: 'solidgauge'
    };
-   var title = null;
+   var title = {
+      text: 'Current Employee Rating'   
+   };
+   var subtitle = {
+      text: 'Source: Sebentile'
+   };
 
    var pane = {
       center: ['50%', '85%'],
@@ -91,7 +96,7 @@ $(document).ready(function() {
    };
 
    var tooltip = {
-      enabled: true
+      enabled: false
    };
       
    // the value axis
@@ -114,7 +119,7 @@ $(document).ready(function() {
 	  min: 0,
       max: 5,
       title: {
-         text: 'Score'
+         //text: 'Score'
       }
    };	  
    
@@ -132,9 +137,13 @@ $(document).ready(function() {
       enabled: false
    };
 
+    var exporting = {
+      enabled: true
+    };
+
    var series = [{
       name: 'Your Score',
-      data: [4.3],
+      data: [2.3],
       dataLabels: {
          format: '<div style="text-align:center"><span style="font-size:25px;color:' +
          ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
@@ -149,9 +158,11 @@ $(document).ready(function() {
    json.chart = chart; 
    json.title = title;       
    json.pane = pane; 
+   json.subtitle = subtitle;
    json.tooltip = tooltip; 
    json.yAxis = yAxis; 
    json.credits = credits; 
+   json.exporting = exporting;
    json.series = series;     
    $('#container-speed').highcharts(json);   
    
@@ -192,10 +203,10 @@ $(document).ready(function() {
          valueSuffix: ' revolutions/min'
       }
    }];*/
-   
-   json.yAxis = yAxis;   
-   json.series = series;     
-   $('#container-rpm').highcharts(json);  
+   //.exporting = exporting;
+   //json.yAxis = yAxis;   
+   //json.series = series;     
+   //$('#container-rpm').highcharts(json);  
    
    var chartFunction = function() {
       // Speed
@@ -241,6 +252,9 @@ $(document).ready(function() {
    var subtitle = {
       text: 'Source: Sebentile'
    };
+   var credits = {
+      enabled: false
+   };
    var xAxis = {
       categories: ['Mar-15:2013', 'Sep-14:2014', 'Mar-15:2016']
    };
@@ -266,6 +280,10 @@ $(document).ready(function() {
       borderWidth: 0
    };
 
+   var exporting = {
+      enabled: true
+    };
+
    var series =  [
       {
          name: 'Score',
@@ -278,7 +296,9 @@ $(document).ready(function() {
    json.title = title;
    json.subtitle = subtitle;
    json.xAxis = xAxis;
-   json.yAxis = yAxis;
+   json.yAxis = yAxis;0
+   json.exporting = exporting;
+   json.credits = credits;
    json.tooltip = tooltip;
    json.legend = legend;
    json.series = series;

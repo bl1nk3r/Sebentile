@@ -752,12 +752,17 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 					console.log(res);
 					});
 			}else if(Obj.send == "false"){
+				$scope.popDelete = true;
 				$http.post("/deleteKPA/" + id)
 					.success(function (response) {
 					console.log(response);
 				});
 			}	
 		}//end of function
+
+		$scope.confirmBox = function () {
+			$scope.pressed = true;
+		};
 
 		//$scope.retrieveObjectives();
 		/*
