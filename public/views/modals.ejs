@@ -1224,79 +1224,7 @@
 				  	</div> <!-- end createObjModal-content-->
 				</div> <!-- end createObjModal-dialog-->				
 			</div> <!-- end createObjModal-->
-			<!-- begin submit objective modal by Mlandvo-->
-			<div class="modal fade" id="submitObjModal">
-				<div id="submitObjModalDialog" class="modal-dialog" style="width:75%">
-					<div id="submitObjModalContent" class="modal-content"> 
-						<div id="submitObjModalHeader" class="modal-header">
-							<img class="img-responsive" src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
-						  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-						  	<h3 class="modal-title">Submit Objectives</h3>
-						</div> <!-- end createObjModal-header-->
-
-						<div id="submitObjModalBody" class="modal-body">
-							<div ng-show="!showSubErr" class="alert alert-danger alert-dismissable" >
-							  	<button type="button" class="close" data-dismiss="alert">X</button>
-							  	<strong>Oops!:</strong>
-								&nbsp;
-								<span ng-model='showSubMsg' ng-show="!showSubErr">
-								    {{showSubMsg}}
-								    <br>
-								</span>
-							</div> 
-							<div ng-show="showSubErr">
-								<div class="alert alert-info">
-						  			<button type="button" class="close" data-dismiss="alert">X</button>
-									<p>Select Objectives to submit to supervisor for Approval or Delete Objective(s)</p>
-						  		</div>
-								<form id="searchObj">
-									<input type="text" class="form-control pull-right" placeholder="Search objectives..." id="searchInput" ng-model="search.$">
-								</form> <!--end form search-->&nbsp;<hr>
-								<table class="table table-hover" style="width:100%">
-									<thead>
-										<tr>
-											<th>Perspective</th>
-										  	<th>Key Performance Area</th>
-										  	<th>Key Performance Indicator</th>
-										  	<th>Action</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="objective in unactionedKPAs | orderBy: 'pespective' |filter: search |limitTo:10">
-											<td>{{objective.pespective}}</td>
-										  	<td>{{objective.description}}</td>
-										  	<td>{{objective.DSO}}</td>
-										  	<td width="40%">									
-										    	<select class="form-control"  ng-model="objective.send" ng-change="submitKPAs(objective)">
-			                                    	<option ng-selected="[Select]">[Select]</option>
-			                                    	<option value="true">Submit to Supervisor</option>
-			                                    	<option value="false">Delete</option>
-			                                  	</select>
-			      							</td>
-										</tr>
-										
-									</tbody>				  										
-								</table> <!-- end Finance Objectives Table-->	
-								<!--
-								<p ng-model="">Total Broad Category Weighting: </p>
-								<p ng-model="">Total Detailed Weighting:</p> -->
-								<hr>
-							</div>
-						</div>	
-						<div class="modal-footer">
-							
-						  	<button ng-disabled="!showSubErr" class="btn btn-success" type="button" data-dismiss="modal" >
-						  		<span class="glyphicon glyphicon-ok-circle"></span>Finish
-						  	</button>
-						  	<button class="btn btn-danger" type="button" data-dismiss="modal"> 
-						  		<span class="glyphicon glyphicon-remove"></span> Close
-						  	</button>
-						</div> <!--end submitObjModal-Footer-->
-					
-					</div>
-				</div> 
-			</div>
-			<!-- end submit objective modal-->
+			
 			<div class="modal fade" id="createPersModal">
 				<div class="modal-dialog" style="width:45%">
 				  	<div class="modal-content"> 
@@ -1490,7 +1418,7 @@
 							  		Print Contract
 							</button>
 							  											  									
-							<button class="btn btn-danger" type="button" data-dismiss="modal" ng-click="initScorecard()"> 
+							<button class="btn btn-danger" type="button" data-dismiss="modal"> 
 							  	<span class="glyphicon glyphicon-remove"> </span> 
 							  	Close
 							</button>		
@@ -1502,6 +1430,104 @@
 		</div>
 		<!-- Employee self evaluation outcome by Mlandvo -->
 		<div ng-controller="compileController">
+			<!-- begin submit objective modal by Mlandvo-->
+			<div class="modal fade" id="submitObjModal">
+				<div id="submitObjModalDialog" class="modal-dialog" style="width:75%">
+					<div id="submitObjModalContent" class="modal-content"> 
+						<div id="submitObjModalHeader" class="modal-header">
+							<img class="img-responsive" src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+						  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+						  	<h3 class="modal-title">Submit Objectives</h3>
+						</div> <!-- end createObjModal-header-->
+
+						<div id="submitObjModalBody" class="modal-body">
+							<div ng-show="showSubErr" class="alert alert-danger alert-dismissable" >
+							  	<button type="button" class="close" data-dismiss="alert">X</button>
+							  	<strong>Oops!:</strong>
+								&nbsp;
+								<span ng-model='showSubMsg' ng-show="showSubErr">
+								    {{showSubMsg}}
+								    <br>
+								</span>
+							</div> 
+							<div ng-show="!showSubErr">
+								<div class="alert alert-info">
+						  			<button type="button" class="close" data-dismiss="alert">X</button>
+									<p>Select Objectives to submit to supervisor for Approval or Delete Objective(s)</p>
+						  		</div>
+								<form id="searchObj">
+									<input type="text" class="form-control pull-right" placeholder="Search objectives..." id="searchInput" ng-model="search.$">
+								</form> <!--end form search-->&nbsp;<hr>
+								<table class="table table-hover" style="width:100%">
+									<thead>
+										<tr>
+											<th>Perspective</th>
+										  	<th>Key Performance Area</th>
+										  	<th>Key Performance Indicator</th>
+										  	<th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="objective in unactionedKPAs | orderBy: 'pespective' |filter: search |limitTo:10">
+											<td>{{objective.pespective}}</td>
+										  	<td>{{objective.description}}</td>
+										  	<td>{{objective.DSO}}</td>
+										  	<td width="40%">									
+										    	<select class="form-control"  ng-model="objective.send" ng-change="submitKPAs(objective)">
+			                                    	<option ng-selected="[Select]">[Select]</option>
+			                                    	<option value="true">Submit to Supervisor</option>
+			                                    	<option value="false">Delete</option>
+			                                  	</select>
+			      							</td>
+										</tr>
+										
+									</tbody>				  										
+								</table> <!-- end Finance Objectives Table-->	
+								<!--
+								<p ng-model="">Total Broad Category Weighting: </p>
+								<p ng-model="">Total Detailed Weighting:</p> -->
+								<hr>
+							</div>
+						</div>	
+						<div class="modal-footer">
+							
+						  	<button ng-disabled="showSubErr" class="btn btn-success" type="button" data-dismiss="modal" >
+						  		<span class="glyphicon glyphicon-ok-circle"></span>&nbsp;Finish
+						  	</button>
+						  	<button class="btn btn-danger" type="button" data-dismiss="modal"> 
+						  		<span class="glyphicon glyphicon-remove"></span> Close
+						  	</button>
+						</div> <!--end submitObjModal-Footer-->
+					
+					</div>
+				</div> 
+			</div>
+			<!-- end submit objective modal-->
+			<div ng-show="popDelete" id="myModal" class="modal fade" role="dialog">
+			  <div class="modal-dialog" style="width:10%">
+			    <!-- Modal content-->
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal">&times;</button>
+			        <h3 class="modal-title">Confirm Action</h3>
+			      </div>
+			      <div class="modal-body">
+			        <p>
+				        <button class="btn btn-success" type="button" data-dismiss="modal" >
+							<span class="glyphicon glyphicon-ok-circle"></span>&nbsp;Confirm
+						</button>
+					  	<button class="btn btn-danger" type="button" data-dismiss="modal"> 
+					  		<span class="glyphicon glyphicon-remove"></span> Cancel
+					  	</button>
+				  	</p>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			      </div>
+			    </div>
+
+			  </div>
+			</div>
 			<!-- Self evaluation modal by Mlandvo -->
 			<div class="modal fade" id="evalModal">
 				<div id="scorecardModalDialog" class="modal-dialog" style="width:95%;">
