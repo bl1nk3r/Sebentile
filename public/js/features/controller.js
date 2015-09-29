@@ -2106,9 +2106,4 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 			});
 		}
 
-
-
-		/* SELF EVAlUATION CONTROLLER*/
-
-
    }]);
