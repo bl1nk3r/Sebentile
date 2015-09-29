@@ -165,51 +165,116 @@ var bsc = express()
 			}	
 		});
 	})
-
-	.post("/getPendingObjectives", function ( req, res) {
-	   		//console.log("Beginning of route");
-			db.Objectives.find({status: "sent_for_approval"}, function (err, docs) {
-				if (err) {
-					console.log("There is an error");
-				} else { 
-					res.json(docs);
-					//console.log(docs);
-				}
-				//onsole.log(res);
-				//console.log("say!");		
-			});
+	
+    // Brian
+    .post("/getAllUnactionedObjectives", function (req, res) {
+		db.Objectives.find({status: "unactioned"}, function (err, docs) {
+			if (err) {
+				console.log("There is an error");
+			} else { 
+				res.json(docs);
+			}	
+		});
 	})
 
+    // Brian
+	.post("/getAllUnapprovedObjectives", function (req, res) {
+		db.Objectives.find({status: "rejected"}, function (err, docs) {
+			if (err) {
+				console.log("There is an error");
+			} else { 
+				res.json(docs);
+			}	
+		});
+	})
+
+	// Brian
+	.post("/getEditObjective", function (req, res) {
+		var id = req.body.id;
+		db.Objectives.findOne({_id: mongojs.ObjectId(id)}, function (err, doc) {
+			if (err) {
+				console.log("There is an error");
+			} else { 
+				res.json(doc);
+			}	
+		});
+	})
+
+	// Brian
+	.post("/removeRejectedObj", function (req, res) {
+		var id = req.body.id;
+		db.Objectives.remove({_id:mongojs.ObjectId(id)}, function (err, doc) {
+			if (err) {
+				console.log("There is an error");
+			} else { 
+				res.send('Done');
+			}	
+		});
+	})
+
+	// Brian
+	.post("/editObjective", function (req, res) {
+		var obj = req.body;
+		obj['status'] = 'unactioned';
+		obj['_id'] = mongojs.ObjectId(obj._id);
+		db.Objectives.save(obj, function (err, doc) {
+			if (err) {
+				console.log("There is an error");
+			} else { 
+				res.json(doc);
+			}	
+		});
+	})
+
+	// Brian
+	.post("/getAllApprovedObjectives", function ( req, res) {
+		db.Objectives.find({status: "approved"}, function (err, docs) {
+			if (err) {
+				console.log("There is an error");
+			} else { 
+				res.json(docs);
+			}	
+		});
+	})
+
+	// Brian
+	.post("/getPendingObjectives", function ( req, res) {
+		db.Objectives.find({status: "sent_for_approval"}, function (err, docs) {
+			if (err) {
+				console.log("There is an error");
+			} else { 
+				res.json(docs);
+			}	
+		});
+	})
+
+	// Brian
 	.post("/getApprovedObjectives", function ( req, res) {
-	   		//console.log("Beginning of route");
-			db.Objectives.find({status: "approved"}, function (err, docs) {
-				if (err) {
-					console.log("There is an error");
-				} else { 
-					res.json(docs);
-					//console.log(docs);
-				}
-				//onsole.log(res);
-				//console.log("say!");		
-			});
+		db.Objectives.find({status: "approved"}, function (err, docs) {
+			if (err) {
+				console.log("There is an error");
+			} else { 
+				res.json(docs);
+			}
+		});
 	})
 
 	/* FOR SELF EVALUATION by Mlandvo*/
 	
 	//get all KPAs by Mlandvo
 	.post("/getKPAs", function (req, res) {
-	   		console.log("Retrieving all aproved KPAs");
-			db.Objectives.find({status: "approved"}, function (err, data) {
-				if (err || !data) {
-					console.log("No Approved KPA's found");
-				} else { 
-					console.log(data);
-					res.send(data);
-				
-				}
-				//onsole.log(res);
-				//console.log("say!");		
-			});
+   		console.log("Retrieving all aproved KPAs");
+		db.Objectives.find({status: "approved"}, function (err, data) {
+			if (err || !data) {
+				console.log("No Approved KPA's found");
+			} else { 
+				console.log(data);
+				res.send(data);
+			
+			}
+			//onsole.log(res);
+			//console.log("say!");		
+		});
 	})
 	/*By Mlandvo
 	.post('/completeSelfEval', function (req, res) {
