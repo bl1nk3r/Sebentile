@@ -19,7 +19,7 @@ var express = require('express') 											//lightweight server framerwork
    ,flash    = require('connect-flash');
 
 //include access to the MongoDB driver for Node
-var mongojs = require("mongojs")
+var mongojs = require("mongojs") 
 //localhost specified		
     ,host = "127.0.0.1"	
 //use the default port for Mongo server/client connections			

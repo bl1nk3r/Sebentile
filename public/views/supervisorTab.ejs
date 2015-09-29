@@ -6,7 +6,7 @@
 					<h3 class="panel-title">Supervisor Quick Actions</h3>
 				</div>
 			<div class="col-sm-6">
-				<div class="btn-group" role="group">
+				<div class="btn-group" role="group"> 
 					<a data-backdrop="static" data-keyboard="false" href="#viewEmpObjModal" role="button" class="btn btn-primary" data-toggle="modal"> 
 						<span class="glyphicon glyphicon-list"> </span> Analyse Objectives
 					</a> <!-- end View Objectives button link -->
@@ -896,19 +896,18 @@
 										<span ng-model='learnSCErrorMsg'>
 										    {{learnSCErrorMsg}}
 										    <br>
-										</span>
+										</span> 
 									</div> <!--end danger alert -->
 								</div>
 							</div><!-- end modal body -->
-
-							<!--These Buttons Are Zombies -->				
+				
 							<div class="modal-footer">
 								<button class="btn btn-danger" type="button" data-dismiss="modal">
 								  	<span class="glyphicon glyphicon-remove"> </span> 
 									  	Reject
 								</button>
 								
-								<button class="btn btn-success" type="button" ng-click="selfEvaluate()">
+								<button class="btn btn-success" type="button" ng-click="supEvaluate()">
 								  	<span class="glyphicon glyphicon-ok"> </span> 
 									  	Approve
 								</button>

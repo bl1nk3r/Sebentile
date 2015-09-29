@@ -2059,6 +2059,11 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 			//console.log(empPF);
 			//console.log(empName)
 			//$scope.empAlias = {};
+			$scope.specificEmpFinObjs = [];
+			$scope.specificEmpCustObjs = [];
+			$scope.specificEmpIntObjs = [];
+			$scope.specificEmpLearnObjs = [];
+
 			$scope.empAlias = {PF: empPF, Name: empName};
 			console.log($scope.empAlias);
 			pendingObjectives.getPending()
@@ -2072,30 +2077,23 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 				$scope.empObjArray = res;
 				console.log($scope.empObjArray);
 				console.log("PF is:::");
-				console.log(empPF);
+				console.log($scope.empObjArray.length);
+
 				for (var i = 0; i < $scope.empObjArray.length; i++){
 					//console.log($scope.empObjArray[i].PFNum);
 					if (empPF == $scope.empObjArray[i].PFNum) {
 
-						if ($scope.empObjArray[i].perspective = "finance"){
-							$scope.specificEmpFinObjs = $scope.empObjArray[i];
-							console.log("So now Fin :");
-							//console.log($scope.specificEmpFinObjs.empObjArray[i]);
+						if ($scope.empObjArray[i].perspective == "finance"){
+							$scope.specificEmpFinObjs.push($scope.empObjArray[i]);
 						}
-						else if ($scope.empObjArray[i].perspective = "customer"){
-							$scope.specificEmpCustObjs = $scope.empObjArray[i];
-							console.log("So now Cust :");
-							console.log($scope.specificEmpCustObjs.description);
+						else if ($scope.empObjArray[i].perspective == "customer"){
+							$scope.specificEmpCustObjs.push($scope.empObjArray[i]);
 						}
-						else if ($scope.empObjArray[i].perspective = "internal"){
-							$scope.specificEmpIntObjs = $scope.empObjArray[i];
-							console.log("So now Int:");
-							console.log($scope.specificEmpIntObjs.description);
+						else if ($scope.empObjArray[i].perspective == "internal"){
+							$scope.specificEmpIntObjs.push($scope.empObjArray[i]);
 						}
-						else if ($scope.empObjArray[i].perspective = "learning"){
-							$scope.specificEmpLearnObjs = $scope.empObjArray[i];
-							console.log("So now Learn:");
-							console.log($scope.specificEmpLearnObjs.description);
+						else if ($scope.empObjArray[i].perspective == "learn"){
+							$scope.specificEmpLearnObjs.push($scope.empObjArray[i]);
 						}
 						else {
 							console.log("No other Objectives found!");
