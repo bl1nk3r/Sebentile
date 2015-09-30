@@ -11,13 +11,8 @@
 							<span class="glyphicon glyphicon-plus"></span>&nbsp;Create Objective (KPA)
 						</a> <!-- end Create an Objective button link -->
 						<!--CREATE OBJECTIVE MODAL-->
-<<<<<<< HEAD
 						<a data-backdrop="static"  data-keyboard="false" ng-click="getObjectivez();" href="#submitObjModal" role="button"class="btn btn-primary" data-toggle="modal" data-tooltip="true" data-placement="top" title="Click to Submit your Objectives to your Supervisor"> 
 							<span class="glyphicon glyphicon-share-alt"></span>&nbsp;Submit Objective(s) 
-=======
-						<a data-backdrop="static"  data-keyboard="false" ng-click="getUnactndObjectives()" href="#submitObjModal" role="button" class="btn btn-primary" data-toggle="modal" data-tooltip="true" data-placement="top" title="Click to Submit your Objectives to your Supervisor"> 
-							<span class="glyphicon glyphicon-arrow-up"></span>&nbsp;Submit Objective(s) 
->>>>>>> 7b3dcf80e774d14cfb1d480b06c54c4d028e61ea
 						</a> <!-- end Submit Objectives button link-->
 						<!--SUBMIT OBJECTIVE MODAL-->
 						<a data-backdrop="static" data-keyboard="false" href="#scorecardModal" ng-click="retrieveApproved();ScorecardCreate()" role="button" class="btn btn-primary" data-toggle="modal" data-tooltip="true" data-placement="top" title="View your Perfomance Contract">
@@ -32,28 +27,27 @@
 						<div id="panelListGroupDiv" class="list-group" ng-controller="empPanelInfoCtrl">
 							<a href="#" class="list-group-item"> <span class="badge"> 0 </span><span class="glyphicon glyphicon-asterisk"> </span> Notifications </a>
 							<a href="#" class="list-group-item"> <span class="badge"> 3 </span><span class="glyphicon glyphicon-inbox"> </span> Emails </a>
+							<a href="#" class="list-group-item"> <span class="badge" ng-model="unapprovedVal"> {{unapprovedVal}} </span><span class="glyphicon glyphicon-thumbs-down"> </span> Unapproved </a>
 							<a href="#" class="list-group-item"> <span class="badge" ng-model="pendingVal"> {{pendingVal}} </span><span class="glyphicon glyphicon-repeat"> </span> Pending 
 							</a>
 							<a href="#" class="list-group-item"> <span class="badge"> 1 </span><span class="glyphicon glyphicon-ok-circle"> </span> Completed </a>
-							<a data-backdrop="static"  data-keyboard="false" ng-click="getUnaprdObjectives()" href="#unApprovedObjsModal" data-toggle="modal" data-tooltip="true" data-placement="top" role="button" class="list-group-item"> <span class="badge" ng-model="unapprovedVal"> {{unapprovedVal}} </span><span class="glyphicon glyphicon-thumbs-down"> </span> Unapproved Objectives</a>
-							<a data-backdrop="static"  data-keyboard="false" ng-click="getAprdObjectives();" href="#approvedObjsModal" data-toggle="modal" data-tooltip="true" data-placement="top" role="button" class="list-group-item"> <span class="badge" ng-model="approvedVal"> {{approvedVal}} </span><span class="glyphicon glyphicon-thumbs-up"> </span> Approved Objectives
+							<a href="#" class="list-group-item"> <span class="badge" ng-model="approvedVal"> {{approvedVal}} </span><span class="glyphicon glyphicon-thumbs-up"> </span> Approved 
 							</a>
 						</div> <!-- end panelListGroupDiv-->
 					</div> <!--end btn-group-->
 				</div>
 				<!-- By Mlandvo -->
 				<div class="panel with-nav-tabs panel-info col-sm-4">
-		            <div class="panel-heading">
-		            	<p class="panel-title"> <span class="glyphicon glyphicon-resize-small"> </span>Mini-Dashboard</p>
-		                <ul class="nav nav-tabs">	
-		                	<li class="active"> 
-		                		<a href="#crTab" data-toggle="tab"> 
-		                     		<span class = "glyphicon glyphicon-star-empty"></span> 
-		                     		Current Rating
-		                     	</a>
-		                     </li>
+			            <div class="panel-heading">
+			            	<p class="panel-title"> <span class="glyphicon glyphicon-resize-small"> </span>Mini-Dashboard</p>
+			                <ul class="nav nav-tabs">	
+			                	<li class="active"> 
+			                		<a href="#crTab" data-toggle="tab"> 
+			                     		<span class = "glyphicon glyphicon-star-empty"></span> 
+			                     		Current Rating
+			                     	</a>
+			                     </li>
 
-<<<<<<< HEAD
 			                   	<li>
 			                   		<a href="#orTab" data-toggle="tab"> 
 			                   			<span class = "glyphicon glyphicon-star"></span> 
@@ -79,35 +73,12 @@
 										<p>No Data Found!</p>
 									</div>-->
 								</div>
-=======
-		                   	<li>
-		                   		<a href="#orTab" data-toggle="tab"> 
-		                   			<span class = "glyphicon glyphicon-star"></span> 
-		                   			Overrall Rating
-		                   		</a>
-		                   	</li>
-		                </ul>
-		            </div>
-		            <div class="panel-body">
-		                <div class="tab-content">
-							<div class="tab-pane fade in active" id="crTab">
-								<div id="container-speed" style="width: 300px; height: 200px;"></div>
-							</div>
-							<div class="tab-pane fade in" id="orTab">
-								<div id="overral" style="width: 300px; height: 200px; margin: 0 auto"></div>
-								<!--
-								<div class="alert alert-danger">
-									<button type="button" class="close" data-dismiss="alert">X</button>
-									<p>No Data Found!</p>
-								</div>-->
->>>>>>> 7b3dcf80e774d14cfb1d480b06c54c4d028e61ea
 							</div>
 						</div>
-					</div>
-					<!--
-					<div class="panel-footer">
-						<button class="btn  btn-small btn-primary" href="#"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;Export</button>
-					</div>-->
+						<!--
+						<div class="panel-footer">
+							<button class="btn  btn-small btn-primary" href="#"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;Export</button>
+						</div>-->
 				</div>
 				<!--
 				<div class="panel panel-primary col-sm-4">
