@@ -1,32 +1,44 @@
  //using $scope to bind data models from the UI to the angular script (interchangeably)
-angular.module('BSCIMS')
-	
-	//this service retrieves and globally stores all objectives (with a default status of "unapproved") to be used by any controller
-	.service('allObjectives', ['$http', function ($http){
-		this.getObjectives = function () {
-			return $http.post("/getAllObjectives");
-		}
-	}]) 
+var bsc = angular.module('BSCIMS', ['ngRoute']);
+
+/***********************************************************************************************************************************************
+***********************************************GLOBAL SERVICES**********************************************************************************
+***********************************************************************************************************************************************/
+
+	 //this service retrieves and globally stores all objectives (with a default status of "unapproved") to be used by any controller
+	 bsc.service('allObjectives', ['$http', function ($http){
+			this.getObjectives = function () {
+				return $http.post("/getAllObjectives");
+			}
+		}]) 
 
 	//while this one does the same only for objectives that have been sent for processing or approval (with a status of  "sent_for_approval")
- 	.service('pendingObjectives', ['$http', function ($http) {
- 		this.getPending = function() {
- 			return $http.post('/getPendingObjectives');
- 		}
- 	}])
- 
- 	.service('approvedObjectives', ['$http', function ($http) {
- 		this.getApproved = function() {
- 			return $http.post('/getApprovedObjectives');
- 		}
- 	}])
+	 	.service('pendingObjectives', ['$http', function ($http) {
+	 		this.getPending = function() {
+	 			return $http.post('/getPendingObjectives');
+	 		}
+	 	}])
 
- 	.service('unApprovedObjectives', ['$http', function ($http) {
- 		this.getApproved = function() {
- 			return $http.post('/getUnapprovedObjectives');
- 		}
- 	}])
+	 	.service('approvedObjectives', ['$http', function ($http) {
+	 		this.getApproved = function() {
+	 			return $http.post('/getApprovedObjectives');
+	 		}
+	 	}])
 
+	 	.service('unApprovedObjectives', ['$http', function ($http) {
+	 		this.getApproved = function() {
+	 			return $http.post('/getUnapprovedObjectives');
+	 		}
+	 	}])
+
+	 	/*.controller('allObjectivesCtrl', ['allObjectives', '$scope', function(allObjectives, $scope){
+	 		$scope.allObjectives = allObjectives;
+	 	}])*/
+
+
+/***********************************************************************************************************************************************
+*********************************************************MANAGE EMPLOYEES***********************************************************************
+***********************************************************************************************************************************************/
 	.service('manageEmployeeData', ['$http', '$q', function ($http, $q) {
 		this.insertEmp = function(emp) {
 			return $http.post('/addEmp', emp);
@@ -40,7 +52,7 @@ angular.module('BSCIMS')
 			var deferred = $q.defer();
 			$http.post('/showAllEmps').success(function (res) {
 				deferred.resolve(res);
-				console.log(res);
+
 			}).error(function (res) {
 				deferred.reject(res);
 			});
@@ -52,7 +64,7 @@ angular.module('BSCIMS')
 			var deferred = $q.defer();
 			$http.post('/showEmpsWithPending').success(function (res) {
 				deferred.resolve(res);
-				console.log(res);
+
 			}).error(function (res) {
 				deferred.reject(res);
 			});
@@ -65,7 +77,6 @@ angular.module('BSCIMS')
 			$http.post('/showAllDivisions').success(function (res) {
 				deferred.resolve(res);
 
-				//console.log(res);
 			}).error(function (res) {
 				deferred.reject(res);
 			});
@@ -76,10 +87,14 @@ angular.module('BSCIMS')
 		this.getLoggedInEmp = function () {
 			return $http.post('/getLoggedInEmp');
 
-			this.lastLogIn = null;
+			//this.lastLogIn = null;
 		}
+
 	}])
 
+/***********************************************************************************************************************************************
+********************************************************EMPLOYEE CONTROLLER*********************************************************************
+***********************************************************************************************************************************************/
 	.controller('manageEmployees', ['$q', '$scope', '$rootScope', '$http', 'manageEmployeeData', 
 		function ($q, $scope, $rootScope, $http, manageEmployeeData) {
 
@@ -130,126 +145,199 @@ angular.module('BSCIMS')
 
 		$scope.getLoggedUser();
 
+		//validate user access role after capturing from login form and throw appropriate errors
+		$scope.validate = function() {
+
+			$scope.loginErrorMsgs = [],
+			$scope.userFormRoles = [];
+
+			var userRoleError = "Opt for at least one role!",
+				user_Pass_Error = "Incorrect username / password combination!",
+				supervisorRoleError = "You currently don't have a supervisor role!",
+				HRRoleError = "You seem not to be an HR officer!",
+
+				//retrieve login values from login form
+				loginEmp = {empName: $scope.empName, password: $scope.password}; 
+
+				manageEmployeeData.authenticate(loginEmp).success(function (data) {
+
+					$scope.employeeName = data.empName,
+					$scope.employeePassword = data.password,
+					$scope.employeeRoles  = data.roles,
+					$scope.employeePF = data.PFNum;
+
+					if($scope.empName != $scope.employeeName && $scope.password != $scope.employeePassword) {
+
+						$scope.loginErrorMsgs.push(user_Pass_Error),
+						$scope.hasLoginError = true;
+					}	
+					else if (!$scope.supervisorRole && !$scope.employeeRole && !$scope.HRRole) {
+
+						$scope.loginErrorMsgs.push(userRoleError),
+						$scope.hasLoginError = true;
+					}	
+					else if ($scope.supervisorRole && ($scope.employeeRoles.indexOf("supervisor") <= -1)) {
+
+						$scope.loginErrorMsgs.push(supervisorRoleError),
+						$scope.hasLoginError = true;
+					}
+					else if ($scope.HRRole && ($scope.employeeRoles.indexOf("HR") <= -1)) {
+
+						$scope.loginErrorMsgs.push(HRRoleError),
+						$scope.hasLoginError = true;
+					}
+					else {
+
+						$scope.loginState = "Logged In";
+
+						var loggedInEmp = { employeeName: $scope.employeeName, employeePassword: $scope.employeePassword, employeeRoles: $scope.employeeRoles};
+
+						//Store information of currently logged in user in a service
+						manageEmployeeData.setCurrentLoggedInEmp (loggedInEmp);
+
+						//initialize current employee with the employee object defined above
+						$scope.currentEmp = loggedInEmp;
+
+						//match employee roles from the form with the ones in DB
+						if ($scope.supervisorRole && ($scope.employeeRoles.indexOf("supervisor") > -1)) {
+							$scope.isSupervisor = true;
+						}
+
+						if ($scope.HRRole && ($scope.employeeRoles.indexOf("HR") > -1)) {
+							$scope.isHR = true;
+						}
+						if ($scope.employeeRole && ($scope.employeeRoles.indexOf("employee") > -1)) {
+							$scope.isHR = true;
+						}
+					} //end 'if' of 'else'
+
+				}).error(function (error){}); 
+		} //end of validate function
+
 		$scope.addEmp = function(){
 
-			$scope.hasAddEmpError = false;
-			$scope.addEmpErrorMsgs = [];
-			$scope.empInserted = false;
-			$scope.empInsertedMsg = '';
+		$scope.hasAddEmpError = false;
+		$scope.addEmpErrorMsgs = [];
+		$scope.empInserted = false;
+		$scope.empInsertedMsg = '';
 
-			var passwordMissMatchError = "Passwords do not match"
-			    ,empRoleError = "Assign at least one role to the user"
-			    ,emptyEmpNameError = "Username cannot be empty"
-			    ,emptyPasswordError = "Password cannot be empty"
-			    ,emptyPassword2Error = "Password two cannot be empty"
-			    ,emptyFirstNameError = "Firstname cannot be empty"
-			    ,emptyLastNameError = "Lastname cannot be empty"
-			    ,emptyStationError = "Station cannot be empty";
+		var passwordMissMatchError = "Passwords do not match"
+		    ,empRoleError = "Assign at least one role to the user"
+		    ,emptyEmpNameError = "Username cannot be empty"
+		    ,emptyPasswordError = "Password cannot be empty"
+		    ,emptyPassword2Error = "Password two cannot be empty"
+		    ,emptyFirstNameError = "Firstname cannot be empty"
+		    ,emptyLastNameError = "Lastname cannot be empty"
+		    ,emptyStationError = "Station cannot be empty";
 
-			//check if fields are filled
-			if ($scope.employeeName == null){
+		//check if fields are filled
+		if ($scope.employeeName == null){
 
-				$scope.addEmpErrorMsgs.push(emptyEmpNameError);
-				$scope.hasAddEmpError = true;
-			} 
-			else if ($scope.employeePassword == null){
+			$scope.addEmpErrorMsgs.push(emptyEmpNameError);
+			$scope.hasAddEmpError = true;
+		} 
+		else if ($scope.employeePassword == null){
 
-				$scope.addEmpErrorMsgs.push(emptyPasswordError);
-				$scope.hasAddEmpError = true;
-			} 
-			else if ($scope.employeePassword2 == null){
+			$scope.addEmpErrorMsgs.push(emptyPasswordError);
+			$scope.hasAddEmpError = true;
+		} 
+		else if ($scope.employeePassword2 == null){
 
-				$scope.addEmpErrorMsgs.push(emptyPassword2Error);
-				$scope.hasAddEmpError = true;
-			} 
-			else if ($scope.firstname == undefined){
+			$scope.addEmpErrorMsgs.push(emptyPassword2Error);
+			$scope.hasAddEmpError = true;
+		} 
+		else if ($scope.firstname == undefined){
 
-				$scope.addEmpErrorMsgs.push(emptyFirstNameError);
-				$scope.hasAddEmpError = true;
-			} 
-			else if ($scope.lastname == undefined){
+			$scope.addEmpErrorMsgs.push(emptyFirstNameError);
+			$scope.hasAddEmpError = true;
+		} 
+		else if ($scope.lastname == undefined){
 
-				$scope.addEmpErrorMsgs.push(emptyLastNameError);
-				$scope.hasAddEmpError = true;
-			} 
-			else if (!$scope.supervisorRole && !$scope.HRRole && !$scope.employeeRole) {
+			$scope.addEmpErrorMsgs.push(emptyLastNameError);
+			$scope.hasAddEmpError = true;
+		} 
+		else if (!$scope.supervisorRole && !$scope.HRRole && !$scope.employeeRole) {
 
-				$scope.addEmpErrorMsgs.push(empRoleError);
-				$scope.hasAddEmpError = true;
+			$scope.addEmpErrorMsgs.push(empRoleError);
+			$scope.hasAddEmpError = true;
+		}
+
+		//check if entered passwords match
+		else if ($scope.employeePassword !== $scope.employeePassword2) {
+
+			$scope.addEmpErrorMsgs.push(passwordMissMatchError);
+			$scope.hasAddEmpError = true;
+		} 
+		else {
+			//initial employee roles
+			$scope.employee = false;
+			$scope.supervisor = false;
+			$scope.HR = false;
+
+			//store employee roles selected
+			var empRoles = [];
+
+			if ($scope.employeeRole) {
+				empRoles.push("employee");
+			}
+			if ($scope.supervisorRole){
+				empRoles.push("supervisor");
+			}
+			if ($scope.HRRole){
+				empRoles.push("HR");
 			}
 
-			//check if entered passwords match
-			else if ($scope.employeePassword !== $scope.employeePassword2) {
+			//create user object from form
+			var newEmp = {empName:$scope.empName, password:$scope.password, firstname:$scope.firstname, lastname:$scope.lastname, roles:empRoles};
 
-				$scope.addEmpErrorMsgs.push(passwordMissMatchError);
-				$scope.hasAddEmpError = true;
-			} 
-			else {
-				//initial employee roles
-				$scope.employee = false;
-				$scope.supervisor = false;
-				$scope.HR = false;
+			manageEmpData.insertEmp(newEmp)
+	            .success(function (res) {
+	            	$scope.empInsertedMsg = res;
+	                $scope.empInserted = true;
+	            
+	                $scope.clearNewEmp();
+	            })
+	            .error(function (error) {
+	                $scope.addEmpErrorMsgs.push(error);
+					$scope.hasAddEmpError = true;
+	            });
+	    }
+	}//add employee function ends
 
-				//store employee roles selected
-				var empRoles = [];
+	$scope.showEmployees = function() {
+		manageEmployeeData.getEmps()
+			.then(function (data) {
+				$scope.emps = data;
 
-				if ($scope.employeeRole) {
-					empRoles.push("employee");
-				}
-				if ($scope.supervisorRole){
-					empRoles.push("supervisor");
-				}
-				if ($scope.HRRole){
-					empRoles.push("HR");
-				}
+			});
+	}
 
-				//create user object from form
-				var newEmp = {empName:$scope.empName, password:$scope.password, firstname:$scope.firstname, lastname:$scope.lastname, roles:empRoles};
+	$scope.clearNewEmp = function() {
+		$scope.empName = '',
+		$scope.employeePassword = '',
+		$scope.employeePassword2 = '',
+		$scope.firstname = '',
+		$scope.lastname = '',
+		$scope.supervisorRole = '',
+		$scope.employeeRole = '',
+		$scope.HRRole = '';
+	}
 
-				manageEmpData.insertEmp(newEmp)
-		            .success(function (res) {
-		            	$scope.empInsertedMsg = res;
-		                $scope.empInserted = true;
-		            
-		                $scope.clearNewEmp();
-		            })
-		            .error(function (error) {
-		                $scope.addEmpErrorMsgs.push(error);
-						$scope.hasAddEmpError = true;
-		            });
-		    }
-		}//add employee function ends
+	$scope.clearLogin = function() {
+		$scope.empName = '',
+		$scope.password = '',
+		$scope.supervisorRole = '',
+		$scope.employeeRole = '',
+		$scope.HRRole = '';
+	}
 
-		$scope.showEmployees = function() {
-			manageEmployeeData.getEmps()
-				.then(function (data) {
-					$scope.emps = data;
+	}])
 
-					console.log(data);
-				});
-		}
+ /*************************************************************************************************************************************************************************************************
+ ********************************************************HUMAN RESOURCE CONTROLLER*****************************************************************************************************************
+ *************************************************************************************************************************************************************************************************/
 
-		$scope.clearNewEmp = function() {
-			$scope.empName = '',
-			$scope.employeePassword = '',
-			$scope.employeePassword2 = '',
-			$scope.firstname = '',
-			$scope.lastname = '',
-			$scope.supervisorRole = '',
-			$scope.employeeRole = '',
-			$scope.HRRole = '';
-		}
-
-		$scope.clearLogin = function() {
-			$scope.empName = '',
-			$scope.password = '',
-			$scope.supervisorRole = '',
-			$scope.employeeRole = '',
-			$scope.HRRole = '';
-		}
-	}]) // end manageEMployees controller
-
- 	.controller('hrRolesController',['$scope','$http','manageEmployeeData', function($scope, $http, manageEmployeeData){
+ .controller('hrRolesController',['$scope','$http','manageEmployeeData', function($scope, $http, manageEmployeeData){
 		$scope.getDivisions = function () {
 			manageEmployeeData.getDivs()
 				.then (function (data) {
@@ -295,14 +383,187 @@ angular.module('BSCIMS')
 		$scope.getEmpObjectives = function (pfnum, name) {
 			$scope.empName = name;
 			var emp = {pfno:pfnum};
-			console.log(pfnum);
 			$http.post('/getEmpObjectives', emp).success(function(resp) {
 				console.log(resp);
 			});
 		}
- 	}]) // end hrRolesController
+ }])
 
- 	.controller('adminController',['$scope','$http','manageEmployeeData', function($scope, $http, manageEmployeeData){
+ /*************************************************************************************************************************************************************************************************
+ ********************************************************ADMINISTRATOR  CONTROLLER*****************************************************************************************************************
+ *************************************************************************************************************************************************************************************************/
+
+ .controller('adminController',['$scope','$http','manageEmployeeData', function($scope, $http, manageEmployeeData){
+	
+ }])
+
+
+/***********************************************************************************************************************************************
+*****************************************************FINANCE PERSPECTIVE CONTROLLER*************************************************************
+************************************************************************************************************************************************/
+   .controller('financePerspectiveController', function ($scope, $rootScope, $http) {		
+		
+	$scope.poorOptions = [{ label: '-Select metric-', value: 0},
+						  { label: '>15% budget variance', value: 15 },
+    				      { label: '>16% budget variance', value: 16 },
+  					      { label: '>17% budget variance', value: 17 },
+  					      { label: '>18% budget variance', value: 18 }
+  					     ];
+
+  	$scope.unsatOptions = [{ label: '-Select metric-', value: 0},
+				           { label: '>19% budget variance', value: 19 },
+    			           { label: '>20% budget variance', value: 20 },
+  				           { label: '>21% budget variance', value: 21 },
+  				           { label: '>22% budget variance', value: 22 }
+  				          ];
+
+  	$scope.targetOptions = [{ label: '-Select metric-', value: 0},
+						    { label: '9% budget variance  ', value: 9 },
+    				        { label: '10% budget variance ', value: 10 },
+  					        { label: '11% budget variance ', value: 11 }
+  					       ];
+
+  	$scope.exceedOptions = [{ label: '-Select metric-', value: 0},
+					        { label: '<5% budget variance ', value: 5 },
+    				        { label: '<6% budget variance ', value: 6 },
+  					        { label: '<7% budget variance ', value: 7 }
+  					       ];
+
+  	$scope.outstandOptions = [{ label: '-Select metric-', value: 0},
+						      { label: '0% budget variance', value: 00 },
+    				          { label: '1% budget variance', value: 16 }
+  					         ];
+
+  	$scope.monitorChange = function() {
+  		console.log($scope.poorOptions);
+  	}
+
+	$scope.submitFinanceObjective = function (PF) { 
+		
+		$scope.finObjError = [],
+		$scope.createObjectiveErrorMsgs = [],
+		$scope.hasCreateObjErrors = false;
+		$scope.hasFinKPAError = false;
+		$scope.hasFinKPIError = false;
+	
+		var generalErrorMsg = "Please ensure that all fields are filled!"
+			objDescriptionError = "The 'Key Performance Area' field is mandatory!",
+			objDSOError = "Please define the Key Performance Indicator!",
+			poorOptionsSelectError = "Select a minimum metric above!",
+			unsatOptionsSelectError = "Select an unsatisfactory metric above!",
+			targetOptionsSelectError = "Verfiy the 'Target Met' metric above!",
+			exceedOptionsSelectError = "Select an exceed metric above!",
+			outstandOptionsSelectError = "Select an outstanding metric above!",
+			poorOptionsDefError = "Define the poor metric above!",
+			unsatOptionsDefError = "Define the unsatisfactory metric above!",
+			targetOptionsDefError = "Define the 'Target Met' metric above!",
+			exceedOptionsDefError = "Define the exceed metric above!",
+			outstandOptionsDefError = "Define the outstanding metric above!";
+
+		if ($scope.financePerspectiveController.description == null) {
+
+			$scope.hasFinKPAError = true,
+			$scope.finObjError.push(objDescriptionError);
+		}
+		else if ($scope.financePerspectiveController.DSO == null) {
+
+			$scope.hasFinKPIError = true,
+			$scope.finObjError.push(objDSOError);
+		}
+		else if ($scope.poorOptions.value == 0) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(poorOptionsSelectError);
+		}
+		else if ($scope.unsatOptions.value == 0) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(unsatOptionsSelectError);
+		}
+		else if ($scope.targetOptions.value == 0) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(targetOptionsSelectError);
+		}
+		else if ($scope.exceedOptions.value == 0) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(exceedOptionsSelectError);
+		}
+		else if ($scope.outstandOptions.value == 0) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(outstandOptionsSelectError);
+		}
+		else if ($scope.financePerspectiveController.metricOneDef == null) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(poorOptionsDefError);
+		}
+		else if ($scope.financePerspectiveController.metricTwoDef == null) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(unsatOptionsDefError);
+		}
+		else if ($scope.financePerspectiveController.metricThreeDef == null) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(targetOptionsDefError);
+		}
+		else if ($scope.financePerspectiveController.metricFourDef == null) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(exceedOptionsDefError);
+		}
+		else if ($scope.financePerspectiveController.metricFiveDef == null) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(outstandOptionsDefError);
+		}
+		else {
+
+	    	$http.post("/financePerspectiveController", $scope.financePerspectiveController)
+	    	.success(function (resp){
+	    		$scope.Objective = resp;
+	    		$('#successObjAlert1').slideDown();
+	    	});
+	    }
+    };	
+
+	$scope.renderFinancePerspective = function (response) {
+		$scope.financePerspective = response;
+	};
+
+	$scope.retrieveFinanceObjectives = function() {
+		$http.get("/retrieveFinanceObjectives")
+		.success(function (res, err) {
+			if (err) {console.log(err);}
+			console.log(res);
+		});
+		//.success($scope.renderFinancePerspective);
+	};
+
+
+	$scope.removeFinanceObjective = function (id) {
+		$http.delete("/financePerspectiveController" + id)
+		.success(function (response) {
+			$scope.retrieve();
+		});
+	};
+
+	//annyang environment (voice command functionality)
+	var commands = {
+		'create objective' : function() {
+			$scope.$apply();
+		}
+	}
+
+	annyang.addCommands(commands);
+	annyang.debug();
+	annyang.start();
+})
+
+	.controller('adminController',['$scope','$http','manageEmployeeData', function ($scope, $http, manageEmployeeData){
  	}]) // end adminController
 
 	// Brian
@@ -310,6 +571,9 @@ angular.module('BSCIMS')
    		$scope.financeObjective = {};
    		$scope.gotFinBCW = false;
    		$scope.BCWStat = "Lock";
+   		$scope.showSubErr = false;
+		$scope.showSubMsg = "There are no Approved Objectives to submit for now, Create Objectives or if this problem persists contact your IT Administrator.";
+   		
    		$scope.financeObjective.metrixType = '--Select matrix--';
    		$scope.objPerspDropdownMenu = '--Select a Perspective--';
    		$scope.finObjWeightSum = 0;
@@ -352,9 +616,6 @@ angular.module('BSCIMS')
 			if (Number($scope.finObjWeightSum) > Number($scope.financeObjective.finBrdCatWeighting)) {
 				console.log("Detailed weighting now exceeding broad category")
 			}
-
-			console.log("Sum weight is : ");
-			console.log($scope.finObjWeightSum);
 		
 			// define create finance objective errors
 			var generalErrorMsg = "Please ensure that all fields are filled!"
@@ -403,7 +664,7 @@ angular.module('BSCIMS')
 				$scope.createObjectiveErrorMsgs.push(exceedOptionsDefError);
 
 			} else if ($scope.financeObjective.metricFiveDef == null) {
-				$scope.clearFinObjectivesErrors();https://github.com/bl1nk3r/Sebentile/archive/master.zip
+				$scope.clearFinObjectivesErrors();
 				$scope.hasCreateObjErrors = true,
 				$scope.createObjectiveErrorMsgs.push(outstandOptionsDefError);
 
@@ -429,44 +690,6 @@ angular.module('BSCIMS')
 	    	$scope.objPerspDropdownMenu = '--Select a Perspective--';
 	    }
 
-	    // retrieve Objectives : Brian
-	    $scope.retrieveObjectives = function () {
-			allObjectives.getObjectives().success(function (res) {
-				$scope.subFinObj = [];
-				$scope.subCustObj = [];
-				$scope.subIntObj = [];
-				$scope.subLearnObj = [];
-				$scope.empObjectives = res;
-				
-				for (var i = 0; i<res.length; i++) {
-					if (res[i].pespective == "finance") {
-						$scope.subFinObj.push(res[i]);
-					} else if (res[i].pespective == "customer") {
-						$scope.subCustObj.push(res[i]);
-					} else if (res[i].pespective == "internal") {
-						$scope.subIntObj.push(res[i]);
-					} else if (res[i].pespective == "learn") {
-						$scope.subLearnObj.push(res[i]);
-					};
-				};				
-			})
-			.error(function () {
-				console.log('There is an error');
-			});		
-		}
-
-		$scope.retrieveObjectives();
-
-		//Brian
-		$scope.sendObjs = function() {
-			$http.post("/submitEmpObjectives", $scope.empObjectives).success(function (res) {
-				$('#successObjSubmit').slideDown();
-				console.log(res);
-			}).error(function (res) {
-				console.log(res);
-			});
-		};
-
 		$scope.renderFinancePerspective = function (response) {
 			$scope.financePerspective = response;
 		};
@@ -475,7 +698,7 @@ angular.module('BSCIMS')
 			$http.get("/retrieveFinanceObjectives")
 			.success(function (res, err) {
 				if (err) {console.log(err);}
-				console.log(res);
+
 			});
 			//.success($scope.renderFinancePerspective);
 		};
@@ -494,7 +717,6 @@ angular.module('BSCIMS')
 			}
 		}
 	}]) // end empRoleController
-
 /***********************************************************************************************************************************************
 *****************************************************CUSTOMER PERSPECTIVE CONTROLLER*************************************************************
 ************************************************************************************************************************************************/
@@ -619,7 +841,6 @@ angular.module('BSCIMS')
 				console.log($scope.customerPerspectiveController);
 		    	$http.post("/customerPerspectiveController", $scope.customerPerspectiveController)
 		    	.success(function(resp){
-		    		//console.log(resp);
 		    		$('#successObjAlert2').slideDown();
 		    	});
 		    }
@@ -760,7 +981,6 @@ angular.module('BSCIMS')
 				console.log($scope.learnPerspectiveController);
 		    	$http.post("/learnPerspectiveController", $scope.learnPerspectiveController)
 		    	.success(function(resp){
-		    		//console.log(resp);
 		    		$('#successObjAlert4').slideDown();
 
 		    	});
@@ -908,7 +1128,6 @@ angular.module('BSCIMS')
 				console.log($scope.internalPerspectiveController);
 		    	$http.post("/internalPerspectiveController", $scope.internalPerspectiveController)
 		    	.success(function (resp){
-		    		//console.log(resp);
 		    		$('#successObjAlert3').slideDown();
 		    	});
 		    }
@@ -943,267 +1162,68 @@ angular.module('BSCIMS')
 	$scope.capChecked = true;
 	$scope.sendObjErrorMsg = "Cannot send empty objectives - make sure you select from above!"
 
-	$scope.retrieveObjectives = function () {
-		allObjectives.getObjectives()
-		.success(function (res) {
-		$scope.subFinObj = [];
-		$scope.subCustObj = [];
-		$scope.subIntObj = [];
-		$scope.subLearnObj = [];
-
-		for (var i = 0; i<res.length; i++) {
-			if (res[i].perspective == "finance") {
-				$scope.subFinObj.push(res[i]);
-			}
-			else if (res[i].perspective == "customer") {
-				$scope.subCustObj.push(res[i]);
-			}
-			else if (res[i].perspective == "internal") {
-				$scope.subIntObj.push(res[i]);
-			}
-			else if (res[i].perspective == "learn") {
-				$scope.subLearnObj.push(res[i]);
-			}
-		}
-		})
-		.error(function () {
-			console.log('There is an error');
-		});		
-	}
-
 	//Checkbox invokes 'captureObj' function that pushes content into 'pendingObj' array [needs to toggle]
 	$scope.captureFinObj = function(objID, description, DSO) {
 		$scope.capChecked = !$scope.capChecked;	
-		console.log($scope.capChecked);	
-		/*$scope.objIDArray.push(objID);
-		$scope.pointer = {objID, description, DSO};
-		$scope.pendingObj.push({pendingID: $scope.pointer.objID, pendingDescription: $scope.pointer.description, pendingDSO: $scope.pointer.DSO});
-	
-		if ( $scope.capChecked == false) {
-			//var index = $scope.pendingObj.indexOf($scope.pointer);
 
-			for (var index = 0; index < $scope.pendingObj.length; index++){
-				if ($scope.pointer.objID == $scope.pendingObj[index].pendingID) {
-					console.log("The index is Below")
-					console.log(index);
-				}
-				else {
-					console.log("Error caught!");
-				}
-				$scope.index = index;
-			}
-
-			$scope.pendingObj.splice(index, 1);
-			console.log("After unchecking we get the index: ")
-			console.log(index);
-		}
-		else {
-			var index = $scope.pendingObj.indexOf($scope.pointer);
-			console.log("capChecked is true");
-			console.log(index);
-		}*/
-
-		/*var array = ["one", "two", "three", "four"];
-			console.log(array);
-			array.splice(2, 2, "this", "was", "spliced");
-			console.log("The spliced array is :")
-			console.log(array);
-
-		for (var index = 0; index < $scope.objIDArray.length; index++){
-			if ($scope.pointer.objID == $scope.pendingObj[index].pendingID) {
-				console.log("The index is Below")
-				console.log(index);
-			}
-			else {
-				console.log("Error caught!");
-			}
-		}
-			*/
-
-		/*console.log("Pending Objectives before splice:")
-		console.log($scope.pendingObj.pendingID);*/
 	}
 	$scope.captureCustObj = function(objID, description, DSO) {
 		$scope.capChecked = !$scope.capChecked;	
-		console.log($scope.capChecked);	
-		/*$scope.objIDArray.push(objID);
-		$scope.pointer = {objID, description, DSO};
-		$scope.pendingObj.push({pendingID: $scope.pointer.objID, pendingDescription: $scope.pointer.description, pendingDSO: $scope.pointer.DSO});
-	
-		if ( $scope.capChecked == false) {
-			//var index = $scope.pendingObj.indexOf($scope.pointer);
 
-			for (var index = 0; index < $scope.pendingObj.length; index++){
-				if ($scope.pointer.objID == $scope.pendingObj[index].pendingID) {
-					console.log("The index is Below")
-					console.log(index);
-				}
-				else {
-					console.log("Error caught!");
-				}
-				$scope.index = index;
-			}
-
-			$scope.pendingObj.splice(index, 1);
-			console.log("After unchecking we get the index: ")
-			console.log(index);
-		}
-		else {
-			var index = $scope.pendingObj.indexOf($scope.pointer);
-			console.log("capChecked is true");
-			console.log(index);
-		}*/
-
-		/*var array = ["one", "two", "three", "four"];
-			console.log(array);
-			array.splice(2, 2, "this", "was", "spliced");
-			console.log("The spliced array is :")
-			console.log(array);
-
-		for (var index = 0; index < $scope.objIDArray.length; index++){
-			if ($scope.pointer.objID == $scope.pendingObj[index].pendingID) {
-				console.log("The index is Below")
-				console.log(index);
-			}
-			else {
-				console.log("Error caught!");
-			}
-		}
-			*/
-
-		/*console.log("Pending Objectives before splice:")
-		console.log($scope.pendingObj.pendingID);*/
 	}
 	$scope.captureIntObj = function(objID, description, DSO) {
 		$scope.capChecked = !$scope.capChecked;	
-		console.log($scope.capChecked);	
-		/*$scope.objIDArray.push(objID);
-		$scope.pointer = {objID, description, DSO};
-		$scope.pendingObj.push({pendingID: $scope.pointer.objID, pendingDescription: $scope.pointer.description, pendingDSO: $scope.pointer.DSO});
-	
-		if ( $scope.capChecked == false) {
-			//var index = $scope.pendingObj.indexOf($scope.pointer);
 
-			for (var index = 0; index < $scope.pendingObj.length; index++){
-				if ($scope.pointer.objID == $scope.pendingObj[index].pendingID) {
-					console.log("The index is Below")
-					console.log(index);
-				}
-				else {
-					console.log("Error caught!");
-				}
-				$scope.index = index;
-			}
-
-			$scope.pendingObj.splice(index, 1);
-			console.log("After unchecking we get the index: ")
-			console.log(index);
-		}
-		else {
-			var index = $scope.pendingObj.indexOf($scope.pointer);
-			console.log("capChecked is true");
-			console.log(index);
-		}*/
-
-		/*var array = ["one", "two", "three", "four"];
-			console.log(array);
-			array.splice(2, 2, "this", "was", "spliced");
-			console.log("The spliced array is :")
-			console.log(array);
-
-		for (var index = 0; index < $scope.objIDArray.length; index++){
-			if ($scope.pointer.objID == $scope.pendingObj[index].pendingID) {
-				console.log("The index is Below")
-				console.log(index);
-			}
-			else {
-				console.log("Error caught!");
-			}
-		}
-			*/
-
-		/*console.log("Pending Objectives before splice:")
-		console.log($scope.pendingObj.pendingID);*/
 	}
 	$scope.captureLearnObj = function(objID, description, DSO) {
 		$scope.capChecked = !$scope.capChecked;	
-		console.log($scope.capChecked);	
-		/*$scope.objIDArray.push(objID);
-		$scope.pointer = {objID, description, DSO};
-		$scope.pendingObj.push({pendingID: $scope.pointer.objID, pendingDescription: $scope.pointer.description, pendingDSO: $scope.pointer.DSO});
-	
-		if ( $scope.capChecked == false) {
-			//var index = $scope.pendingObj.indexOf($scope.pointer);
 
-			for (var index = 0; index < $scope.pendingObj.length; index++){
-				if ($scope.pointer.objID == $scope.pendingObj[index].pendingID) {
-					console.log("The index is Below")
-					console.log(index);
-				}
-				else {
-					console.log("Error caught!");
-				}
-				$scope.index = index;
-			}
-
-			$scope.pendingObj.splice(index, 1);
-			console.log("After unchecking we get the index: ")
-			console.log(index);
-		}
-		else {
-			var index = $scope.pendingObj.indexOf($scope.pointer);
-			console.log("capChecked is true");
-			console.log(index);
-		}*/
-
-		/*var array = ["one", "two", "three", "four"];
-			console.log(array);
-			array.splice(2, 2, "this", "was", "spliced");
-			console.log("The spliced array is :")
-			console.log(array);
-
-		for (var index = 0; index < $scope.objIDArray.length; index++){
-			if ($scope.pointer.objID == $scope.pendingObj[index].pendingID) {
-				console.log("The index is Below")
-				console.log(index);
-			}
-			else {
-				console.log("Error caught!");
-			}
-		}
-			*/
-
-		/*console.log("Pending Objectives before splice:")
-		console.log($scope.pendingObj.pendingID);*/
 	}
 	
-	var IDs = $scope.objIDArray;
+	//var IDs = $scope.objIDArray;
+
 }])
 
 /***********************************************************************************************************************************************
 ********************************************************COMPILE OBJECTIVE CONTROLLER*************************************************************
 ************************************************************************************************************************************************/
-   .controller('compileController', ['approvedObjectives', 'unApprovedObjectives' ,'$scope','$rootScope', '$http', function (approvedObjectives, unApprovedObjectives,$scope, $rootScope, $http) {
-
+   .controller('compileController', ['allObjectives','approvedObjectives','unApprovedObjectives' ,'$scope','$rootScope', '$http', function (approvedObjectives,allObjectives,unApprovedObjectives,$scope, $rootScope, $http) {
 	$scope.appFinIDArray = [];
 	$scope.appCustIDArray = [];
 	$scope.appIntIDArray = [];
 	$scope.appLearnIDArray = [];
-	
 	$scope.appFinObjective = [];
 	$scope.appCustObjective = [];
 	$scope.appIntObjective = [];
 	$scope.appLearnObjective = [];
+	//by Mlandvo
+	$scope.tester = "";
+	$scope.appFinArr = [];
+	$scope.appCustArr = [];
+	$scope.appIntArr = [];
+	$scope.appLearnArr = [];
+	$scope.showSubErr = true;
+	$scope.showSubErrUactd = false;
+	$scope.showSubErrAprvd = false;
+	$scope.showSubErrUnAprvd = false;
+	$scope.showSubMsg = "There are no unactioned objectives to submit for now, create objectives. If this problem persists contact your IT administrator.";
+   	$scope.unactionedKPAs = [];
+   	$scope.unapprovedKPAs = [];
+   	$scope.approvedKPAs = [];
 
+	$scope.showSCardErr = false;
+	$scope.showSCardMsg = "Your Perfomance contract is not ready yet. There are no Approved Objectives to work on for now ... Please Contact your supervisor or try again later.";
+
+	$scope.showEvalErr = true;
+	$scope.showEvalMsg = "There are no Approved Objectives to evaluate for now ... Please try again later.";
+	//end
 	$scope.finRowSpan = 0;
 	$scope.custRowSpan = 0;
 	$scope.intRowSpan = 0;
 	$scope.learnRowSpan = 0;
-
 	$scope.selfEvalObjs = {};
 	$scope.singleObj = [];
 	$scope.hasSelfEvalErrors = false;
-
 	$scope.scorecardReady = false;
 	$scope.hasCompileSCErrors = false;
 	$scope.hasFinSCErrors     = false;
@@ -1216,173 +1236,65 @@ angular.module('BSCIMS')
 	$scope.intSCErrorMsg = "Choose one of the Internal Business Objectives";
 	$scope.learnSCErrorMsg = "Choose one of the Learning & Growth Objectives";
 	
-
 	$scope.retrieveApproved = function () {
-		approvedObjectives.getApproved()
+		$http.post('/getApprovedObjectives')
 		.success(function (res) {
-			console.log(res);
 			$scope.scorecardHeight = res.length + 1;
-			console.log("Score card height is:")
-
-			console.log($scope.scorecardHeight);
 			$scope.appFinObj = [];
 			$scope.appCustObj = [];
 			$scope.appIntObj = [];
 			$scope.appLearnObj = [];
 
-			for (var i = 0; i<res.length; i++) {
-				if (res[i].perspective == "finance") {
-					$scope.appFinObj.push(res[i]);
-				}
-				else if (res[i].perspective == "customer") {
-					$scope.appCustObj.push(res[i]);
-				}
-				else if (res[i].perspective == "internal") {
-					$scope.appIntObj.push(res[i]);
-				}
-				else if (res[i].perspective == "learn") {
-					$scope.appLearnObj.push(res[i]);
+			if (res.length > 0) {
+				for (var i = 0; i<res.length; i++) {
+					if (res[i].perspective == "finance") {
+						$scope.appFinObj.push(res[i]);
+						
+					}
+					else if (res[i].perspective == "customer") {
+						$scope.appCustObj.push(res[i]);
+					}
+					else if (res[i].perspective == "internal") {
+						$scope.appIntObj.push(res[i]);
+					}
+					else if (res[i].perspective == "learn") {
+						$scope.appLearnObj.push(res[i]);
+					}
 				}
 			}
-			console.log("Finance items :")
-		 	console.log($scope.appFinObj);
-		 	for (var k =0; k<$scope.appFinObj.length; k++) {
-		 		console.log($scope.appFinObj[k]._id);
-		 	}
+			else if (res.length <= 0){
+				$scope.showSCardErr = true;
+			}
+
+			
 		})
 		.error(function () {
 			console.log('There is an error with compile socrecard! (BUG FOUND)');
 		});		
-	}
-
-	/*$scope.captureFinApp = function(objID, finDes, finDSO, finOneDef, finTwoDef, finThreeDef, finFourDef, finFiveDef) {
-		//console.log(obj);
-		$scope.appFinIDArray.push(objID);
-		$scope.appFinObjective.push({id: objID, finDes: finDes, finDSO: finDSO, finOneDef: finOneDef, finTwoDef: finTwoDef, finThreeDef: finThreeDef, finFourDef: finFourDef, finFiveDef: finFiveDef, perspective: "Financial"});
-	
-		//console.log("Content of finance array");
-		//console.log($scope.appFinObjective);
-
-		console.log($scope.appFinIDArray.length);
-
-		for (var index = 0; index < $scope.appFinIDArray.length; index++){
-			//console.log($scope.appFinIDArray[index]);
-		}
-		//console.log("Fin Spans")
-		//console.log($scope.appFinIDArray.length);
-		$scope.finRowSpan = $scope.appFinIDArray.length;
-
-	}
-
-	$scope.captureCustApp = function(objID, custDes, custDSO, custOneDef, custTwoDef, custThreeDef, custFourDef, custFiveDef) {
-		//console.log(obj);
-		$scope.appCustIDArray.push(objID);
-		$scope.appCustObjective.push({id: objID, custDes: custDes, custDSO: custDSO, custOneDef: custOneDef, custTwoDef: custTwoDef, custThreeDef: custThreeDef, custFourDef: custFourDef, custFiveDef: custFiveDef, perspective: "Customer"});
-	
-		//console.log("Content of customer array");
-		//console.log($scope.appCustObjective);
-		
-
-		for (var index = 0; index < $scope.appCustIDArray.length; index++){
-			//console.log($scope.appCustIDArray[index]);
-		}
-		//console.log("Cust Spans")
-		//console.log($scope.appCustObj.length);
-		$scope.custRowSpan = $scope.appCustIDArray.length;
-
-	}
-
-	$scope.captureIntApp = function(objID, intDes, intDSO, intOneDef, intTwoDef, intThreeDef, intFourDef, intFiveDef) {
-		//console.log(obj);
-		$scope.appIntIDArray.push(objID);
-		$scope.appIntObjective.push({id: objID, intDes: intDes, intDSO: intDSO, intOneDef: intOneDef, intTwoDef: intTwoDef, intThreeDef: intThreeDef, intFourDef: intFourDef, intFiveDef: intFiveDef, perspective: "Internal Process"});
-	
-		//console.log("Content of internal array");
-		//console.log($scope.appIntObjective);
-		
-
-		for (var index = 0; index < $scope.appIntIDArray.length; index++){
-			//console.log($scope.appIntIDArray[index]);
-		}
-		//console.log("Int Spans")
-		//console.log($scope.appIntObj.length);
-		$scope.intRowSpan = $scope.appIntIDArray.length;
-
-	}
-
-	$scope.captureLearnApp = function(objID, learnDes, learnDSO, learnOneDef, learnTwoDef, learnThreeDef, learnFourDef, learnFiveDef) {
-		//console.log(obj);
-		$scope.appLearnIDArray.push(objID);
-		$scope.appLearnObjective.push({id: objID, learnDes: learnDes, learnDSO: learnDSO, learnOneDef: learnOneDef, learnTwoDef: learnTwoDef, learnThreeDef: learnThreeDef, learnFourDef: learnFourDef, learnFiveDef: learnFiveDef, perspective: "Learning & Growth"});
-	
-		//console.log("Content of learn array");
-		//console.log($scope.appLearnObjective);
-		
-
-		for (var index = 0; index < $scope.appLearnIDArray.length; index++){
-			//console.log($scope.appLearnIDArray[index]);
-		}
-
-		//console.log("Learn Spans")
-		//console.log($scope.appLearnObj.length);
-		$scope.learnRowSpan = $scope.appLearnIDArray.length;
-
-	}*/
+	};	
 
 	$scope.scorecardCreate = function() {
 
-		/*for (var index = 0; index < $scope.appFinIDArray.length; index++){
-			console.log($scope.appFinObjective);
-			$http.post("/createScoreCardRoute:/" + $scope.appFinIDArray[index] , $scope.compileController)
-			.success(function (response) {
-				$scope.finRowSpan = $scope.appFinIDArray.length;
-				//console.log($scope.finRowSpan);
-				$scope.finObjs = response;
-				//console.log($scope.finObjs);
-			})
-			.error(function (response) {
-				console.log("Error");
-			})
-		}*/
-
 		for (var index = 0; index < $scope.appFinObj.length; index++){
-			console.log($scope.appFinObj);
 			$http.post("/createScoreCardRoute:/" + $scope.appFinObj[index]._id , $scope.compileController)
 			.success(function (response) {
 				$scope.finRowSpan = $scope.appFinObj.length;
-				//console.log($scope.finRowSpan);
 				$scope.finObjs = response;
-				//console.log($scope.finObjs);
+
 			})
 			.error(function (response) {
 				console.log("Error with Fin Obj for SC_create");
 			})
 		}
-
 		$scope.finRowSpan = $scope.appFinObj.length;
-		console.log($scope.finRowSpan);
 
-		/*for (var index = 0; index < $scope.appCustIDArray.length; index++){
-			console.log($scope.appCustObjective);
-			$http.post("/createScoreCardRoute:/" + $scope.appCustIDArray[index] , $scope.compileController)
-			.success(function (response) {
-				$scope.custRowSpan = $scope.appCustIDArray.length;
-				//console.log(response);
-				console.log($scope.custRowSpan);
-				$scope.custObjs = response;
-			})
-			.error(function (response) {
-				console.log("Error");
-			})
-		}*/
 
 		for (var index = 0; index < $scope.appCustObj.length; index++){
-			console.log($scope.appCustObj);
+
 			$http.post("/createScoreCardRoute:/" + $scope.appCustObj[index]._id , $scope.compileController)
 			.success(function (response) {
 				$scope.custRowSpan = $scope.appCustObj.length;
-				//console.log(response);
-				console.log($scope.custRowSpan);
+
 				$scope.custObjs = response;
 			})
 			.error(function (response) {
@@ -1391,125 +1303,37 @@ angular.module('BSCIMS')
 		}
 
 		$scope.custRowSpan = $scope.appCustObj.length;
-		console.log($scope.custRowSpan);
-
-		/*for (var index = 0; index < $scope.appIntIDArray.length; index++){
-			console.log($scope.appIntObjective);
-			$http.post("/createScoreCardRoute:/" + $scope.appIntIDArray[index] , $scope.compileController)
-			.success(function (response) {
-				$scope.intRowSpan = $scope.appIntIDArray.length;
-				//console.log(response);
-				console.log($scope.intRowSpan);
-				$scope.intObjs = response;
-			})
-			.error(function (response) {
-				console.log("Error");
-			})
-		}*/
 
 		for (var index = 0; index < $scope.appIntObj.length; index++){
-			console.log($scope.appIntObj);
+
 			$http.post("/createScoreCardRoute:/" + $scope.appIntObj[index]._id , $scope.compileController)
 			.success(function (response) {
 				$scope.intRowSpan = $scope.appIntObj.length;
-				//console.log(response);
-				console.log($scope.intRowSpan);
 				$scope.intObjs = response;
 			})
 			.error(function (response) {
 				console.log("Error with Int Obj for SC_create");
 			})
 		}
- 
  		$scope.intRowSpan = $scope.appIntObj.length;
-		console.log($scope.intRowSpan);
 
-		/*for (var index = 0; index < $scope.appLearnIDArray.length; index++){
-			console.log($scope.appLearnObjective);
-			$http.post("/createScoreCardRoute:/" + $scope.appLearnIDArray[index] , $scope.compileController)
-			.success(function (response) {
-				$scope.learnRowSpan = $scope.appLearnIDArray.length;
-				//console.log(response);
-				console.log($scope.learnRowSpan);
-				$scope.learnObjs = response;
-			})
-			.error(function (response) {
-				console.log("Error");
-			})
-		}*/
-		
 		for (var index = 0; index < $scope.appLearnObj.length; index++){
-			console.log($scope.appLearnObj);
+
 			$http.post("/createScoreCardRoute:/" + $scope.appLearnObj[index]._id , $scope.compileController)
 			.success(function (response) {
 				$scope.learnRowSpan = $scope.appLearnObj.length;
-				//console.log(response);
-				console.log($scope.learnRowSpan);
 				$scope.learnObjs = response;
 			})
 			.error(function (response) {
 				console.log("Error with Learn Obj for SC_create");
 			})
 		}
-
 		$scope.learnRowSpan = $scope.appLearnObj.length;
-		console.log($scope.learnRowSpan);
-
-		/*if ($scope.finRowSpan == 0) {
-			$scope.hasFinSCErrors = true;
-		}
-		else if ($scope.finRowSpan > 0) {
-			$scope.hasFinSCErrors = false;
-		}
-
-		if ($scope.custRowSpan == 0) {
-			$scope.hasCustSCErrors = true;
-		}
-		else if ($scope.custRowSpan > 0) {
-			$scope.hasCustSCErrors = false;
-		}
-
-		if ($scope.intRowSpan == 0) {
-			$scope.hasIntSCErrors = true;
-		}
-		else if ($scope.intRowSpan > 0) {
-			$scope.hasIntSCErrors = false;
-		}
-
-		if ($scope.learnRowSpan == 0) {
-			$scope.hasLearnSCErrors = true;
-		}
-		else if ($scope.learnRowSpan > 0) {
-			$scope.hasLearnSCErrors = false;
-		}*/
-
 		//Creates the Scorecard if (and only if) there are (approved) objectives to fill into the table
 		if ($scope.finRowSpan > 0 && $scope.custRowSpan > 0 && $scope.intRowSpan > 0 && $scope.learnRowSpan > 0) {
 			$scope.scorecardReady = true;
 		}
-	}
-
-	$scope.initScorecard = function() {
-		approvedObjectives.getApproved()
-		.success(function (res) {
-
-			console.log("initScorecard gives:")
-			//for(var i = 0; i<res.length; i++) {
-				//console.log(res[i]._id);
-				$http.post("/initScorecardRoute:/", res)
-				.success(function (res) {
-					console.log("initScorecard posted successfully!")
-					//console.log(res[i]._id);
-				})
-				.error(function (res) {
-					console.log(res);
-				});
-			//}
-		})
-		.error (function () {
-			console.log("initScorecard is throwing errors!!!");
-		});
-	}  
+	};
 
 	// increase objective rating
 	$scope.incrementObjRating = function(Obj) {
@@ -1521,9 +1345,7 @@ angular.module('BSCIMS')
 		} 
 		singleObj[0] = Obj.rating;
 		$scope.selfEvalObjs[Obj._id] = singleObj;
-		console.log($scope.selfEvalObjs);
 	};
-
 	// decrease objective rating
 	$scope.decrementObjRating = function(Obj) {
 		var singleObj = $scope.singleObj;
@@ -1536,119 +1358,368 @@ angular.module('BSCIMS')
 		singleObj[0] = Obj.rating;
 		$scope.selfEvalObjs[Obj._id] = singleObj;
 	};
-
-	$scope.captureComment = function (Obj) {
-		var singleObj = $scope.singleObj;
-		singleObj[1] = Obj.comment;
-		$scope.selfEvalObjs[Obj._id] = singleObj;
-		console.log($scope.selfEvalObjs);
-	}
-
+	//By Mlandvo
+	$scope.upload = function (files) {
+        if (files && files.length) {
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                upload({
+                    url: '/uploads/',
+                    fields: {
+                        //'username': $scope.username
+                    },
+                    file: file
+                })
+                .progress(function (evt) {
+	                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+	                $scope.log = 'progress: ' + progressPercentage + '% ' + evt.config.file.name + '\n' + $scope.log;
+                })
+                .success(function (data, status, headers, config) {
+	                $timeout(function() {
+	                    $scope.log = 'file: ' + config.file.name + ', Response: ' + JSON.stringify(data) + '\n' + $scope.log;
+	                });
+               	});
+            }
+        }
+    };
+	//By Mlandvo
 	$scope.selfEvaluate = function () {
-		console.log($scope.appFinObj.length);
 		for (var i = 0; i < $scope.appFinObj.length; i++) {
 			if (Number($scope.appFinObj[i].rating) == 0) {
 				$scope.hasFinSCErrors = true;
-				$scope.finSCErrorMsg = "Enter all Finance ratings";
+				$scope.finSCErrorMsg = "Rate all Finance Objectives";
 				return;
 			}
 		}
-		/*$scope.hasSelfEvalErrors = true;
-		$scope.selfEvalrrorMsg = "Fill all ratings";
-   		var objectives = $scope.selfEvalObjs;
-   		console.log(objectives);
-   		$http.post("/empSelfEvaluate", objectives).success(function (res, err) {
-			if (err) {
-				console.log(err);
-			} else {
-				console.log(res);
+		for (var i = 0; i < $scope.appCustObj.length; i++) {
+			if (Number($scope.appCustObj[i].rating) == 0) {
+				$scope.hasCustSCErrors = true;
+				$scope.custSCErrorMsg = "Rate all Customer Objectives";
+				return;
 			}
-		});*/
-   	}	
-
+		}
+		for (var i = 0; i < $scope.appIntObj.length; i++) {
+			if (Number($scope.appIntObj[i].rating) == 0) {
+				$scope.hasIntSCErrors = true;
+				$scope.intSCErrorMsg = "Rate all Internal Business Objectives";
+				return;
+			}
+		}
+		for (var i = 0; i < $scope.appLearnObj.length; i++) {
+			if (Number($scope.appLearnObj[i].rating) == 0) {
+				$scope.hasLearnSCErrors = true;
+				$scope.learnSCErrorMsg = "Rate all Learning & Growth Objectives";
+				return;
+			}
+		}
+   	};	
+   	// By Mlandvo
 	$scope.getAllKPAs = function() {
-		approvedObjectives.getApproved().success(function(res){
+		$http.post('/getApprovedObjectives')
+		.success(function (res) {
 			$scope.appFinObj = [];
 			$scope.appCustObj = [];
 			$scope.appIntObj = [];
 			$scope.appLearnObj = [];
-			$scope.kpi = [];
-
-			res.forEach(function(kpi){
-	       		$scope.kpi.push(kpi);
-	        	if (kpi.perspective == "finance") {
-	          		$scope.appFinObj.push(kpi);
-	        	} else if (kpi.perspective == "customer") {
-					$scope.appCustObj.push(kpi);
-				}
-				else if (kpi.perspective == "internal") {
-					$scope.appIntObj.push(kpi);
-				}
-				else if (kpi.perspective == "learn") {
-					$scope.appLearnObj.push(kpi);
-				}
-	      	});
-	      	console.log($scope.appFinObj);
-			/*
-			for (var i = 0; i<res.length; i++) {
-				$scope.kpi.push(res[i]);
-				if (res[i].perspective == "finance") {
-					$scope.appFinObj.push(res[i]);
-				}
-				else if (res[i].perspective == "customer") {
-					$scope.appCustObj.push(res[i]);
-				}
-				else if (res[i].perspective == "internal") {
-					$scope.appIntObj.push(res[i]);
-				}
-				else if (res[i].perspective == "learn") {
-					$scope.appLearnObj.push(res[i]);
-				}
-			}*/
-		});
-	};	
-	$scope.addSelfEvaluation = function(id){
-		console.log($scope.kpi.DSO);
-		/*
-		$http.put('/completeSelfEval/'+ $scope.kpi._id, $scope.kpiAttachment, $scope.kpiComment, $scope.kpiRating).success(function (response){
-			console.log(response);
+			if(res.length > 0){
+				res.forEach(function (kpi) {
+		        	if (kpi.perspective == "finance") {
+		          		$scope.appFinObj.push(kpi);	        		
+		        	} 
+		        	else if (kpi.perspective == "customer") {
+						$scope.appCustObj.push(kpi);
+					}
+					else if (kpi.perspective == "internal") {
+						$scope.appIntObj.push(kpi);
+					}
+					else if (kpi.perspective == "learn") {
+						$scope.appLearnObj.push(kpi);
+					}
+	      		})
+			}
+			else if(res.length <= 0){
+				$scope.showEvalErr = false;
+			}
 			
-		});*/
-
-	};
-	/*
-	//remove function 
-	$scope.remove = function (id){
-		console.log(id);
-		$http.delete('/contactList/' + id).success(function(response) {
-			refresh();
-		});
-	};//end of remove
-	 
-	$scope.edit = function(id) {
-		console.log(id);
-		$http.get('/contactList/' + id).success(function(response) {
-			$scope.contact = response;
-		});
-
-	};
-
-	$scope.update = function(id) {
-		console.log($scope.contact._id);
-		$http.put('/contactList/' + $scope.contact._id, $scope.contact).success(function(response){
-			refresh();
 		})
 	};
-*/
-	
+	//By Mlandvo 
+	$scope.updateKPA = function (Obj) {
+		//call function that will get evaluated objectives on scorecard
+		var id = Obj._id;
+		var empComment = Obj.empComment;
+		var perspective = Obj.perspective;
+		var rating = Obj.rating;
+		var value = Obj.value;
+		//var detailedWeig = Obj.finDetailedWeighting || Obj.custDetailedWeighting || Obj.learnDetailedWeighting || Obj.intDetailedWeighting;
+		var dweight = 0;
+		var weightedRating = 0;
+		var score = 0;
+		var finScore = 0;
+		var custScore = 0;
+		var learnScore = 0;
+		var intScore = 0;
+		var status = Obj.status;
+		var updateKPA = {};
+		var detailedWeig = 0;
+		var rating = value;
+		var totalScore = 0;
 
-//}//end of self evaluation controller
+		if (Obj.finDetailedWeighting >0) {
+			detailedWeig = Obj.finDetailedWeighting;
+		}
+		else if (Obj.custDetailedWeighting>0) {
+			detailedWeig = Obj.custDetailedWeighting;
+		}
+		else if (Obj.learnDetailedWeighting>0) {
+			detailedWeig = Obj.learnDetailedWeighting;
+		}
+		else if (Obj.intDetailedWeighting>0) {
+			detailedWeig = Obj.intDetailedWeighting;
+		};
 
+		if (rating >= 0) {
+			status = "evaluatedByEmp"
+			dweight = detailedWeig/100;
+			weightedRating =  value * dweight;
+			
+			if(perspective == "finance"){
+				finScore += weightedRating;		
+			}
+			else if(perspective == "customer"){
+				custScore += weightedRating;	
+			}
+			else if(perspective == "internal"){
+				learnScore += weightedRating;	
+			}
+			else if(perspective == "learn"){
+				intScore += weightedRating;	
+			};
+		};
 
+		if (finScore>=0) {
+			updateKPA = {id: id, status: status, empComment : empComment, rating: value, weightedRating: weightedRating, score: finScore };
+			if (updateKPA.score == 5) {
+				$scope.hasErrors = true;
+				$scope.errorMsg = "Attach files for evidence to continue with evaluation";
+				return updateKPA;
+			};
+			$http.put('/completeSelfEval', updateKPA).success(function (resp) {
+	            $scope.kpaUpdatedMsg = resp;
+	            $scope.kpaUpdated = true;
+	        }).error(function () {
+	            console.log("An error occured");
+	        });
+		}
+		else if (custScore>=0) {
+			updateKPA = {id: id, status: status, empComment : empComment, rating: value, weightedRating: weightedRating, score: custScore };
+			if (updateKPA.score == 5) {
+				$scope.hasErrors = true;
+				$scope.errorMsg = "Attach files for evidence to continue with evaluation";
+				return updateKPA;
+			}
+			$http.put('/completeSelfEval', updateKPA).success(function (resp) {
+	            $scope.kpaUpdatedMsg = resp;
+	            $scope.kpaUpdated = true;
+	        }).error(function () {
+	            console.log("An error occured");
+	        });
+		}
+		else if (learnScore>=0) {
+			updateKPA = {id: id, status: status, empComment : empComment, rating: value, weightedRating: weightedRating, score: learnScore };
+			if (updateKPA.score == 5) {
+				$scope.hasErrors = true;
+				$scope.errorMsg = "Attach files for evidence to continue with evaluation";
+				return updateKPA;
+			}
+			$http.put('/completeSelfEval', updateKPA).success(function (resp) {
+	            $scope.kpaUpdatedMsg = resp;
+	            $scope.kpaUpdated = true;
+	        }).error(function () {
+	            console.log("An error occured");
+	        });
+		}
+		else if (intScore>=0) {
+			updateKPA = {id: id, status: status, empComment : empComment, rating: value, weightedRating: weightedRating, score: intScore };
+			if (updateKPA.score == 5) {
+				$scope.hasErrors = true;
+				$scope.errorMsg = "Attach files for evidence to continue with evaluation";
+				return updateKPA;
+			}
+			$http.put('/completeSelfEval', updateKPA).success(function (resp) {
+	            $scope.kpaUpdatedMsg = resp;
+	            $scope.kpaUpdated = true;
+	            console.log($scope.kpaUpdatedMsg);
+	        }).error(function () {
+	            console.log("An error occured");
+	        });
+		}
+	};	
+	//By Mlandvo
+	$scope.getEvalKPAs = function () {
+			
+		$http.post('/getEvalKPAs').success(function (data) {
+			//console.log(res);
+  			for (var i = 0; i<data.length; i++) {
+  				$scope.scorecardHeights = data.length + 1;
+				if (data[i].perspective == "finance") {
+					$scope.appFinArr.push(data[i]);
+					$scope.finRowSpan += $scope.appFinArr.length;
+				}
+				else if (data[i].perspective == "customer") {
+					$scope.appCustArr.push(data[i]);
+					$scope.custRowSpan += $scope.appCustArr.length;
+				}
+				else if (data[i].perspective == "internal") {
+					$scope.appIntArr.push(data[i]);
+					$scope.intRowSpan += $scope.appIntArr.length;
+				}
+				else if (data[i].perspective == "learn") {
+					$scope.appLearnArr.push(data[i]);
+					$scope.learnRowSpan += $scope.appLearnArr.length;
+				}
+			}//end for loop
 
-}])
+		}).error (function (error) {
+			console.log(error);
+		})		
+	};//end master func
 
+	// retrieve unactioned objectives : Mlandvo
+    $scope.getUnactndObjectives = function () {
+    	
+		$http.post("/getAllUnactionedObjectives").success(function (res) {				
+			if(res.length > 0){
+				for (var i = 0; i<res.length; i++) {
+					$scope.unactionedKPAs.push(res[i]);
+				};
+						
+			} else if(res.length <= 0){
+				$scope.showSubErrUactd = true;
+			}	
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
 
+	$scope.getUnactndObjectives();	
+
+	// retrieve getUnaprdObjectives : Brian
+    $scope.getUnaprdObjectives = function () {
+    	
+		$http.post("/getAllUnapprovedObjectives").success(function (res) {				
+
+			if(res.length > 0){
+				for (var i = 0; i<res.length; i++) {
+					$scope.unapprovedKPAs.push(res[i]);
+				};		
+			} else if(res.length <= 0){
+				$scope.showSubErrUnAprvd = true;
+				console.log("there should be an error");
+				console.log($scope.showSubErrUnAprvd);
+				$scope.showSubMsg = "There are no unapproved objectives";
+			}	
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+	$scope.getUnaprdObjectives();
+
+	// retrieve approved objectives : Brian
+    $scope.getAprdObjectives = function () {
+
+		$http.post("/getAllApprovedObjectives").success(function (res) {				
+			if(res.length > 0){
+				for (var i = 0; i<res.length; i++) {
+					$scope.approvedKPAs.push(res[i]);
+				};
+						
+			} else if(res.length <= 0){
+				$scope.showSubErrAprvd = true;
+
+			}	
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+
+	$scope.getAprdObjectives();
+
+	$scope.getEditObjective = function (objId) {
+		var obj = {id:objId};
+		$http.post("/getEditObjective",obj).success(function (res) {				
+			if(res){
+				$scope.editObj = res;
+			} else {
+				$scope.hasEditObj = false;
+			}
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+
+	$scope.editObjective = function (obj) {
+		$http.post("/editObjective",obj).success(function (res) {				
+			if(res){
+				console.log(success);
+			} else {
+				console.log('error');
+			}
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+
+	$scope.removeRejectedObj = function (objId) {
+		var obj = {id:objId};
+		$http.post("/removeRejectedObj",obj).success(function (res) {				
+			if(res){
+				console.log(success);
+			} else {
+				console.log('error');
+			}
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+
+	//By Brian 
+	//By Mlandvo
+	$scope.submitKPAs = function(Obj) {
+
+		//$scope.send = true;
+		var toBeSent = [];
+		var toBeDeleted = [];
+		var id = Obj._id;
+
+		if (Obj.send == "true") {
+			$http.post("/objectivesSubmitted_status_changed/" + id)
+				.success(function (res) {
+			})
+			.error(function (res) {
+				console.log(res);
+				});
+		}else if(Obj.send == "false"){
+			$scope.popDelete = true;
+			
+			$http.post("/deleteKPA/" + id)
+				.success(function (response) {
+				console.log(response);
+			});
+		}	
+	}//end of function
+
+	$scope.confirmBox = function () {
+		$scope.pressed = true;
+	};
+}])	
+ 
 /***********************************************************************************************************************************************
 *****************************************************EMPLOYEE PANEL CONTROLLER******************************************************************
 ************************************************************************************************************************************************/
@@ -1658,8 +1729,6 @@ angular.module('BSCIMS')
 	allObjectives.getObjectives()
 	.success(function (res) {
 		$scope.unapprovedVal = res.length;
-		//console.log("Response is:");
-		//console.log(res);
 	});
 
 	pendingObjectives.getPending()
@@ -1711,8 +1780,7 @@ angular.module('BSCIMS')
    		$scope.empKPAs = true;
 
    		$scope.retrieveEmpObjs = function (empPF, empName) {
-			//console.log(empPF);
-			//console.log(empName)
+
 			//$scope.empAlias = {};
 
 			$scope.empAlias = {PF: empPF, Name: empName};
@@ -1721,16 +1789,13 @@ angular.module('BSCIMS')
 			pendingObjectives.getPending()
 			.success(function (res) {
 				//This works just fine, objectives are received and displayed
-				//console.log("Response is:")
-				//console.log(res);
+
 
 				//for( var i = 0; i< res.length)
 
 				console.log("Pending objectives are as follows:")
 				$scope.empObjArray = res;
-				//console.log($scope.empObjArray);
-				console.log("PF is:::");
-				console.log(empPF);
+
 
 				$scope.specificEmpFinObjs = []
 				$scope.specificEmpCustObjs = []
@@ -1739,8 +1804,7 @@ angular.module('BSCIMS')
 
 				
 				for (var i = 0; i < $scope.empObjArray.length; i++){
-					//console.log($scope.empObjArray[i].PFNum);
-					//console.log($scope.empObjArray.length);
+
 					if (empPF == $scope.empObjArray[i].PFNum) {
 
 						if ($scope.empObjArray[i].perspective = "finance"){
@@ -1748,18 +1812,15 @@ angular.module('BSCIMS')
 						}
 						 if ($scope.empObjArray[i].perspective = "customer"){
 							$scope.specificEmpCustObjs[i] = $scope.empObjArray[i];
-							//console.log("So now Cust :");
-							//console.log($scope.specificEmpCustObjs[i].description);
+
 						} 
 						if ($scope.empObjArray[i].perspective = "internal"){
 							$scope.specificEmpIntObjs[i] = $scope.empObjArray[i];
-							//console.log("So now Int:");
-							//console.log($scope.specificEmpIntObjs[i].description);
+
 						}
 						if ($scope.empObjArray[i].perspective = "learning"){
 							$scope.specificEmpLearnObjs[i] = $scope.empObjArray[i];
-							//console.log("So now Learn:");
-							//console.log($scope.specificEmpLearnObjs[i].description);
+
 						}
 						else {
 							console.log("No other Objectives found!");
@@ -1787,12 +1848,11 @@ angular.module('BSCIMS')
 	   			$scope.financeEditLabelText = "Unlock Objective";
 	   		}
 
-   			console.log($scope.financeEditLabelText);
    		}
 
    		$scope.rejectFinanceObjective = function() {
    			$scope.isRejected = true;
-   			console.log($scope.isRejected);
+
    		}
    		//Edit Customer Objective Button logic for toggling between states of "Edit" && "Lock"
    		$scope.editCustomerObjective = function() {
@@ -1806,7 +1866,7 @@ angular.module('BSCIMS')
 	   			$scope.customerEditLabelText = "Edit Objective";
 	   		}
 
-   			console.log($scope.customerEditLabelText);
+
    		}
    		//Edit Internal Objective Button logic for toggling between states of "Edit" && "Lock"
    		$scope.editInternalObjective = function() {
@@ -1820,7 +1880,7 @@ angular.module('BSCIMS')
 	   			$scope.internalEditLabelText = "Edit Objective";
 	   		}
 
-   			console.log($scope.internalEditLabelText);
+
    		}
    		//Edit Learn Objective Button logic for toggling between states of "Edit" && "Lock"
    		$scope.editLearnObjective = function() {
@@ -1834,7 +1894,6 @@ angular.module('BSCIMS')
 	   			$scope.learnEditLabelText = "Edit Objective";
 	   		}
 
-   			console.log($scope.learnEditLabelText);
    		}
 
    		pendingObjectives.getPending()
@@ -1845,37 +1904,35 @@ angular.module('BSCIMS')
    		$scope.retrieveApproved = function (empPF, empName) {
 			approvedObjectives.getApproved()
 			.success(function (res) {
-				$scope.empAlias = {PF: empPF, Name: empName};
-				console.log($scope.empAlias);
-				console.log(res);
-				$scope.scorecardHeight = res.length + 1;
-				console.log("Score card height is:")
+				
+					$scope.empAlias = {PF: empPF, Name: empName};
 
-				console.log($scope.scorecardHeight);
-				$scope.appFinObj = [];
-				$scope.appCustObj = [];
-				$scope.appIntObj = [];
-				$scope.appLearnObj = [];
+					$scope.scorecardHeight = res.length + 1;
 
-				for (var i = 0; i<res.length; i++) {
-					if (res[i].perspective == "finance") {
-						$scope.appFinObj.push(res[i]);
+					$scope.appFinObj = [];
+					$scope.appCustObj = [];
+					$scope.appIntObj = [];
+					$scope.appLearnObj = [];
+
+					for (var i = 0; i<res.length; i++) {
+						if (res[i].perspective == "finance") {
+							$scope.appFinObj.push(res[i]);
+						}
+						else if (res[i].perspective == "customer") {
+							$scope.appCustObj.push(res[i]);
+						}
+						else if (res[i].perspective == "internal") {
+							$scope.appIntObj.push(res[i]);
+						}
+						else if (res[i].perspective == "learn") {
+							$scope.appLearnObj.push(res[i]);
+						}
 					}
-					else if (res[i].perspective == "customer") {
-						$scope.appCustObj.push(res[i]);
-					}
-					else if (res[i].perspective == "internal") {
-						$scope.appIntObj.push(res[i]);
-					}
-					else if (res[i].perspective == "learn") {
-						$scope.appLearnObj.push(res[i]);
-					}
-				}
-				console.log("Finance items :")
-			 	console.log($scope.appFinObj);
-			 	for (var k =0; k<$scope.appFinObj.length; k++) {
-			 		console.log($scope.appFinObj[k]._id);
-			 	}
+
+				 	for (var k =0; k<$scope.appFinObj.length; k++) {
+
+				 	}
+
 			})
 			.error(function () {
 	   			console.log("Could not retrieve Approved Objectives");
@@ -1890,7 +1947,7 @@ angular.module('BSCIMS')
 
    		$scope.getEmps = function() {
    			//getSecEmployees.success(function (res) {
-   				console.log(res);
+
    			//});
    		}
 
@@ -1914,15 +1971,6 @@ angular.module('BSCIMS')
 			})
 		}
 
-		/*$scope.rejectFinanceObjective = function (id) {
-			$http.post('/rejectFinanceObjective/' + id)
-			.success(function () {
-				$('#successObjAlertFinReject').show(500);
-			})
-			.error(function (err) {
-				console.log("Objective empty!!");
-			})
-		}*/
 
 		$scope.approveCustomerObjective = function (id, PFNum, custDescription, custDSO, custOneDef, custTwoDef, custThreeDef, custFourDef, custFiveDef) {
 			$scope.approveCustObj = {PF: PFNum, description: custDescription, DSO: custDSO, oneDef: custOneDef, twoDef: custTwoDef, threeDef: custThreeDef, fourDef: custFourDef, fiveDef: custFiveDef, perspective: "customer"}
@@ -1960,7 +2008,73 @@ angular.module('BSCIMS')
 
    .controller('supEmpObjsCtrl', ['pendingObjectives', '$scope', function (pendingObjectives, $scope) {
 
-		/* SELF EVAlUATION CONTROLLER*/
+   		$scope.retrieveEmpObjs = function (empPF, empName) {
+			//console.log(empPF);
+			//console.log(empName)
+			//$scope.empAlias = {};
+			$scope.specificEmpFinObjs = [];
+			$scope.specificEmpCustObjs = [];
+			$scope.specificEmpIntObjs = [];
+			$scope.specificEmpLearnObjs = [];
 
+			$scope.empAlias = {PF: empPF, Name: empName};
+			pendingObjectives.getPending()
+			.success(function (res) {
+
+
+				//for( var i = 0; i< res.length)
+
+				$scope.empObjArray = res;
+<<<<<<< HEAD
+=======
+				console.log($scope.empObjArray);
+				console.log("PF is:::");
+				console.log($scope.empObjArray.length);
+>>>>>>> 35c5ff1d146ca810b919cc8dfafed4c64ea4ab61
+
+				for (var i = 0; i < $scope.empObjArray.length; i++){
+
+					if (empPF == $scope.empObjArray[i].PFNum) {
+
+<<<<<<< HEAD
+						if ($scope.empObjArray[i].perspective = "finance"){
+							$scope.specificEmpFinObjs = $scope.empObjArray[i];
+
+						}
+						else if ($scope.empObjArray[i].perspective = "customer"){
+							$scope.specificEmpCustObjs = $scope.empObjArray[i];
+
+						}
+						else if ($scope.empObjArray[i].perspective = "internal"){
+							$scope.specificEmpIntObjs = $scope.empObjArray[i];
+
+						}
+						else if ($scope.empObjArray[i].perspective = "learning"){
+							$scope.specificEmpLearnObjs = $scope.empObjArray[i];
+
+=======
+						if ($scope.empObjArray[i].perspective == "finance"){
+							$scope.specificEmpFinObjs.push($scope.empObjArray[i]);
+						}
+						else if ($scope.empObjArray[i].perspective == "customer"){
+							$scope.specificEmpCustObjs.push($scope.empObjArray[i]);
+						}
+						else if ($scope.empObjArray[i].perspective == "internal"){
+							$scope.specificEmpIntObjs.push($scope.empObjArray[i]);
+						}
+						else if ($scope.empObjArray[i].perspective == "learn"){
+							$scope.specificEmpLearnObjs.push($scope.empObjArray[i]);
+>>>>>>> 35c5ff1d146ca810b919cc8dfafed4c64ea4ab61
+						}
+						else {
+
+						}
+					}
+				}
+			})
+			.error(function () {
+				console.log("Buzzer sound!!!");
+			});
+		}
 
    }]);

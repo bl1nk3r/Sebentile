@@ -1669,7 +1669,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 	};//end master func
 
 	// retrieve Objectivez : Mlandvo
-    $scope.getObjectivez = function () {
+    $scope.getUnactndObjectives = function () {
     	console.log("get objectives called");
     	
 		$http.post("/getAllObjectives").success(function (res) {				
