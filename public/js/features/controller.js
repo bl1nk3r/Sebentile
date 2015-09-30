@@ -2147,8 +2147,6 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 				console.log("Response is:::")
 				console.log(res);
 
-				//for( var i = 0; i< res.length)
-
 				console.log("Pending objectives are as follows:")
 				$scope.empObjArray = res;
 				console.log($scope.empObjArray);
