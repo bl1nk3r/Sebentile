@@ -166,7 +166,11 @@
 
 					  								<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
 														ng-model="appFin.metricFiveDef" ng-disabled="financeUnedittable"></textarea></td>
-													<td> <input type="checkbox" ng-click="selectForEval()">  </td>
+													<td> <div class="btn-group btn-group-sm" role="group" aria-label="...">
+														  <button type="button" class="btn btn-info"> <span class = "glyphicon glyphicon-thumbs-up"></span> Check</button>
+														  <button type="button" class="btn btn-danger"><span class = "glyphicon glyphicon-thumbs-down"></span> Cross</button>
+														</div>  
+													</td>
 												</tr>
 											</tbody>
 										</form>	
@@ -222,7 +226,13 @@
 
 					  								<td><textarea class="form-control" id="financeDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
 														ng-model="appCust.metricFiveDef" ng-disabled="customerUnedittable"></textarea></td>
-													<td> <input type="checkbox" ng-click="selectForEval()">  </td>
+													<td> 
+														<div class="btn-group btn-group-sm" role="group" aria-label="...">
+														  <button type="button" class="btn btn-info"> <span class = "glyphicon glyphicon-thumbs-up"></span> Check</button>
+														  <button type="button" class="btn btn-danger"><span class = "glyphicon glyphicon-thumbs-down"></span> Cross</button>
+														</div>
+
+													</td>
 												</tr>
 											</tbody>
 									</table> <!-- end Customer Approved-Objectives Table-->
@@ -277,7 +287,13 @@
 
 				  								<td><textarea class="form-control" id="internalDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
 													ng-model="appInt.metricFiveDef" ng-disabled="internalUnedittable"></textarea></td>
-												<td> <input type="checkbox" ng-click="selectForEval()">  </td>
+												<td> 
+													<div class="btn-group btn-group-sm" role="group" aria-label="...">
+													  <button type="button" class="btn btn-info"> <span class = "glyphicon glyphicon-thumbs-up"></span> Check</button>
+													  <button type="button" class="btn btn-danger"><span class = "glyphicon glyphicon-thumbs-down"></span> Cross</button>
+													</div>
+
+												</td>
 											</tr>
 										</tbody>
 									</table> <!-- end Internal Approved-Objectives Table-->
@@ -331,7 +347,12 @@
 
 				  								<td><textarea class="form-control" id="learnDSODescription2" placeholder="Enter the Desired Standard Output..." type="text" rows="3" 
 													ng-model="appLearn.metricFiveDef" ng-disabled="learnUnedittable"></textarea></td>
-												<td> <input type="checkbox" ng-click="selectForEval()">  </td>
+												<td> 
+													<div class="btn-group btn-group-sm" role="group" aria-label="...">
+													  <button type="button" class="btn btn-info"> <span class = "glyphicon glyphicon-thumbs-up"></span> Check</button>
+													  <button type="button" class="btn btn-danger"><span class = "glyphicon glyphicon-thumbs-down"></span> Cross</button>
+													</div>
+												</td>
 											</tr>
 										</tbody>			
 									</table> <!-- end Learning Approved-Objectives Table-->
@@ -350,13 +371,13 @@
 							<div class="modal-footer">
 								<button class="btn btn-danger" type="button" data-dismiss="modal">
 								  	<span class="glyphicon glyphicon-remove"> </span> 
-									  	Reject
+									  	Close
 								</button>
 								
-								<button class="btn btn-success" type="button" ng-click="supEvaluate()">
+								<!--button class="btn btn-success" type="button" ng-click="supEvaluate()">
 								  	<span class="glyphicon glyphicon-ok"> </span> 
 									  	Approve
-								</button>
+								</button-->
 								
 							</div>
 						</div>
