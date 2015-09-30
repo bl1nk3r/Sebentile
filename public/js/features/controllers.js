@@ -403,7 +403,7 @@ angular.module('BSCIMS')
 				$scope.createObjectiveErrorMsgs.push(exceedOptionsDefError);
 
 			} else if ($scope.financeObjective.metricFiveDef == null) {
-				$scope.clearFinObjectivesErrors();
+				$scope.clearFinObjectivesErrors();https://github.com/bl1nk3r/Sebentile/archive/master.zip
 				$scope.hasCreateObjErrors = true,
 				$scope.createObjectiveErrorMsgs.push(outstandOptionsDefError);
 
