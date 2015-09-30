@@ -88,8 +88,8 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 		this.getLoggedInEmp = function () {
 		return $http.post('/getLoggedInEmp');
 
-		this.lastLogIn = null;
-	}
+			//this.lastLogIn = null;
+		}
 
 	}])
 
@@ -1263,8 +1263,13 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 	$scope.appIntArr = [];
 	$scope.appLearnArr = [];
 	$scope.showSubErr = true;
-	$scope.showSubMsg = "There are no Approved Objectives to submit for now, Create Objectives. If this problem persists contact your IT Administrator.";
+	$scope.showSubErrUactd = false;
+	$scope.showSubErrAprvd = false;
+	$scope.showSubErrUnAprvd = false;
+	$scope.showSubMsg = "There are no unactioned objectives to submit for now, create objectives. If this problem persists contact your IT administrator.";
    	$scope.unactionedKPAs = [];
+   	$scope.unapprovedKPAs = [];
+   	$scope.approvedKPAs = [];
 
 	$scope.showSCardErr = false;
 	$scope.showSCardMsg = "Your Perfomance contract is not ready yet. There are no Approved Objectives to work on for now ... Please Contact your supervisor or try again later.";
@@ -1397,23 +1402,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 			$scope.scorecardReady = true;
 		}
 	};
-	/*
-	$scope.initScorecard = function() {
-		approvedObjectives.getApproved()
-		.success(function (res) {
-			console.log("initScorecard gives:")
-				$http.post("/initScorecardRoute:/", res)
-				.success(function (res) {
-					console.log("initScorecard posted successfully!")
-				})
-				.error(function (res) {
-					console.log(res);
-				});
-		})
-		.error (function () {
-			console.log("initScorecard is throwing errors!!!");
-		});
-	};  */
+
 	// increase objective rating
 	$scope.incrementObjRating = function(Obj) {
 		var singleObj = $scope.singleObj;
@@ -1695,11 +1684,80 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 				console.log($scope.unactionedKPAs);	
 				console.log("KPAs in array");
 						
+			} else if(res.length <= 0){
+				$scope.showSubErrUactd = true;
+			}	
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+
+	$scope.getUnactndObjectives();	
+
+	// retrieve getUnaprdObjectives : Brian
+    $scope.getUnaprdObjectives = function () {
+    	
+		$http.post("/getAllUnapprovedObjectives").success(function (res) {				
+
+			if(res.length > 0){
+				for (var i = 0; i<res.length; i++) {
+					$scope.unapprovedKPAs.push(res[i]);
+				};		
+			} else if(res.length <= 0){
+				$scope.showSubErrUnAprvd = true;
+				console.log("there should be an error");
+				console.log($scope.showSubErrUnAprvd);
+				$scope.showSubMsg = "There are no unapproved objectives";
+			}	
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+	$scope.getUnaprdObjectives();
+
+	// retrieve approved objectives : Brian
+    $scope.getAprdObjectives = function () {
+
+		$http.post("/getAllApprovedObjectives").success(function (res) {				
+			if(res.length > 0){
+				for (var i = 0; i<res.length; i++) {
+					$scope.approvedKPAs.push(res[i]);
+				};
+						
+			} else if(res.length <= 0){
+				$scope.showSubErrAprvd = true;
+
+			}	
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+
+	$scope.getAprdObjectives();
+
+	$scope.getEditObjective = function (objId) {
+		var obj = {id:objId};
+		$http.post("/getEditObjective",obj).success(function (res) {				
+			if(res){
+				$scope.editObj = res;
+			} else {
+				$scope.hasEditObj = false;
 			}
-			else if(res.length <= 0){
-				$scope.showSubErr = true;
-				console.log("logging for result less than zero");
-				console.log($scope.showSubErr);
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+
+	$scope.editObjective = function (obj) {
+		$http.post("/editObjective",obj).success(function (res) {				
+			if(res){
+				console.log(success);
+			} else {
+				console.log('error');
 			}
 				
 		})
@@ -1707,7 +1765,22 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 			console.log('There is an error');
 		});	
 	}
-	$scope.getObjectivez();	
+
+	$scope.removeRejectedObj = function (objId) {
+		var obj = {id:objId};
+		$http.post("/removeRejectedObj",obj).success(function (res) {				
+			if(res){
+				console.log(success);
+			} else {
+				console.log('error');
+			}
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+
+	//By Brian 
 	//By Mlandvo
 	$scope.submitKPAs = function(Obj) {
 		console.log("Function called");
@@ -2077,23 +2150,26 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 				$scope.empObjArray = res;
 				console.log($scope.empObjArray);
 				console.log("PF is:::");
-				console.log($scope.empObjArray.length);
-
+				console.log(empPF);
 				for (var i = 0; i < $scope.empObjArray.length; i++){
-					//console.log($scope.empObjArray[i].PFNum);
+
 					if (empPF == $scope.empObjArray[i].PFNum) {
 
-						if ($scope.empObjArray[i].perspective == "finance"){
-							$scope.specificEmpFinObjs.push($scope.empObjArray[i]);
+						if ($scope.empObjArray[i].perspective = "finance"){
+							$scope.specificEmpFinObjs = $scope.empObjArray[i];
+
 						}
-						else if ($scope.empObjArray[i].perspective == "customer"){
-							$scope.specificEmpCustObjs.push($scope.empObjArray[i]);
+						else if ($scope.empObjArray[i].perspective = "customer"){
+							$scope.specificEmpCustObjs = $scope.empObjArray[i];
+
 						}
-						else if ($scope.empObjArray[i].perspective == "internal"){
-							$scope.specificEmpIntObjs.push($scope.empObjArray[i]);
+						else if ($scope.empObjArray[i].perspective = "internal"){
+							$scope.specificEmpIntObjs = $scope.empObjArray[i];
+
 						}
-						else if ($scope.empObjArray[i].perspective == "learn"){
-							$scope.specificEmpLearnObjs.push($scope.empObjArray[i]);
+						else if ($scope.empObjArray[i].perspective = "learning"){
+							$scope.specificEmpLearnObjs = $scope.empObjArray[i];
+
 						}
 						else {
 							console.log("No other Objectives found!");
@@ -2105,5 +2181,10 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 				console.log("Buzzer sound!!!");
 			});
 		}
+
+
+
+		/* SELF EVAlUATION CONTROLLER*/
+
 
    }]);
