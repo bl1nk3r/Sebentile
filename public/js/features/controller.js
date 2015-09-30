@@ -1706,12 +1706,14 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 		.error(function () {
 			console.log('There is an error');
 		});	
+		$scope.$apply();
 	}
 	$scope.getObjectivez();	
 	//By Mlandvo
 	$scope.submitKPAs = function(Obj) {
 		console.log("Function called");
 		//$scope.send = true;
+		$scope.delKPA = "false";
 		var toBeSent = [];
 		var toBeDeleted = [];
 		var id = Obj._id;
@@ -1727,13 +1729,14 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 			.error(function (res) {
 				console.log(res);
 				});
+			$scope.$apply();
 		}else if(Obj.send == "false"){
-			$scope.popDelete = true;
-			
-			$http.post("/deleteKPA/" + id)
+			//$scope.popDelete = true;
+				$http.post("/deleteKPA/" + id)
 				.success(function (response) {
 				console.log(response);
-			});
+				});
+				$scope.$apply();
 		}	
 	}//end of function
 

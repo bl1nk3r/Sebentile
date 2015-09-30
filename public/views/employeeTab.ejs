@@ -12,7 +12,7 @@
 						</a> <!-- end Create an Objective button link -->
 						<!--CREATE OBJECTIVE MODAL-->
 						<a data-backdrop="static"  data-keyboard="false" ng-click="getObjectivez();" href="#submitObjModal" role="button"class="btn btn-primary" data-toggle="modal" data-tooltip="true" data-placement="top" title="Click to Submit your Objectives to your Supervisor"> 
-							<span class="glyphicon glyphicon-arrow-up"></span>&nbsp;Submit Objective(s) 
+							<span class="glyphicon glyphicon-share-alt"></span>&nbsp;Submit Objective(s) 
 						</a> <!-- end Submit Objectives button link-->
 						<!--SUBMIT OBJECTIVE MODAL-->
 						<a data-backdrop="static" data-keyboard="false" href="#scorecardModal" ng-click="retrieveApproved();ScorecardCreate()" role="button" class="btn btn-primary" data-toggle="modal" data-tooltip="true" data-placement="top" title="View your Perfomance Contract">
@@ -60,6 +60,10 @@
 			                <div class="tab-content">
 								<div class="tab-pane fade in active" id="crTab">
 									<div id="container-speed" style="width: 300px; height: 200px;"></div>
+									<br>
+									<button class="btn btn-default btn-xs" data-title="See full screen" data-toggle="modal" data-target="#fullsize1" >
+				      					<span class="glyphicon glyphicon-zoom-in"></span>
+				      				</button>
 								</div>
 								<div class="tab-pane fade in" id="orTab">
 									<div id="overral" style="width: 300px; height: 200px; margin: 0 auto"></div>
