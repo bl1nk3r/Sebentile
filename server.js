@@ -648,6 +648,17 @@ var bsc = express()
 			
 		});
 	})
+
+	.post('/getKPA/:id', function (req, res) {
+        var id = String(req.params.id);
+        db.Objectives.findOne({_id: db.ObjectId(req.params.id)}, function (err, data) {
+            if (err || !data) {
+                res.send("KPA not in database");
+            } else {
+                res.send(data);
+            } 
+        });
+    })
  
 	.post('/getEmpsPendingObjs', function (req, res) {
 		db.Employees.find( function (err, cur) {
@@ -660,6 +671,7 @@ var bsc = express()
 			}
 		})
 	})
+
 
 /******************************************************************************************************************************************
 ***********************************SUBMIT OBJECTIVE OPERATION (CHANGES STATUS OF OBJECTIVE)************************************************
