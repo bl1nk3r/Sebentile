@@ -2155,20 +2155,20 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 
 					if (empPF == $scope.empObjArray[i].PFNum) {
 
-						if ($scope.empObjArray[i].perspective = "finance"){
-							$scope.specificEmpFinObjs = $scope.empObjArray[i];
+						if ($scope.empObjArray[i].perspective == "finance"){
+							$scope.specificEmpFinObjs.push($scope.empObjArray[i]);
 
 						}
-						else if ($scope.empObjArray[i].perspective = "customer"){
-							$scope.specificEmpCustObjs = $scope.empObjArray[i];
+						else if ($scope.empObjArray[i].perspective == "customer"){
+							$scope.specificEmpCustObjs.push($scope.empObjArray[i]);
 
 						}
-						else if ($scope.empObjArray[i].perspective = "internal"){
-							$scope.specificEmpIntObjs = $scope.empObjArray[i];
+						else if ($scope.empObjArray[i].perspective == "internal"){
+							$scope.specificEmpIntObjs.push($scope.empObjArray[i]);
 
 						}
-						else if ($scope.empObjArray[i].perspective = "learning"){
-							$scope.specificEmpLearnObjs = $scope.empObjArray[i];
+						else if ($scope.empObjArray[i].perspective == "learn"){
+							$scope.specificEmpLearnObjs.push($scope.empObjArray[i]);
 
 						}
 						else {
