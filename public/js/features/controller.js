@@ -19,15 +19,17 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 	 		}
 	 	}])
 
+	 	// changed - Brian
 	 	.service('approvedObjectives', ['$http', function ($http) {
 	 		this.getApproved = function() {
-	 			return $http.post('/getApprovedObjectives');
+	 			return $http.post('/getAllApprovedObjectives');
 	 		}
 	 	}])
 
+	 	// changed - Brian
 	 	.service('unApprovedObjectives', ['$http', function ($http) {
-	 		this.getApproved = function() {
-	 			return $http.post('/getUnapprovedObjectives');
+	 		this.getUnApproved = function() {
+	 			return $http.post('/getAllUnapprovedObjectives');
 	 		}
 	 	}])
 
@@ -1264,7 +1266,11 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 	$scope.appLearnArr = [];
 	$scope.showSubErr = true;
 	$scope.showSubMsg = "There are no Approved Objectives to submit for now, Create Objectives. If this problem persists contact your IT Administrator.";
+   	
+	// changed - Brian
    	$scope.unactionedKPAs = [];
+   	$scope.approvedKPAs = [];
+   	$scope.unapprovedKPA = [];
 
 	$scope.showSCardErr = false;
 	$scope.showSCardMsg = "Your Perfomance contract is not ready yet. There are no Approved Objectives to work on for now ... Please Contact your supervisor or try again later.";
@@ -1680,8 +1686,8 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 		})		
 	};//end master func
 
-	// retrieve Objectivez : Mlandvo
-    $scope.getObjectivez = function () {
+	// retrieve getUnactndObjectives : Brian
+    $scope.getUnactndObjectives = function () {
     	console.log("get objectives called");
     	
 		$http.post("/getAllObjectives").success(function (res) {				
@@ -1696,36 +1702,113 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 				console.log($scope.unactionedKPAs);	
 				console.log("KPAs in array");
 						
+			} else if(res.length <= 0){
+				$scope.showSubErrUactd = true;
+			}	
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+
+	$scope.getUnactndObjectives();	
+
+	// retrieve getUnaprdObjectives : Brian
+    $scope.getUnaprdObjectives = function () {
+    	
+		$http.post("/getAllUnapprovedObjectives").success(function (res) {				
+
+			if(res.length > 0){
+				for (var i = 0; i<res.length; i++) {
+					$scope.unapprovedKPAs.push(res[i]);
+				};		
+			} else if(res.length <= 0){
+				$scope.showSubErrUnAprvd = true;
+				console.log("there should be an error");
+				console.log($scope.showSubErrUnAprvd);
+				$scope.showSubMsg = "There are no unapproved objectives";
+			}	
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+	$scope.getUnaprdObjectives();
+
+	// retrieve approved objectives : Brian
+    $scope.getAprdObjectives = function () {
+
+		$http.post("/getAllApprovedObjectives").success(function (res) {				
+			if(res.length > 0){
+				for (var i = 0; i<res.length; i++) {
+					$scope.approvedKPAs.push(res[i]);
+				};
+						
+			} else if(res.length <= 0){
+				$scope.showSubErrAprvd = true;
+
+			}	
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+
+	$scope.getAprdObjectives();
+
+	// retrieve objective to be edited : Brian
+	$scope.getEditObjective = function (objId) {
+		var obj = {id:objId};
+		$http.post("/getEditObjective",obj).success(function (res) {				
+			if(res){
+				$scope.editObj = res;
+			} else {
+				$scope.hasEditObj = false;
 			}
-			else if(res.length <= 0){
-				$scope.showSubErr = true;
-				console.log("logging for result less than zero");
-				console.log($scope.showSubErr);
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+
+	// edit objectives : Brian
+	$scope.editObjective = function (obj) {
+		$http.post("/editObjective",obj).success(function (res) {				
+			if(res){
+				console.log(success);
+			} else {
+				console.log('error');
 			}
 			
 		})
 		.error(function () {
 			console.log('There is an error');
 		});	
-		$scope.$apply();
 	}
+<<<<<<< HEAD
 	$scope.clearSubmitModal = function() {
 		$scope.unactionedKPAs = null;
 		$scope.showSubErr = true;
 	};
 	//$scope.getObjectivez();
+=======
+>>>>>>> 36b89946741553f59a9cf65b327d5a724570807f
 
-	$scope.getKPA = function (Obj) {
-		var id = Obj._id;
-		console.log(id);
-		console.log("get kpa function called + response");
-		$http.post("/getKPA/" + id)
-			.success(function (res) {
-				
-			console.log(res);
-			$scope.kpaID = res._id;
-		});
+	// remove objectives : Brian
+	$scope.removeRejectedObj = function (objId) {
+		var obj = {id:objId};
+		$http.post("/removeRejectedObj",obj).success(function (res) {				
+			if(res){
+				console.log(success);
+			} else {
+				console.log('error');
+			}
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
 	}
+
 
 	//By Mlandvo
 	$scope.submitKPAs = function (kpaID) {
@@ -1766,7 +1849,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 
    .controller('empPanelInfoCtrl', ['allObjectives', 'pendingObjectives', 'approvedObjectives', 'unApprovedObjectives', '$scope', function (allObjectives, pendingObjectives, approvedObjectives, unApprovedObjectives, $scope) {
 
-	allObjectives.getObjectives()
+	unApprovedObjectives.getUnApproved()
 	.success(function (res) {
 		$scope.unapprovedVal = res.length;
 		//console.log("Response is:");
