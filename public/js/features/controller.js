@@ -1710,7 +1710,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 		$scope.$apply();
 	}
 	$scope.clearSubmitModal = function() {
-		$scope.unactionedKPAs = [];
+		$scope.unactionedKPAs = null;
 		$scope.showSubErr = true;
 	};
 	//$scope.getObjectivez();
