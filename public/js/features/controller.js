@@ -1272,6 +1272,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 	$scope.showEvalErr = true;
 	$scope.showEvalMsg = "There are no Approved Objectives to evaluate for now ... Please try again later.";
 	//end
+	$scope.act = 0;
 	$scope.finRowSpan = 0;
 	$scope.custRowSpan = 0;
 	$scope.intRowSpan = 0;
@@ -1701,14 +1702,18 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 				console.log("logging for result less than zero");
 				console.log($scope.showSubErr);
 			}
-				
+			
 		})
 		.error(function () {
 			console.log('There is an error');
 		});	
 		$scope.$apply();
 	}
-	$scope.getObjectivez();
+	$scope.clearSubmitModal = function() {
+		$scope.unactionedKPAs = [];
+		$scope.showSubErr = true;
+	};
+	//$scope.getObjectivez();
 
 	$scope.getKPA = function (Obj) {
 		var id = Obj._id;
@@ -1736,7 +1741,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 					//$('#successObjSubmit').slideDown();
 					console.log(res);
 					console.log("KPA uphanded");
-					$scope.getObjectivez();
+					$scope.getObjectivez().$apply();
 			})
 			.error(function (res) {
 				console.log(res);
@@ -1749,7 +1754,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 		$http.post("/deleteKPA/" + id)
 			.success(function (response) {
 			console.log(response);
-			$scope.getObjectivez();
+			$scope.getObjectivez().$apply();
 		});
 
 	};

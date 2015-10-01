@@ -1449,16 +1449,21 @@
 								    {{showSubMsg}}
 								    <br>
 								</span>
+								<h5>OR</h5>
+								<p>
+									<button class="btn btn-primary" ng-click="getObjectivez()">
+						  				<span class="glyphicon glyphicon-refresh"></span>
+						  				Refresh Objectives
+						  			</button>
+								</p>
+
 							</div> 
 							<div ng-show="!showSubErr">
 								<div class="alert alert-info">
 						  			<button type="button" class="close" data-dismiss="alert">X</button>
 									<p>Select Objectives to submit to supervisor for Approval or Delete Objective(s)</p>
 						  		</div>
-						  		<button class="btn btn-primary" ng-click="getObjectivez();">
-						  		<span class="glyphicon glyphicon-refresh"></span>
-						  			Refresh Objectives
-						  		</button>
+						  		
 								<form id="searchObj">
 									<input type="text" class="form-control pull-right" placeholder="Search objectives..." id="searchInput" ng-model="search.$">
 								</form> <!--end form search-->&nbsp;<hr>
@@ -1512,8 +1517,13 @@
 							<!--
 						  	<button ng-disabled="showSubErr" class="btn btn-success" type="button" data-dismiss="modal" >
 						  		<span class="glyphicon glyphicon-ok-circle"></span>&nbsp;Finish
+						  	</button>
+
+						  	<button ng-model="act" value="1" ng-disabled="showSubErr | " class="btn btn-primary btn-sm" ng-click="getObjectivez()">
+						  		<span class="glyphicon glyphicon-refresh"></span>
+						  		Refresh
 						  	</button>-->
-						  	<button class="btn btn-default" type="button" data-dismiss="modal"> 
+						  	<button class="btn btn-default btn-sm" ng-click="clearSubmitModal()" type="button" data-dismiss="modal"> 
 						  		<span class="glyphicon glyphicon-remove"></span> Close
 						  	</button>
 						</div> <!--end submitObjModal-Footer-->
