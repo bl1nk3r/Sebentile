@@ -1505,7 +1505,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 			$scope.appCustObj = [];
 			$scope.appIntObj = [];
 			$scope.appLearnObj = [];
-			console.log("Ran getAllKPAs finction");
+			console.log("Ran getAllKPAs finction and got");
 			console.log(res.length);
 			if(res.length > 0){
 				res.forEach(function (kpi) {
@@ -1522,6 +1522,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 						$scope.appLearnObj.push(kpi);
 					}
 	      		})
+	      		$scope.showEvalErr = true;
 			}
 			else if(res.length <= 0){
 				$scope.showEvalErr = false;
@@ -1691,9 +1692,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 			console.log(res.length);
 			if(res.length > 0){
 				$scope.showSubErr = false;
-				for (var i = 0; i<res.length; i++) {
-					$scope.unactionedKPAs.push(res[i]);
-				};
+				$scope.unactionedKPAs = res;
 				console.log($scope.unactionedKPAs);	
 				console.log("KPAs in array");
 						
@@ -1708,9 +1707,9 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 		.error(function () {
 			console.log('There is an error');
 		});	
-		$scope.$apply();
+		
 	}
-	$scope.clearSubmitModal = function() {
+	$scope.clearSubmitModal = function () {
 		$scope.unactionedKPAs = null;
 		$scope.showSubErr = true;
 	};
@@ -1726,7 +1725,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 			console.log(res);
 			$scope.kpaID = res._id;
 		});
-	}
+	};
 
 	//By Mlandvo
 	$scope.submitKPAs = function (kpaID) {
@@ -1747,7 +1746,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 			.error(function (res) {
 				console.log(res);
 				});
-		}//end of function
+		};//end of function
 
 	$scope.delKPA = function (kpaID) {
 		console.log("Delete kpa function called");
