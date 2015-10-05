@@ -1272,6 +1272,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 	$scope.showEvalErr = true;
 	$scope.showEvalMsg = "There are no Approved Objectives to evaluate for now ... Please try again later.";
 	//end
+	$scope.approvedKPAs = [];
 	$scope.act = 0;
 	$scope.finRowSpan = 0;
 	$scope.custRowSpan = 0;
@@ -1758,6 +1759,116 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 		});
 
 	};
+	// retrieve getUnactndObjectives : Brian
+    $scope.getUnactndObjectives = function () {
+    	
+		$http.post("/getAllObjectives").success(function (res) {	
+			console.log(res);			
+			if(res.length > 0){
+				$scope.showSubErr = false;
+				$scope.unactionedKPAs = res;
+			} else if(res.length <= 0){
+				$scope.showSubErrUactd = true;
+			}	
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+	$scope.getUnactndObjectives();
+
+	//console.log("whats wrong");
+
+	//$scope.getUnactndObjectives();	
+
+	// retrieve getUnaprdObjectives : Brian
+    $scope.getUnaprdObjectives = function () {
+    	
+		$http.post("/getAllUnapprovedObjectives").success(function (res) {				
+
+			if(res.length > 0){
+				for (var i = 0; i<res.length; i++) {
+					$scope.unapprovedKPAs.push(res[i]);
+				};		
+			} else if(res.length <= 0){
+				$scope.showSubErrUnAprvd = true;
+				console.log("there should be an error");
+				console.log($scope.showSubErrUnAprvd);
+				$scope.showSubMsg = "There are no unapproved objectives";
+			}	
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+	$scope.getUnaprdObjectives();
+
+	// retrieve approved objectives : Brian
+    $scope.getAprdObjectives = function () {
+
+		$http.post("/getAllApprovedObjectives").success(function (res) {				
+			if(res.length > 0){
+				for (var i = 0; i<res.length; i++) {
+					$scope.approvedKPAs.push(res[i]);
+				};
+						
+			} else if(res.length <= 0){
+				$scope.showSubErrAprvd = true;
+
+			}	
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+
+	$scope.getAprdObjectives();
+
+	// retrieve objective to be edited : Brian
+	$scope.getEditObjective = function (objId) {
+		var obj = {id:objId};
+		$http.post("/getEditObjective",obj).success(function (res) {				
+			if(res){
+				$scope.editObj = res;
+			} else {
+				$scope.hasEditObj = false;
+			}
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+
+	// edit objectives : Brian
+	$scope.editObjective = function (obj) {
+		$http.post("/editObjective",obj).success(function (res) {				
+			if(res){
+				console.log(success);
+			} else {
+				console.log('error');
+			}
+				
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+
+	// remove objectives : Brian
+	$scope.removeRejectedObj = function (objId) {
+		var obj = {id:objId};
+		$http.post("/removeRejectedObj",obj).success(function (res) {				
+			if(res){
+				console.log(success);
+			} else {
+				console.log('error');
+			}
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+	}
+
 }])	
  
 /***********************************************************************************************************************************************
