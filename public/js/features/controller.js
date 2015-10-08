@@ -2254,4 +2254,232 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 		/* SELF EVAlUATION CONTROLLER*/
 
 
-   }]);
+   }])
+
+ .controller('ctrl560cfdc514d04f8439306951', ['$scope', '$http', function($scope, $http) {
+     $scope.initCompIcon = 'glyphicon glyphicon-tower';
+     $scope.initCompStructType = 'company';
+     $scope.initCompParObjId = '0';
+     $scope.listOfPos = null;
+
+     $scope.myTree = [];
+
+     $scope.structType = [{
+         disp: "Division",
+         val: "division"
+     }, {
+         disp: "Department",
+         val: "department"
+     }, {
+         disp: "Section",
+         val: "section"
+     }, {
+         disp: "Subsection",
+         val: "subsection"
+     }, {
+         disp: "Position",
+         val: "position"
+     }];
+
+     //$("#obj560cf73114d04f843930692a").hide();
+
+     setTimeout(function(){
+        $('#tree').treeview({
+          data: $scope.myTree //$scope.getTree()
+        });
+     },1500);
+
+     $scope.func560d4856d00d941c304c7254 = function() {
+         $http.post('/route560d4856d00d941c304c7254').success(function(resp) {
+             $scope.listOfPos = resp;
+             console.log(resp);
+         });
+
+     }
+
+     $scope.getPerspectives = function() {
+         $http.post('/getPerspectives').success(function(resp) {
+             $scope.listOfPersp = resp;
+             console.log(resp);
+         });
+
+     }
+     
+     //Get all perspectives
+     $scope.getPerspectives();
+
+     $scope.getPositions = function() {
+         $http.post('/getPositions').success(function(resp) {
+             $scope.listOfPos = resp;
+             console.log(resp);
+         });
+
+     }
+     
+     //Get all positions
+     $scope.getPositions();
+
+     $scope.func560d4856d00d941c304c7254();
+
+
+     $scope.$on('begin560d000d14d04f84393069550', function(event, data) {
+         $scope.func560d000d14d04f84393069550()
+     });
+
+     $scope.$on('end560d4062da6ba58814600b161', function(event, data) {
+         $scope.func560d4062da6ba58814600b162()
+     });
+
+     $scope.func560d000d14d04f84393069550 = function() {
+         $http.post('/route560d000d14d04f84393069550', {
+             name: $scope.structInitCompName,
+             icon: $scope.initCompIcon,
+             parentObjid: $scope.initCompParObjId,
+             structType: $scope.initCompStructType
+
+         }).success(function(resp) {
+             $scope.myTree = [];
+             $scope.func55df0ed0b2bc8bc76c51da16();
+             $scope.getPositions();
+             setTimeout(function(){
+                $('#tree').treeview({
+                  data: $scope.myTree //$scope.getTree()
+                });
+             },1000);
+             console.log(resp);
+             $scope.$broadcast('end560d000d14d04f84393069550', 'Composite');
+         });
+
+     }
+
+     $scope.func55df0ed0b2bc8bc76c51da16 = function() {
+         $http.post('/route55df0ed0b2bc8bc76c51da16').success(function(resp) {
+             $scope.structPar = resp;
+             console.log(resp);
+         });
+
+         $http.post('/getStructure').success(function(resp) {
+         	 $scope.myTree = [];
+             $scope.myTree.push(resp.nodeData);
+             console.log($scope.myTree);
+         });
+
+     }
+
+     $scope.func55df0ed0b2bc8bc76c51da16();
+
+     $scope.func55df11e094e05079749e0a04 = function() {
+         var structIcon = '';
+
+         if ($scope.structureType == "company") {
+             structIcon = "glyphicon glyphicon-tower"
+         } else if ($scope.structureType == "division") {
+             structIcon = "glyphicon glyphicon-tasks"
+         } else if ($scope.structureType == "department") {
+             structIcon = "glyphicon glyphicon-home"
+         } else if ($scope.structureType == "section") {
+             structIcon = "glyphicon glyphicon-file"
+         } else if ($scope.structureType == "subsection") {
+             structIcon = "glyphicon glyphicon-th"
+         } else if ($scope.structureType == "position") {
+             structIcon = "glyphicon glyphicon-link"
+         } else if ($scope.structureType == "employee") {
+             structIcon = "glyphicon glyphicon-user"
+         };
+
+         $http.post('/route55df11e094e05079749e0a04', {
+             parentObjid: $scope.parentObjid,
+             name: $scope.name,
+             structType: $scope.structureType,
+             structCompoAddBtn: $scope.structCompoAddBtn,
+             icon: structIcon
+         }).success(function(resp) {
+         	$scope.func55df0ed0b2bc8bc76c51da16();
+         	$scope.getPositions();
+             setTimeout(function(){
+                $('#tree').treeview({
+                  data: $scope.myTree //$scope.getTree()
+                });
+             },1000);
+             console.log(resp);
+         });
+
+     }
+
+     $scope.func560d4062da6ba58814600b162 = function() {
+
+         $scope.perspName = "";
+         console.log($scope.listOfPersp);
+
+     }
+
+     $scope.func560d4062da6ba58814600b16 = function() {
+
+         $scope.$broadcast('begin560d000d14d04f84393069550', 'Composite start');
+
+     }
+
+     $scope.$on('end560d000d14d04f84393069550', function(event, data) {
+         $scope.func560d000d14d04f84393069551()
+     });
+
+     $scope.$on('end560d4062da6ba58814600b160', function(event, data) {
+         $scope.func560d4062da6ba58814600b161()
+     });
+
+     $scope.func560d000d14d04f84393069551 = function() {
+         $http.post('/route560d000d14d04f84393069551').success(function(resp) {
+             $scope.structInitCompName = "";
+             $scope.$broadcast('end560d000d14d04f84393069551', 'Composite');
+         });
+
+     }
+
+     $scope.func560d4062da6ba58814600b161 = function() {
+         $http.post('/route560d4062da6ba58814600b161').success(function(resp) {
+             $scope.listOfPersp = resp;
+             $scope.$broadcast('end560d4062da6ba58814600b161', 'Composite');
+         });
+
+     }
+
+     $scope.saveNewPerspective = function() {
+         $http.post('/saveNewPerspective',{
+         	perspName:$scope.perspName
+         }).success(function(resp) {
+             $scope.perspName = "";
+             $scope.listOfPersp = resp;
+             console.log(resp);
+         });
+
+     }
+
+     $scope.saveNewEmployee = function() {
+         $http.post('/saveNewEmployee',{
+         	fname:$scope.newEmpFName,
+         	mname:$scope.newEmpMName,
+         	lname:$scope.newEmpLName,
+         	natid:$scope.newEmpNatId,
+         	empno:$scope.newEmpNum,
+         	empos:$scope.newEmpPos,
+         	empName: $scope.newEmpFName+" "+ $scope.newEmpLName,
+         	position: $scope.newEmpPos,
+         	PFNum: $scope.newEmpNum,
+         	userName: "sec"+$scope.newEmpNum,
+         	password: "admin",
+         	roles: ["employee"]
+         }).success(function(resp) {
+             $scope.newEmpFName = "";
+             $scope.newEmpMName = "";
+             $scope.newEmpLName = "";
+             $scope.newEmpNatId = "";
+             $scope.newEmpNum = "";
+             $scope.newEmpPos = "";
+
+             console.log(resp);
+         });
+
+     }
+
+
+ }]);

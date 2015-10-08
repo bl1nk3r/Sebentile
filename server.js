@@ -25,7 +25,10 @@ var mongojs = require("mongojs")
 //use the default port for Mongo server/client connections			
     ,port = "27017"				
 //init BSCIMS (database) and Objectives (collection)
-    ,db = mongojs("sebentiledb", ["Objectives","Division","Transaction","Document","Employees", "Scorecard"]);
+    ,db = mongojs("sebentiledb", ["Objectives","Division","Transaction","Document","Employees", "Scorecard", "structure", "perspective"]);
+
+    //Custom Libs
+var boolStruct = require('./routes/boolstruct');
 
 //instantiate the server application 
 var bsc = express()
@@ -779,6 +782,141 @@ var bsc = express()
 		})
 		
 	})*/
+/*HR Module Routes*/
+
+.post('/route560d000d14d04f84393069550', function(req, res) {
+    query = req.body;
+
+    db.structure.insert(query, function(err, saved) {
+        if (err) res.send('Error!');
+        else {
+            res.send('Success!')
+        }
+    });
+
+})
+
+ .post('/route55df0ed0b2bc8bc76c51da16', function(req, res) {
+    query = req.body;
+
+    db.structure.find(function(err, data) {
+        if (err) res.send('Error!');
+        else {
+            //var boolStruct = require('./routes/boolstruct');
+            res.send(data)
+        }
+    });
+
+})
+
+.post('/route55df11e094e05079749e0a04', function(req, res) {
+    query = req.body;
+
+    db.structure.insert(query, function(err, saved) {
+        if (err) res.send('Error!');
+        else {
+            res.send('Success!')
+        }
+    });
+
+})
+
+.post('/saveNewPerspective', function(req, res) {
+    query = req.body;
+
+    db.perspective.insert(query, function(err, saved) {
+        if (err) res.send('Error!');
+        else {
+        	db.perspective.find(function(err1, resp){
+        		if (err1) res.send('Error!');
+        		res.send(resp);
+        	});
+            
+        }
+    });
+
+})
+
+.post('/saveNewEmployee', function(req, res) {
+    query = req.body;
+
+    db.Employees.insert(query, function(err, saved) {
+        if (err) res.send('Error!');
+        else {
+        	db.Employees.find(function(err1, resp){
+        		if (err1) res.send('Error!');
+        		res.send(resp);
+        	});
+            
+        }
+    });
+
+})
+
+.post('/getPerspectives', function(req, res) {
+    db.perspective.find( function(err, resp) {
+        if (err) res.send('Error!');
+        else {
+            res.send(resp);
+        }
+    });
+
+})
+
+.post('/getPositions', function(req, res) {
+    db.structure.find({"structType":"position"}, function(err, resp) {
+        if (err) res.send('Error!');
+        else {
+            res.send(resp);
+        }
+    });
+
+})
+
+.post('/getStructure', function(req, res) {
+    var myTree = new boolStruct();
+    myTree.init();
+
+    setTimeout(function() {
+        myTree.render();
+        //console.dir(myTree.treeData[0]);
+        //console.log(myTree.depth());
+        
+        
+    }, 300);
+
+    setTimeout(function(){
+        //console.log(myTree.showStruct());
+        res.send(myTree.showStruct());
+    },600);
+
+})
+
+.post('/route560d000d14d04f84393069551', function(req, res) {
+    query = req.body;
+
+    db.perspective.find(function(err, data) {
+        if (err) res.send('Error!');
+        else {
+            res.send(data)
+        }
+    });
+
+})
+
+.post('/route560d4856d00d941c304c7254', function(req, res) {
+    query = req.body;
+
+    db.structure.find({
+        "structType": "position"
+    }, function(err, data) {
+        if (err) res.send('Error!');
+        else {
+            res.send(data)
+        }
+    });
+
+})
 
 
 //Log on the console the 'init' of the server
