@@ -19,17 +19,15 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 	 		}
 	 	}])
 
-	 	// changed - Brian
 	 	.service('approvedObjectives', ['$http', function ($http) {
 	 		this.getApproved = function() {
-	 			return $http.post('/getAllApprovedObjectives');
+	 			return $http.post('/getApprovedObjectives');
 	 		}
 	 	}])
 
-	 	// changed - Brian
 	 	.service('unApprovedObjectives', ['$http', function ($http) {
-	 		this.getUnApproved = function() {
-	 			return $http.post('/getAllUnapprovedObjectives');
+	 		this.getApproved = function() {
+	 			return $http.post('/getUnapprovedObjectives');
 	 		}
 	 	}])
 
@@ -1093,7 +1091,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 /***********************************************************************************************************************************************
 ********************************************************COMPILE OBJECTIVE CONTROLLER*************************************************************
 ************************************************************************************************************************************************/
-   .controller('compileController', ['allObjectives','approvedObjectives','unApprovedObjectives' ,'$scope','$rootScope', '$http', function (approvedObjectives,allObjectives,unApprovedObjectives, $scope, $rootScope, $http) {
+   .controller('compileController', ['allObjectives','approvedObjectives','unApprovedObjectives', '$scope', '$rootScope', '$http', function (approvedObjectives,allObjectives,unApprovedObjectives,$scope,$rootScope, $http) {
 	$scope.appFinIDArray = [];
 	$scope.appCustIDArray = [];
 	$scope.appIntIDArray = [];
@@ -1110,11 +1108,12 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 	$scope.appLearnArr = [];
 	$scope.showSubErr = true;
 	$scope.showSubMsg = "There are no Approved Objectives to submit for now, Create Objectives. If this problem persists contact your IT Administrator.";
-   	
-	// changed - Brian
    	$scope.unactionedKPAs = [];
+<<<<<<< HEAD
    	$scope.approvedKPAs = [];
    	$scope.unapprovedKPAs = [];
+=======
+>>>>>>> 346559063414214ccfb004794604f2a4d6e73e17
 
 	$scope.showSCardErr = false;
 	$scope.showSCardMsg = "Your Perfomance contract is not ready yet. There are no Approved Objectives to work on for now ... Please Contact your supervisor or try again later.";
@@ -1122,6 +1121,8 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 	$scope.showEvalErr = true;
 	$scope.showEvalMsg = "There are no Approved Objectives to evaluate for now ... Please try again later.";
 	//end
+	$scope.approvedKPAs = [];
+	$scope.act = 0;
 	$scope.finRowSpan = 0;
 	$scope.custRowSpan = 0;
 	$scope.intRowSpan = 0;
@@ -1349,27 +1350,41 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 	$scope.getAllKPAs = function() {
 		$http.post('/getApprovedObjectives')
 		.success(function (res) {
-			$scope.appFinObj = [];
-			$scope.appCustObj = [];
-			$scope.appIntObj = [];
-			$scope.appLearnObj = [];
-			console.log("Ran getAllKPAs finction");
+			$scope.appFinOb = [];
+			$scope.appCustOb = [];
+			$scope.appIntOb = [];
+			$scope.appLearnOb = [];
+			$scope.appFin = true;
+			$scope.appCust = true;
+			$scope.appInt = true;
+			$scope.appLearn = true;
+			console.log("Ran getAllKPAs finction and got");
 			console.log(res.length);
 			if(res.length > 0){
 				res.forEach(function (kpi) {
 		        	if (kpi.perspective == "finance") {
-		          		$scope.appFinObj.push(kpi);	        		
+		        		console.log(kpi);
+		        		console.log(kpi.perspective);
+		          		$scope.appFinOb.push(kpi);
+		          		console.log($scope.appFinOb);
+		          		$scope.appFin = false;	        		
 		        	} 
 		        	else if (kpi.perspective == "customer") {
-						$scope.appCustObj.push(kpi);
+						$scope.appCustOb.push(kpi);
+						$scope.appCust = false;
 					}
 					else if (kpi.perspective == "internal") {
-						$scope.appIntObj.push(kpi);
+						$scope.appIntOb.push(kpi);
+						$scope.appInt = false;
 					}
 					else if (kpi.perspective == "learn") {
-						$scope.appLearnObj.push(kpi);
+						$scope.appLearnOb.push(kpi);
+						$scope.appLearn = false;
 					}
 	      		})
+	      		$scope.showEvalErr = true;
+	      		console.log("Array contents");
+	      		console.log($scope.appFinOb);
 			}
 			else if(res.length <= 0){
 				$scope.showEvalErr = false;
@@ -1529,6 +1544,87 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 		})		
 	};//end master func
 
+<<<<<<< HEAD
+	// retrieve getUnactndObjectives : Brian
+    $scope.getUnactndObjectives = function () {
+=======
+	// retrieve Objectivez : Mlandvo
+    $scope.getObjectivez = function () {
+    	console.log("get objectives called");
+>>>>>>> 346559063414214ccfb004794604f2a4d6e73e17
+    	
+		$http.post("/getAllObjectives").success(function (res) {	
+			console.log(res);			
+			if(res.length > 0){
+				$scope.showSubErr = false;
+				$scope.unactionedKPAs = res;
+<<<<<<< HEAD
+=======
+				console.log($scope.unactionedKPAs);	
+				console.log("KPAs in array");
+						
+			}
+			else if(res.length <= 0){
+				$scope.showSubErr = true;
+				console.log("logging for result less than zero");
+				console.log($scope.showSubErr);
+			}
+			
+		})
+		.error(function () {
+			console.log('There is an error');
+		});	
+		
+	}
+	$scope.clearSubmitModal = function () {
+		$scope.unactionedKPAs = null;
+		$scope.showSubErr = true;
+	};
+	//$scope.getObjectivez();
+
+	$scope.getKPA = function (Obj) {
+		var id = Obj._id;
+		console.log(id);
+		console.log("get kpa function called + response");
+		$http.post("/getKPA/" + id)
+			.success(function (res) {
+				
+			console.log(res);
+			$scope.kpaID = res._id;
+		});
+	};
+
+	//By Mlandvo
+	$scope.submitKPAs = function (kpaID) {
+		console.log("submit function called");
+		//$scope.send = true;
+		var toBeSent = [];
+		var toBeDeleted = [];
+		var id = $scope.kpaID;
+		//console.log(Obj);
+		//console.log(typeof(id));
+		$http.post("/objectivesSubmitted_status_changed/" + id)
+				.success(function (res) {
+					//$('#successObjSubmit').slideDown();
+					console.log(res);
+					console.log("KPA uphanded");
+					$scope.getObjectivez().$apply();
+			})
+			.error(function (res) {
+				console.log(res);
+				});
+		};//end of function
+
+	$scope.delKPA = function (kpaID) {
+		console.log("Delete kpa function called");
+		var id = $scope.kpaID;
+		$http.post("/deleteKPA/" + id)
+			.success(function (response) {
+			console.log(response);
+			$scope.getObjectivez().$apply();
+		});
+
+	};
 	// retrieve getUnactndObjectives : Brian
     $scope.getUnactndObjectives = function () {
     	
@@ -1537,6 +1633,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 			if(res.length > 0){
 				$scope.showSubErr = false;
 				$scope.unactionedKPAs = res;
+>>>>>>> 346559063414214ccfb004794604f2a4d6e73e17
 			} else if(res.length <= 0){
 				$scope.showSubErrUactd = true;
 			}	
@@ -1640,6 +1737,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 		});	
 	}
 
+<<<<<<< HEAD
 	// remove objectives : Brian
 	$scope.submitObj = function (objId) {
 		var obj = {id:objId};
@@ -1690,6 +1788,8 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 		});
 
 	};
+=======
+>>>>>>> 346559063414214ccfb004794604f2a4d6e73e17
 }])	
  
 /***********************************************************************************************************************************************
@@ -1698,7 +1798,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 
    .controller('empPanelInfoCtrl', ['allObjectives', 'pendingObjectives', 'approvedObjectives', 'unApprovedObjectives', '$scope', function (allObjectives, pendingObjectives, approvedObjectives, unApprovedObjectives, $scope) {
 
-	unApprovedObjectives.getUnApproved()
+	allObjectives.getObjectives()
 	.success(function (res) {
 		$scope.unapprovedVal = res.length;
 		//console.log("Response is:");

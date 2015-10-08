@@ -7,12 +7,17 @@
 			<div class="row-fluid">
 				<div class="col-sm-8">	
 					<div id="quickActionsBtnGroup" class="btn-group" role="group">
-						<a data-backdrop="static" ng-controller="empRoleController" data-keyboard="false" href="#createObjModal" role="button" class="btn btn-primary" data-toggle="modal" data-tooltip="true" data-placement="top" title="Click to create your Objectives"> 
+						<a data-backdrop="static" data-keyboard="false" href="#createObjModal" role="button" class="btn btn-primary" data-toggle="modal" data-tooltip="true" data-placement="top" title="Click to create your Objectives"> 
 							<span class="glyphicon glyphicon-plus"></span>&nbsp;Create Objective (KPA)
 						</a> <!-- end Create an Objective button link -->
 						<!--CREATE OBJECTIVE MODAL-->
-						<a data-backdrop="static"  ng-controller="compileController" data-keyboard="false" ng-click="getUnactndObjectives()" href="#submitObjModal" role="button" class="btn btn-primary" data-toggle="modal" data-tooltip="true" data-placement="top" title="Click to Submit your Objectives to your Supervisor"> 
+<<<<<<< HEAD
+						<a data-backdrop="static"  data-keyboard="false" ng-click="getUnactndObjectives()" href="#submitObjModal" role="button" class="btn btn-primary" data-toggle="modal" data-tooltip="true" data-placement="top" title="Click to Submit your Objectives to your Supervisor"> 
 							<span class="glyphicon glyphicon-arrow-up"></span>&nbsp;Submit Objective(s) 
+=======
+						<a data-backdrop="static"  data-keyboard="false" ng-click="getObjectivez();" href="#submitObjModal" role="button"class="btn btn-primary" data-toggle="modal" data-tooltip="true" data-placement="top" title="Click to Submit your Objectives to your Supervisor"> 
+							<span class="glyphicon glyphicon-share-alt"></span>&nbsp;Submit Objective(s) 
+>>>>>>> 346559063414214ccfb004794604f2a4d6e73e17
 						</a> <!-- end Submit Objectives button link-->
 						<!--SUBMIT OBJECTIVE MODAL-->
 						<a data-backdrop="static" data-keyboard="false" href="#scorecardModal" ng-click="retrieveApproved();ScorecardCreate()" role="button" class="btn btn-primary" data-toggle="modal" data-tooltip="true" data-placement="top" title="View your Perfomance Contract">
@@ -60,10 +65,8 @@
 			                <div class="tab-content">
 								<div class="tab-pane fade in active" id="crTab">
 									<div id="container-speed" style="width: 300px; height: 200px;"></div>
-									<br>
-									<button class="btn btn-default btn-xs" data-title="See full screen" data-toggle="modal" data-target="#fullsize1" >
-				      					<span class="glyphicon glyphicon-zoom-in"></span>
-				      				</button>
+									
+									
 								</div>
 								<div class="tab-pane fade in" id="orTab">
 									<div id="overral" style="width: 300px; height: 200px; margin: 0 auto"></div>
@@ -103,5 +106,84 @@
 				-->
 			</div>
 		</div>
+		<!--
+		<div class="container"> 
+			<div class="row-fluid">
+				<section>
+			        <div class="wizard">
+			            <div class="wizard-inner">
+			                <div class="connecting-line"></div>
+			                <ul class="nav nav-tabs" role="tablist">
+
+			                    <li role="presentation" class="active">
+			                        <a href="#step1" data-toggle="tab" aria-controls="step1" role="tab" title="Step 1">
+			                            <span class="round-tab">
+			                                <i class="glyphicon glyphicon-folder-open"></i>
+			                            </span>
+			                        </a>
+			                    </li>
+
+			                    <li role="presentation" class="disabled">
+			                        <a href="#step2" data-toggle="tab" aria-controls="step2" role="tab" title="Step 2">
+			                            <span class="round-tab">
+			                                <i class="glyphicon glyphicon-pencil"></i>
+			                            </span>
+			                        </a>
+			                    </li>
+			                    <li role="presentation" class="disabled">
+			                        <a href="#step3" data-toggle="tab" aria-controls="step3" role="tab" title="Step 3">
+			                            <span class="round-tab">
+			                                <i class="glyphicon glyphicon-picture"></i>
+			                            </span>
+			                        </a>
+			                    </li>
+
+			                    <li role="presentation" class="disabled">
+			                        <a href="#complete" data-toggle="tab" aria-controls="complete" role="tab" title="Complete">
+			                            <span class="round-tab">
+			                                <i class="glyphicon glyphicon-ok"></i>
+			                            </span>
+			                        </a>
+			                    </li>
+			                </ul>
+			            </div>
+
+			            <form role="form">
+			                <div class="tab-content">
+			                    <div class="tab-pane active" role="tabpanel" id="step1">
+			                        <h3>Step 1</h3>
+			                        <p>This is step 1</p>
+			                        <ul class="list-inline pull-right">
+			                            <li><button type="button" class="btn btn-primary next-step">Save and continue</button></li>
+			                        </ul>
+			                    </div>
+			                    <div class="tab-pane" role="tabpanel" id="step2">
+			                        <h3>Step 2</h3>
+			                        <p>This is step 2</p>
+			                        <ul class="list-inline pull-right">
+			                            <li><button type="button" class="btn btn-default prev-step">Previous</button></li>
+			                            <li><button type="button" class="btn btn-primary next-step">Save and continue</button></li>
+			                        </ul>
+			                    </div>
+			                    <div class="tab-pane" role="tabpanel" id="step3">
+			                        <h3>Step 3</h3>
+			                        <p>This is step 3</p>
+			                        <ul class="list-inline pull-right">
+			                            <li><button type="button" class="btn btn-default prev-step">Previous</button></li>
+			                            <li><button type="button" class="btn btn-default next-step">Skip</button></li>
+			                            <li><button type="button" class="btn btn-primary btn-info-full next-step">Save and continue</button></li>
+			                        </ul>
+			                    </div>
+			                    <div class="tab-pane" role="tabpanel" id="complete">
+			                        <h3>Complete</h3>
+			                        <p>You have successfully completed all steps.</p>
+			                    </div>
+			                    <div class="clearfix"></div>
+			                </div>
+			            </form>
+			        </div>
+			    </section>
+			</div>
+		</div>-->
 	</div>
 </div> <!-- end of employee tab -->
