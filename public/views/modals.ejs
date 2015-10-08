@@ -1708,7 +1708,7 @@
 			</div>
 			<!-- end aproved objective modal-->
 			<!-- Self evaluation modal by Mlandvo -->
-			<div class="modal fade" id="evalModal">
+			<div class="modal fade" id="evalModal" ng-controller="compileController">
 				<div id="scorecardModalDialog" class="modal-dialog" style="width:95%;">
 					<div id="scorecardModalContent" class="modal-content"> 
 						<div id="scorecardModalHeader" class="modal-header">
@@ -1718,17 +1718,25 @@
 						</div>
 						<div class="modal-body" >
 
-							<div ng-show="showEvalErr" class="alert alert-danger alert-dismissable" >
+							<div ng-show="!showEvalErr" class="alert alert-danger alert-dismissable" >
 							  	<button type="button" class="close" data-dismiss="alert">X</button>
 							  	<strong>Oops!:</strong>
 								&nbsp;
-								<span ng-model='showEvalMsg' ng-show="showEvalErr">
+								<span ng-model='showEvalMsg' ng-show="!showEvalErr">
 								    {{showEvalMsg}}
 								    <br>
+								    <br>
+								    OR
+								    <p>
+								    	<button class="btn btn-primary" ng-click="getAllKPAs();">
+						  				<span class="glyphicon glyphicon-refresh"></span>
+						  				Refresh
+						  			</button>
+								    </p>
 								</span>
 							</div> 
 
-							<div ng-if="!showEvalErr" class="panel">
+							<div ng-if="showEvalErr" class="panel">
 								<div class="alert alert-info">
 						  			<button type="button" class="close" data-dismiss="alert">X</button>
 									<p>Enter Rating per Perfomance indicator under each Perspective and Comment or Attach files (Maximum 10 e.g PDF,Spreadsheet,Word Document) to support your Rating
@@ -1743,49 +1751,49 @@
 									    <br>
 									</span>
 								</div> 
-
-								<table class="table table-hover" style="width:100%">
-									<caption>
-										<h3 style="color: #6699FF;">Finance Objectives</h3>
-									</caption>
-									<thead>
-										<tr>
-										  	<th style="width:10%"><h4 style="color: #003366;">Key Performance Area</h4></th>
-										  	<th style="width:15%"><h4 style="color: #003366;">Key Performance Indicator</h4></th>
-										  	<th style="width:5%"><h4 style="color: #003366;">Detailed Weightings</h4></th>
-										  	<th style="width:20%"><h4 style="color: #003366;">Attachment(s)(Optional)</h4></th>
-										  	<th style="width:20%"><h4 style="color: #003366;">Comment(s)</h4></th>
-										  	<th style="width:20%"><h4 style="color: #003366;">Rating</h4></th>				 	
-										</tr>
-									</thead>
-									<form>	  									
-										<tbody>
-											<tr ng-repeat="appFin in appFinObj | orderBy: 'description' | filter: search | limitTo:10">
-											  	<td>{{appFin.description | uppercase}}</td>
-											  	<td>{{appFin.DSO}}</td>
-											  	<td style="width:10%">{{appFin.finDetailedWeighting}}</td>
-											  	<td>
-												  	<input id="files" ngf-select  ngf-multiple="true" ng-model="appFin.file" ngf-change="updateKPA(appFin);" type="file" multiple="false">
-											    </td>
-											  	<td>
-											  		<textarea class="form-control" type="text" rows="3" ng-model="appFin.empComment" id="empComment" placeholder="(Optional)" ng-keyup="updateKPA(appFin);">
-											  		</textarea>
-											  	</td>
-											  	<td width="100%">									
-											    	<select class="form-control"  ng-model="appFin.value" ng-change="selfEvaluate();updateKPA(appFin);">
-				                                    	<option ng-selected="[Select]">-- Select Rating --</option>
-				                                    	<option value="{{appFin.metricOne.value}}">{{appFin.metricOne.value+" |"+appFin.metricOne.label}}</option>
-				                                    	<option value="{{appFin.metricTwo.value}}">{{appFin.metricTwo.value+" |"+appFin.metricTwo.label}}</option>
-				                                    	<option value="{{appFin.metricThree.value}}">{{appFin.metricThree.value+" |"+appFin.metricThree.label}}</option>
-				                                    	<option value="{{appFin.metricFour.value}}">{{appFin.metricFour.value+" |"+appFin.metricFour.label}}</option>
-				                                    	<option value="{{appFin.metricFive.value}}">{{appFin.metricFive.value+" |"+appFin.metricFive.label||appFin.metricFive.from+ to +appFin.metricFive.to}}</option>
-				                                  	</select>
-			      								</td>
+								<div ng-show="!appFin">
+									<table class="table table-hover" style="width:100%">
+										<caption>
+											<h3 style="color: #6699FF;">Finance Objectives</h3>
+										</caption>
+										<thead>
+											<tr>
+											  	<th style="width:10%"><h4 style="color: #003366;">Key Performance Area</h4></th>
+											  	<th style="width:15%"><h4 style="color: #003366;">Key Performance Indicator</h4></th>
+											  	<th style="width:5%"><h4 style="color: #003366;">Detailed Weightings</h4></th>
+											  	<th style="width:20%"><h4 style="color: #003366;">Attachment(s)(Optional)</h4></th>
+											  	<th style="width:20%"><h4 style="color: #003366;">Comment(s)</h4></th>
+											  	<th style="width:20%"><h4 style="color: #003366;">Rating</h4></th>				 	
 											</tr>
-										</tbody>
-									</form>	
-								</table> 
-
+										</thead>
+										<form>	  									
+											<tbody>
+												<tr ng-repeat="appFin in appFinOb | orderBy: 'description' | filter: search | limitTo:10">
+												  	<td>{{appFin.description | uppercase}}</td>
+												  	<td>{{appFin.DSO}}</td>
+												  	<td style="width:10%">{{appFin.finDetailedWeighting}}</td>
+												  	<td>
+													  	<input id="files" ngf-select  ngf-multiple="true" ng-model="appFin.file" ngf-change="updateKPA(appFin);" type="file" multiple="false">
+												    </td>
+												  	<td>
+												  		<textarea class="form-control" type="text" rows="3" ng-model="appFin.empComment" id="empComment" placeholder="(Optional)" ng-keyup="updateKPA(appFin);">
+												  		</textarea>
+												  	</td>
+												  	<td width="100%">									
+												    	<select class="form-control"  ng-model="appFin.value" ng-change="selfEvaluate();updateKPA(appFin);">
+					                                    	<option ng-selected="[Select]">-- Select Rating --</option>
+					                                    	<option value="{{appFin.metricOne.value}}">{{appFin.metricOne.value+" |"+appFin.metricOne.label}}</option>
+					                                    	<option value="{{appFin.metricTwo.value}}">{{appFin.metricTwo.value+" |"+appFin.metricTwo.label}}</option>
+					                                    	<option value="{{appFin.metricThree.value}}">{{appFin.metricThree.value+" |"+appFin.metricThree.label}}</option>
+					                                    	<option value="{{appFin.metricFour.value}}">{{appFin.metricFour.value+" |"+appFin.metricFour.label}}</option>
+					                                    	<option value="{{appFin.metricFive.value}}">{{appFin.metricFive.value+" |"+appFin.metricFive.label||appFin.metricFive.from+ to +appFin.metricFive.to}}</option>
+					                                  	</select>
+				      								</td>
+												</tr>
+											</tbody>
+										</form>	
+									</table> 
+								</div>
 								<div class="alert alert-danger alert-dismissable" ng-show="hasFinSCErrors">
 								  	<button type="button" class="close" data-dismiss="alert">&times;</button>
 								  	<strong>Error:</strong>
@@ -1795,45 +1803,45 @@
 									    <br>
 									</span>
 								</div> 
-
-								<table class="table table-hover"  style="width:100%">
-									<caption><h3 style="color: #6699FF;">Customer Objectives</h3></caption>
-									<thead>
-										<tr>
-										  	<th style="width:10%"><h4 style="color: #003366;">Key Performance Area</h4></th>
-										  	<th style="width:15%"><h4 style="color: #003366;">Key Performance Indicator</h4></th>
-										  	<th style="width:5%"><h4 style="color: #003366;">Detailed Weightings</h4></th>
-										  	<th style="width:20%"><h4 style="color: #003366;">Attachment(s)(Optional)</h4></th>
-										  	<th style="width:20%"><h4 style="color: #003366;">Comment(s)</h4></th>
-										  	<th style="width:20%"><h4 style="color: #003366;">Rating</h4></th>							  	
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="appCust in appCustObj | orderBy: 'description' | filter: search | limitTo:10">
-										  	<td>{{appCust.description | uppercase}}</td>
-										  	<td>{{appCust.DSO}}</td>
-										  	<td>{{appCust.custDetailedWeighting}}</td>
-										  	<td>
-										  		<input id="kpiAttachment" type="file" multiple="true">
-										  	</td>
-										  	<td>
-										  		<textarea class="form-control" type="text"  rows="3" ng-model="appCust.empComment" id="empComment" placeholder="(Optional)" ng-keyup="captureComment(appCust);updateKPA(appCust);">
-											  	</textarea>
-										  	</td>
-		      								<td width="100%">									
-										    	<select class="form-control"  ng-model="appCust.value" ng-change="selfEvaluate();updateKPA(appCust);">
-			                                    	<option ng-selected="[Select]">-- Select Rating --</option>
-			                                    	<option value="{{appCust.metricOne.value}}">{{appCust.metricOne.value+" |"+appCust.metricOne.label}}</option>
-			                                    	<option value="{{appCust.metricTwo.value}}">{{appCust.metricTwo.value+" |"+appCust.metricTwo.label}}</option>
-			                                    	<option value="{{appCust.metricThree.value}}">{{appCust.metricThree.value+" |"+appCust.metricThree.label}}</option>
-			                                    	<option value="{{appCust.metricFour.value}}">{{appCust.metricFour.value+" |"+appCust.metricFour.label}}</option>
-			                                    	<option value="{{appCust.metricFive.value}}">{{appCust.metricFive.value+" |"+appCust.metricFive.label}}</option>
-			                                  	</select>
-		      								</td>
-										</tr>
-									</tbody>
-								</table> 
-
+								<div ng-show="!appCust">
+									<table class="table table-hover"  style="width:100%">
+										<caption><h3 style="color: #6699FF;">Customer Objectives</h3></caption>
+										<thead>
+											<tr>
+											  	<th style="width:10%"><h4 style="color: #003366;">Key Performance Area</h4></th>
+											  	<th style="width:15%"><h4 style="color: #003366;">Key Performance Indicator</h4></th>
+											  	<th style="width:5%"><h4 style="color: #003366;">Detailed Weightings</h4></th>
+											  	<th style="width:20%"><h4 style="color: #003366;">Attachment(s)(Optional)</h4></th>
+											  	<th style="width:20%"><h4 style="color: #003366;">Comment(s)</h4></th>
+											  	<th style="width:20%"><h4 style="color: #003366;">Rating</h4></th>							  	
+											</tr>
+										</thead>
+										<tbody>
+											<tr ng-repeat="appCust in appCustOb | orderBy: 'description' | filter: search | limitTo:10">
+											  	<td>{{appCust.description | uppercase}}</td>
+											  	<td>{{appCust.DSO}}</td>
+											  	<td>{{appCust.custDetailedWeighting}}</td>
+											  	<td>
+											  		<input id="kpiAttachment" type="file" multiple="true">
+											  	</td>
+											  	<td>
+											  		<textarea class="form-control" type="text"  rows="3" ng-model="appCust.empComment" id="empComment" placeholder="(Optional)" ng-keyup="captureComment(appCust);updateKPA(appCust);">
+												  	</textarea>
+											  	</td>
+			      								<td width="100%">									
+											    	<select class="form-control"  ng-model="appCust.value" ng-change="selfEvaluate();updateKPA(appCust);">
+				                                    	<option ng-selected="[Select]">-- Select Rating --</option>
+				                                    	<option value="{{appCust.metricOne.value}}">{{appCust.metricOne.value+" |"+appCust.metricOne.label}}</option>
+				                                    	<option value="{{appCust.metricTwo.value}}">{{appCust.metricTwo.value+" |"+appCust.metricTwo.label}}</option>
+				                                    	<option value="{{appCust.metricThree.value}}">{{appCust.metricThree.value+" |"+appCust.metricThree.label}}</option>
+				                                    	<option value="{{appCust.metricFour.value}}">{{appCust.metricFour.value+" |"+appCust.metricFour.label}}</option>
+				                                    	<option value="{{appCust.metricFive.value}}">{{appCust.metricFive.value+" |"+appCust.metricFive.label}}</option>
+				                                  	</select>
+			      								</td>
+											</tr>
+										</tbody>
+									</table> 
+								</div>
 								<div class="alert alert-danger alert-dismissable" ng-show="hasCustSCErrors">
 								  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
 									&nbsp;
@@ -1842,45 +1850,45 @@
 									    <br>
 									</span>
 								</div> <!--end danger alert -->
-
-								<table class="table table-hover" style="width:100%">
-									<caption><h3 style="color: #6699FF;">Internal Business Objectives</h3></caption>
-									<thead>
-										<tr>
-										  	<th style="width:10%"><h4 style="color: #003366;">Key Performance Area</h4></th>
-										  	<th style="width:15%"><h4 style="color: #003366;">Key Performance Indicator</h4></th>
-										  	<th style="width:5%"><h4 style="color: #003366;">Detailed Weightings</h4></th>
-										  	<th style="width:20%"><h4 style="color: #003366;">Attachment(s)(Optional)</h4></th>
-										  	<th style="width:20%"><h4 style="color: #003366;">Comment(s)</h4></th>
-										  	<th style="width:20%"><h4 style="color: #003366;">Rating</h4></th>							  	
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="appInt in appIntObj | orderBy: 'description' |filter: search |limitTo:10">
-										  	<td>{{appInt.description | uppercase}}</td>
-										  	<td>{{appInt.DSO}}</td>
-										  	<td width="20%">{{appInt.intDetailedWeighting}}</td>
-										  	<td>
-											  	<input id="files" ngf-select  ngf-multiple="true" ng-model="appInt.file" ngf-change="updateKPA(appInt);" type="file" multiple="false">
-										    </td>
-										  	<td>
-										  		<textarea class="form-control" type="text" rows="3" ng-model="appInt.empComment" id="empComment" placeholder="(Optional)" ng-keyup="captureComment(appInt);updateKPA(appInt);">
-										  		</textarea>
-										  	</td>
-										  	<td width="100%">									
-										    	<select class="form-control"  ng-model="appInt.value" ng-change="selfEvaluate();updateKPA(appInt);">
-			                                    	<option ng-selected="[Select]">-- Select Rating --</option>
-			                                    	<option value="{{appInt.metricOne.value}}">{{appInt.metricOne.value+" |"+appInt.metricOne.label}}</option>
-			                                    	<option value="{{appInt.metricTwo.value}}">{{appInt.metricTwo.value+" |"+appInt.metricTwo.label}}</option>
-			                                    	<option value="{{appInt.metricThree.value}}">{{appInt.metricThree.value+" |"+appInt.metricThree.label}}</option>
-			                                    	<option value="{{appInt.metricFour.value}}">{{appInt.metricFour.value+" |"+appInt.metricFour.label}}</option>
-			                                    	<option value="{{appInt.metricFive.value}}">{{appInt.metricFive.value+" |"+appInt.metricFive.label}}</option>
-			                                  	</select>
-		      								</td>
-										</tr>
-									</tbody>
-								</table> 
-
+								<div ng-show="!appInt">
+									<table class="table table-hover" style="width:100%">
+										<caption><h3 style="color: #6699FF;">Internal Business Objectives</h3></caption>
+										<thead>
+											<tr>
+											  	<th style="width:10%"><h4 style="color: #003366;">Key Performance Area</h4></th>
+											  	<th style="width:15%"><h4 style="color: #003366;">Key Performance Indicator</h4></th>
+											  	<th style="width:5%"><h4 style="color: #003366;">Detailed Weightings</h4></th>
+											  	<th style="width:20%"><h4 style="color: #003366;">Attachment(s)(Optional)</h4></th>
+											  	<th style="width:20%"><h4 style="color: #003366;">Comment(s)</h4></th>
+											  	<th style="width:20%"><h4 style="color: #003366;">Rating</h4></th>							  	
+											</tr>
+										</thead>
+										<tbody>
+											<tr ng-repeat="appInt in appIntOb | orderBy: 'description' |filter: search |limitTo:10">
+											  	<td>{{appInt.description | uppercase}}</td>
+											  	<td>{{appInt.DSO}}</td>
+											  	<td width="20%">{{appInt.intDetailedWeighting}}</td>
+											  	<td>
+												  	<input id="files" ngf-select  ngf-multiple="true" ng-model="appInt.file" ngf-change="updateKPA(appInt);" type="file" multiple="false">
+											    </td>
+											  	<td>
+											  		<textarea class="form-control" type="text" rows="3" ng-model="appInt.empComment" id="empComment" placeholder="(Optional)" ng-keyup="captureComment(appInt);updateKPA(appInt);">
+											  		</textarea>
+											  	</td>
+											  	<td width="100%">									
+											    	<select class="form-control"  ng-model="appInt.value" ng-change="selfEvaluate();updateKPA(appInt);">
+				                                    	<option ng-selected="[Select]">-- Select Rating --</option>
+				                                    	<option value="{{appInt.metricOne.value}}">{{appInt.metricOne.value+" |"+appInt.metricOne.label}}</option>
+				                                    	<option value="{{appInt.metricTwo.value}}">{{appInt.metricTwo.value+" |"+appInt.metricTwo.label}}</option>
+				                                    	<option value="{{appInt.metricThree.value}}">{{appInt.metricThree.value+" |"+appInt.metricThree.label}}</option>
+				                                    	<option value="{{appInt.metricFour.value}}">{{appInt.metricFour.value+" |"+appInt.metricFour.label}}</option>
+				                                    	<option value="{{appInt.metricFive.value}}">{{appInt.metricFive.value+" |"+appInt.metricFive.label}}</option>
+				                                  	</select>
+			      								</td>
+											</tr>
+										</tbody>
+									</table>
+								</div> 
 								<div class="alert alert-danger alert-dismissable" ng-if="hasIntSCErrors">
 								  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
 									&nbsp;
@@ -1889,45 +1897,45 @@
 									    <br>
 									</span>
 								</div> 
-
-								<table class="table table-hover"  style="width:100%">
-									<caption><h3 style="color: #6699FF;">Learning & Growth Objectives</h3></caption>
-									<thead>
-										<tr>
-										  	<th style="width:10%"><h4 style="color: #003366;">Key Performance Area</h4></th>
-										  	<th style="width:15%"><h4 style="color: #003366;">Key Performance Indicator</h4></th>
-										  	<th style="width:5%"><h4 style="color: #003366;">Detailed Weightings</h4></th>
-										  	<th style="width:20%"><h4 style="color: #003366;">Attachment(s)(Optional)</h4></th>
-										  	<th style="width:20%"><h4 style="color: #003366;">Comment(s)</h4></th>
-										  	<th style="width:20%"><h4 style="color: #003366;">Rating</h4></th>							  	
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="appLearn in appLearnObj | orderBy: 'description' |filter: search |limitTo:10">
-										  	<td>{{appLearn.description}}</td>
-										  	<td>{{appLearn.DSO}}</td>
-										  	<td width="20%">{{appLearn.learnDetailedWeighting}}</td>
-										  	<td>
-											  	<input id="files" ngf-select  ngf-multiple="true" ng-model="appLearn.file" ngf-change="updateKPA(appLearn);" type="file" multiple="false">
-										    </td>
-										  	<td>
-										  		<textarea class="form-control" type="text" rows="3" ng-model="appLearn.empComment" id="empComment" placeholder="(Optional)" ng-keyup="captureComment(appLearn);updateKPA(appLearn);">
-										  		</textarea>
-										  	</td>
-										  	<td width="100%">									
-										    	<select class="form-control"  ng-model="appLearn.value" ng-change="selfEvaluate();updateKPA(appLearn);">
-			                                    	<option ng-selected="[Select]">-- Select Rating --</option>
-			                                    	<option value="{{appLearn.metricOne.value}}">{{appLearn.metricOne.value+" |"+appLearn.metricOne.label}}</option>
-			                                    	<option value="{{appLearn.metricTwo.value}}">{{appLearn.metricTwo.value+" |"+appLearn.metricTwo.label}}</option>
-			                                    	<option value="{{appLearn.metricThree.value}}">{{appLearn.metricThree.value+" |"+appLearn.metricThree.label}}</option>
-			                                    	<option value="{{appLearn.metricFour.value}}">{{appLearn.metricFour.value+" |"+appLearn.metricFour.label}}</option>
-			                                    	<option value="{{appLearn.metricFive.value}}">{{appLearn.metricFive.value+" |"+appLearn.metricFive.label}}</option>
-			                                  	</select>
-		      								</td>
-										</tr>
-									</tbody>			
-								</table> 
-
+								<div ng-show="!appLearn">
+									<table class="table table-hover"  style="width:100%">
+										<caption><h3 style="color: #6699FF;">Learning & Growth Objectives</h3></caption>
+										<thead>
+											<tr>
+											  	<th style="width:10%"><h4 style="color: #003366;">Key Performance Area</h4></th>
+											  	<th style="width:15%"><h4 style="color: #003366;">Key Performance Indicator</h4></th>
+											  	<th style="width:5%"><h4 style="color: #003366;">Detailed Weightings</h4></th>
+											  	<th style="width:20%"><h4 style="color: #003366;">Attachment(s)(Optional)</h4></th>
+											  	<th style="width:20%"><h4 style="color: #003366;">Comment(s)</h4></th>
+											  	<th style="width:20%"><h4 style="color: #003366;">Rating</h4></th>							  	
+											</tr>
+										</thead>
+										<tbody>
+											<tr ng-repeat="appLearn in appLearnOb | orderBy: 'description' |filter: search |limitTo:10">
+											  	<td>{{appLearn.description}}</td>
+											  	<td>{{appLearn.DSO}}</td>
+											  	<td width="20%">{{appLearn.learnDetailedWeighting}}</td>
+											  	<td>
+												  	<input id="files" ngf-select  ngf-multiple="true" ng-model="appLearn.file" ngf-change="updateKPA(appLearn);" type="file" multiple="false">
+											    </td>
+											  	<td>
+											  		<textarea class="form-control" type="text" rows="3" ng-model="appLearn.empComment" id="empComment" placeholder="(Optional)" ng-keyup="captureComment(appLearn);updateKPA(appLearn);">
+											  		</textarea>
+											  	</td>
+											  	<td width="100%">									
+											    	<select class="form-control"  ng-model="appLearn.value" ng-change="selfEvaluate();updateKPA(appLearn);">
+				                                    	<option ng-selected="[Select]">-- Select Rating --</option>
+				                                    	<option value="{{appLearn.metricOne.value}}">{{appLearn.metricOne.value+" |"+appLearn.metricOne.label}}</option>
+				                                    	<option value="{{appLearn.metricTwo.value}}">{{appLearn.metricTwo.value+" |"+appLearn.metricTwo.label}}</option>
+				                                    	<option value="{{appLearn.metricThree.value}}">{{appLearn.metricThree.value+" |"+appLearn.metricThree.label}}</option>
+				                                    	<option value="{{appLearn.metricFour.value}}">{{appLearn.metricFour.value+" |"+appLearn.metricFour.label}}</option>
+				                                    	<option value="{{appLearn.metricFive.value}}">{{appLearn.metricFive.value+" |"+appLearn.metricFive.label}}</option>
+				                                  	</select>
+			      								</td>
+											</tr>
+										</tbody>			
+									</table> 
+								</div>
 								<div class="alert alert-danger alert-dismissable" ng-show="hasLearnSCErrors">
 								  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
 									&nbsp;

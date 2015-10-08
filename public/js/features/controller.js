@@ -1247,7 +1247,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 /***********************************************************************************************************************************************
 ********************************************************COMPILE OBJECTIVE CONTROLLER*************************************************************
 ************************************************************************************************************************************************/
-   .controller('compileController', ['allObjectives','approvedObjectives','unApprovedObjectives' ,'$scope','$rootScope', '$http', function (approvedObjectives,allObjectives,unApprovedObjectives, $scope, $rootScope, $http) {
+   .controller('compileController', ['allObjectives','approvedObjectives','unApprovedObjectives', '$scope', '$rootScope', '$http', function (approvedObjectives,allObjectives,unApprovedObjectives,$scope,$rootScope, $http) {
 	$scope.appFinIDArray = [];
 	$scope.appCustIDArray = [];
 	$scope.appIntIDArray = [];
@@ -1501,28 +1501,41 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 	$scope.getAllKPAs = function() {
 		$http.post('/getApprovedObjectives')
 		.success(function (res) {
-			$scope.appFinObj = [];
-			$scope.appCustObj = [];
-			$scope.appIntObj = [];
-			$scope.appLearnObj = [];
+			$scope.appFinOb = [];
+			$scope.appCustOb = [];
+			$scope.appIntOb = [];
+			$scope.appLearnOb = [];
+			$scope.appFin = true;
+			$scope.appCust = true;
+			$scope.appInt = true;
+			$scope.appLearn = true;
 			console.log("Ran getAllKPAs finction and got");
 			console.log(res.length);
 			if(res.length > 0){
 				res.forEach(function (kpi) {
 		        	if (kpi.perspective == "finance") {
-		          		$scope.appFinObj.push(kpi);	        		
+		        		console.log(kpi);
+		        		console.log(kpi.perspective);
+		          		$scope.appFinOb.push(kpi);
+		          		console.log($scope.appFinOb);
+		          		$scope.appFin = false;	        		
 		        	} 
 		        	else if (kpi.perspective == "customer") {
-						$scope.appCustObj.push(kpi);
+						$scope.appCustOb.push(kpi);
+						$scope.appCust = false;
 					}
 					else if (kpi.perspective == "internal") {
-						$scope.appIntObj.push(kpi);
+						$scope.appIntOb.push(kpi);
+						$scope.appInt = false;
 					}
 					else if (kpi.perspective == "learn") {
-						$scope.appLearnObj.push(kpi);
+						$scope.appLearnOb.push(kpi);
+						$scope.appLearn = false;
 					}
 	      		})
 	      		$scope.showEvalErr = true;
+	      		console.log("Array contents");
+	      		console.log($scope.appFinOb);
 			}
 			else if(res.length <= 0){
 				$scope.showEvalErr = false;
