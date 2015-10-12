@@ -25,7 +25,7 @@ var mongojs = require("mongojs")
 //use the default port for Mongo server/client connections			
     ,port = "27017"				
 //init BSCIMS (database) and Objectives (collection)
-    ,db = mongojs("sebentiledb", ["Objectives","Division","Transaction","Document","Employees", "Scorecard"]);
+    ,db = mongojs("sebentiledb", ["Objectives","Division","Transaction","Document","Employees", "Scorecard", "pespectives"]);
 
 //instantiate the server application 
 var bsc = express()
@@ -259,6 +259,44 @@ var bsc = express()
 		});
 	})
 
+	// Brian
+	.post("/supObjAction", function ( req, res) {
+		var item = req.body;
+		console.log(item);
+		db.Objectives.update({_id: mongojs.ObjectId(item.objId)},{$set:{status:item.action, subComment:item.comment}}, function (err, docs) {
+			if (err) {
+				console.log("There is an error");
+			} else { 
+				res.json(docs);
+			}
+		});
+	})
+
+	// Brian
+	.post("/retrievePespectives", function ( req, res) {
+		db.pespectives.find(function (err, docs) {
+			if (err) {
+				console.log("There is an error");
+			} else { 
+				console.log(docs);
+				res.json(docs);
+			}
+		});
+	})
+
+	// Brian
+	.post("/submitObj", function ( req, res) {
+		var item = req.body;
+		db.Objectives.update({_id: mongojs.ObjectId(item.id)},{$set:{status:"sent_for_approval"}},function (err, docs) {
+			if (err) {
+				console.log("There is an error");
+			} else { 
+				console.log(docs);
+				res.json(docs);
+			}
+		});
+	})
+
 	/* FOR SELF EVALUATION by Mlandvo*/
 	
 	//get all KPAs by Mlandvo
@@ -293,6 +331,7 @@ var bsc = express()
             }
         });
     })*/
+
 	//by Mlandvo
     .post("/getEvalKPAs", function ( req, res) {
 	   		console.log("getting evaluated KPAs");
@@ -306,6 +345,7 @@ var bsc = express()
 				}	
 			});
 	})
+
 	// by Mlandvo
 	.put('/completeSelfEval/', function (req, res) {
 		var kpa = req.body;
@@ -344,10 +384,7 @@ var bsc = express()
         });
 	})
 
-
-
-//********************************
-
+	//********************************
 
 	.post("/getUnapprovedObjectives", function ( req, res) {
 	   		//console.log("Beginning of route");
@@ -416,48 +453,48 @@ var bsc = express()
 		})
 	})
 
-	// create finance objective : by Brian
-    .post("/createFinanceObjective", function (req, res) {
+	// create objective : by Brian
+    .post("/createObjective", function (req, res) {
 		
-		var finObjective = req.body;
+		var objective = req.body;
 		var matrixType = req.body.metrixType;
 
-		finObjective['owner'] = req.session.loggdUser.PFNum;
-		finObjective['pespective'] = 'finance';
-		finObjective['status'] = 'unactioned';
-		finObjective['empComment'] = '';
-		finObjective['supComment'] = '';
-		finObjective['rating'] = '';
-		finObjective['score'] = '';
-		finObjective['creationDate'] = Date();
+		objective['owner'] = req.session.loggdUser.PFNum;
+		//finObjective['pespective'] = 'finance';
+		objective['status'] = 'unactioned';
+		objective['empComment'] = '';
+		objective['supComment'] = '';
+		objective['rating'] = '';
+		objective['score'] = '';
+		objective['creationDate'] = Date();
 
 		if (matrixType == "time") {
-			finObjective['metricOneDef'] = {value:1,from:finObjective.metricOneFrom,To:finObjective.metricOneTo};
-			finObjective['metricTwoDef'] = {value:2,from:finObjective.metricTwoFrom,To:finObjective.metricTwoTo};
-			finObjective['metricThreeDef'] = {value:3,from:finObjective.metricThreeFrom,To:finObjective.metricThreeTo};
-			finObjective['metricFourDef'] = {value:4,from:finObjective.metricFourFrom,To:finObjective.metricFourTo};
-			finObjective['metricFiveDef'] = {value:5,from:finObjective.metricFiveFrom,To:finObjective.metricFiveTo};
+			objective['metricOneDef'] = {value:1,from:objective.metricOneFrom,To:objective.metricOneTo};
+			objective['metricTwoDef'] = {value:2,from:objective.metricTwoFrom,To:objective.metricTwoTo};
+			objective['metricThreeDef'] = {value:3,from:objective.metricThreeFrom,To:objective.metricThreeTo};
+			objective['metricFourDef'] = {value:4,from:objective.metricFourFrom,To:objective.metricFourTo};
+			objective['metricFiveDef'] = {value:5,from:objective.metricFiveFrom,To:objective.metricFiveTo};
 
-			delete finObjective.metricOneFrom;
-			delete finObjective.metricOneTo;
-			delete finObjective.metricTwoFrom;
-			delete finObjective.metricTwoTo;
-			delete finObjective.metricThreeFrom;
-			delete finObjective.metricThreeTo;
-			delete finObjective.metricFourFrom;
-			delete finObjective.metricFourTo;
-			delete finObjective.metricFiveFrom;
-			delete finObjective.metricFiveTo;
+			delete objective.metricOneFrom;
+			delete objective.metricOneTo;
+			delete objective.metricTwoFrom;
+			delete objective.metricTwoTo;
+			delete objective.metricThreeFrom;
+			delete objective.metricThreeTo;
+			delete objective.metricFourFrom;
+			delete objective.metricFourTo;
+			delete objective.metricFiveFrom;
+			delete objective.metricFiveTo;
 
 		} else {
-			finObjective['metricOneDef'] = {label:finObjective.metricOneDef, value:1};
-			finObjective['metricTwoDef'] = {label:finObjective.metricTwoDef, value:2};
-			finObjective['metricThreeDef'] = {label:finObjective.metricThreeDef, value:3};
-			finObjective['metricFourDef'] = {label:finObjective.metricFourDef, value:4};
-			finObjective['metricFiveDef'] = {label:finObjective.metricFiveDef, value:5};
+			objective['metricOneDef'] = {label:objective.metricOneDef, value:1};
+			objective['metricTwoDef'] = {label:objective.metricTwoDef, value:2};
+			objective['metricThreeDef'] = {label:objective.metricThreeDef, value:3};
+			objective['metricFourDef'] = {label:objective.metricFourDef, value:4};
+			objective['metricFiveDef'] = {label:objective.metricFiveDef, value:5};
 		}
 
-		db.Objectives.insert(finObjective, function (err, doc) {
+		db.Objectives.insert(objective, function (err, doc) {
 			res.json(doc);
 		})
 	})
@@ -648,6 +685,17 @@ var bsc = express()
 			
 		});
 	})
+
+	.post('/getKPA/:id', function (req, res) {
+        var id = String(req.params.id);
+        db.Objectives.findOne({_id: db.ObjectId(req.params.id)}, function (err, data) {
+            if (err || !data) {
+                res.send("KPA not in database");
+            } else {
+                res.send(data);
+            } 
+        });
+    })
  
 	.post('/getEmpsPendingObjs', function (req, res) {
 		db.Employees.find( function (err, cur) {
@@ -660,6 +708,7 @@ var bsc = express()
 			}
 		})
 	})
+
 
 /******************************************************************************************************************************************
 ***********************************SUBMIT OBJECTIVE OPERATION (CHANGES STATUS OF OBJECTIVE)************************************************
