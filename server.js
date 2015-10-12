@@ -25,7 +25,10 @@ var mongojs = require("mongojs")
 //use the default port for Mongo server/client connections			
     ,port = "27017"				
 //init BSCIMS (database) and Objectives (collection)
-    ,db = mongojs("sebentiledb", ["Objectives","Division","Transaction","Document","Employees", "Scorecard", "pespectives"]);
+    ,db = mongojs("sebentiledb", ["Objectives","Division","Transaction","Document","Employees", "Scorecard", "structure", "perspective"]);
+
+    //Custom Libs
+var boolStruct = require('./routes/boolstruct');
 
 //instantiate the server application 
 var bsc = express()
@@ -259,44 +262,6 @@ var bsc = express()
 		});
 	})
 
-	// Brian
-	.post("/supObjAction", function ( req, res) {
-		var item = req.body;
-		console.log(item);
-		db.Objectives.update({_id: mongojs.ObjectId(item.objId)},{$set:{status:item.action, subComment:item.comment}}, function (err, docs) {
-			if (err) {
-				console.log("There is an error");
-			} else { 
-				res.json(docs);
-			}
-		});
-	})
-
-	// Brian
-	.post("/retrievePespectives", function ( req, res) {
-		db.pespectives.find(function (err, docs) {
-			if (err) {
-				console.log("There is an error");
-			} else { 
-				console.log(docs);
-				res.json(docs);
-			}
-		});
-	})
-
-	// Brian
-	.post("/submitObj", function ( req, res) {
-		var item = req.body;
-		db.Objectives.update({_id: mongojs.ObjectId(item.id)},{$set:{status:"sent_for_approval"}},function (err, docs) {
-			if (err) {
-				console.log("There is an error");
-			} else { 
-				console.log(docs);
-				res.json(docs);
-			}
-		});
-	})
-
 	/* FOR SELF EVALUATION by Mlandvo*/
 	
 	//get all KPAs by Mlandvo
@@ -331,7 +296,6 @@ var bsc = express()
             }
         });
     })*/
-
 	//by Mlandvo
     .post("/getEvalKPAs", function ( req, res) {
 	   		console.log("getting evaluated KPAs");
@@ -345,7 +309,6 @@ var bsc = express()
 				}	
 			});
 	})
-
 	// by Mlandvo
 	.put('/completeSelfEval/', function (req, res) {
 		var kpa = req.body;
@@ -384,7 +347,10 @@ var bsc = express()
         });
 	})
 
-	//********************************
+
+
+//********************************
+
 
 	.post("/getUnapprovedObjectives", function ( req, res) {
 	   		//console.log("Beginning of route");
@@ -453,48 +419,48 @@ var bsc = express()
 		})
 	})
 
-	// create objective : by Brian
-    .post("/createObjective", function (req, res) {
+	// create finance objective : by Brian
+    .post("/createFinanceObjective", function (req, res) {
 		
-		var objective = req.body;
+		var finObjective = req.body;
 		var matrixType = req.body.metrixType;
 
-		objective['owner'] = req.session.loggdUser.PFNum;
-		//finObjective['pespective'] = 'finance';
-		objective['status'] = 'unactioned';
-		objective['empComment'] = '';
-		objective['supComment'] = '';
-		objective['rating'] = '';
-		objective['score'] = '';
-		objective['creationDate'] = Date();
+		finObjective['owner'] = req.session.loggdUser.PFNum;
+		finObjective['pespective'] = 'finance';
+		finObjective['status'] = 'unactioned';
+		finObjective['empComment'] = '';
+		finObjective['supComment'] = '';
+		finObjective['rating'] = '';
+		finObjective['score'] = '';
+		finObjective['creationDate'] = Date();
 
 		if (matrixType == "time") {
-			objective['metricOneDef'] = {value:1,from:objective.metricOneFrom,To:objective.metricOneTo};
-			objective['metricTwoDef'] = {value:2,from:objective.metricTwoFrom,To:objective.metricTwoTo};
-			objective['metricThreeDef'] = {value:3,from:objective.metricThreeFrom,To:objective.metricThreeTo};
-			objective['metricFourDef'] = {value:4,from:objective.metricFourFrom,To:objective.metricFourTo};
-			objective['metricFiveDef'] = {value:5,from:objective.metricFiveFrom,To:objective.metricFiveTo};
+			finObjective['metricOneDef'] = {value:1,from:finObjective.metricOneFrom,To:finObjective.metricOneTo};
+			finObjective['metricTwoDef'] = {value:2,from:finObjective.metricTwoFrom,To:finObjective.metricTwoTo};
+			finObjective['metricThreeDef'] = {value:3,from:finObjective.metricThreeFrom,To:finObjective.metricThreeTo};
+			finObjective['metricFourDef'] = {value:4,from:finObjective.metricFourFrom,To:finObjective.metricFourTo};
+			finObjective['metricFiveDef'] = {value:5,from:finObjective.metricFiveFrom,To:finObjective.metricFiveTo};
 
-			delete objective.metricOneFrom;
-			delete objective.metricOneTo;
-			delete objective.metricTwoFrom;
-			delete objective.metricTwoTo;
-			delete objective.metricThreeFrom;
-			delete objective.metricThreeTo;
-			delete objective.metricFourFrom;
-			delete objective.metricFourTo;
-			delete objective.metricFiveFrom;
-			delete objective.metricFiveTo;
+			delete finObjective.metricOneFrom;
+			delete finObjective.metricOneTo;
+			delete finObjective.metricTwoFrom;
+			delete finObjective.metricTwoTo;
+			delete finObjective.metricThreeFrom;
+			delete finObjective.metricThreeTo;
+			delete finObjective.metricFourFrom;
+			delete finObjective.metricFourTo;
+			delete finObjective.metricFiveFrom;
+			delete finObjective.metricFiveTo;
 
 		} else {
-			objective['metricOneDef'] = {label:objective.metricOneDef, value:1};
-			objective['metricTwoDef'] = {label:objective.metricTwoDef, value:2};
-			objective['metricThreeDef'] = {label:objective.metricThreeDef, value:3};
-			objective['metricFourDef'] = {label:objective.metricFourDef, value:4};
-			objective['metricFiveDef'] = {label:objective.metricFiveDef, value:5};
+			finObjective['metricOneDef'] = {label:finObjective.metricOneDef, value:1};
+			finObjective['metricTwoDef'] = {label:finObjective.metricTwoDef, value:2};
+			finObjective['metricThreeDef'] = {label:finObjective.metricThreeDef, value:3};
+			finObjective['metricFourDef'] = {label:finObjective.metricFourDef, value:4};
+			finObjective['metricFiveDef'] = {label:finObjective.metricFiveDef, value:5};
 		}
 
-		db.Objectives.insert(objective, function (err, doc) {
+		db.Objectives.insert(finObjective, function (err, doc) {
 			res.json(doc);
 		})
 	})
@@ -816,6 +782,141 @@ var bsc = express()
 		})
 		
 	})*/
+/*HR Module Routes*/
+
+.post('/route560d000d14d04f84393069550', function(req, res) {
+    query = req.body;
+
+    db.structure.insert(query, function(err, saved) {
+        if (err) res.send('Error!');
+        else {
+            res.send('Success!')
+        }
+    });
+
+})
+
+ .post('/route55df0ed0b2bc8bc76c51da16', function(req, res) {
+    query = req.body;
+
+    db.structure.find(function(err, data) {
+        if (err) res.send('Error!');
+        else {
+            //var boolStruct = require('./routes/boolstruct');
+            res.send(data)
+        }
+    });
+
+})
+
+.post('/route55df11e094e05079749e0a04', function(req, res) {
+    query = req.body;
+
+    db.structure.insert(query, function(err, saved) {
+        if (err) res.send('Error!');
+        else {
+            res.send('Success!')
+        }
+    });
+
+})
+
+.post('/saveNewPerspective', function(req, res) {
+    query = req.body;
+
+    db.perspective.insert(query, function(err, saved) {
+        if (err) res.send('Error!');
+        else {
+        	db.perspective.find(function(err1, resp){
+        		if (err1) res.send('Error!');
+        		res.send(resp);
+        	});
+            
+        }
+    });
+
+})
+
+.post('/saveNewEmployee', function(req, res) {
+    query = req.body;
+
+    db.Employees.insert(query, function(err, saved) {
+        if (err) res.send('Error!');
+        else {
+        	db.Employees.find(function(err1, resp){
+        		if (err1) res.send('Error!');
+        		res.send(resp);
+        	});
+            
+        }
+    });
+
+})
+
+.post('/getPerspectives', function(req, res) {
+    db.perspective.find( function(err, resp) {
+        if (err) res.send('Error!');
+        else {
+            res.send(resp);
+        }
+    });
+
+})
+
+.post('/getPositions', function(req, res) {
+    db.structure.find({"structType":"position"}, function(err, resp) {
+        if (err) res.send('Error!');
+        else {
+            res.send(resp);
+        }
+    });
+
+})
+
+.post('/getStructure', function(req, res) {
+    var myTree = new boolStruct();
+    myTree.init();
+
+    setTimeout(function() {
+        myTree.render();
+        //console.dir(myTree.treeData[0]);
+        //console.log(myTree.depth());
+        
+        
+    }, 300);
+
+    setTimeout(function(){
+        //console.log(myTree.showStruct());
+        res.send(myTree.showStruct());
+    },600);
+
+})
+
+.post('/route560d000d14d04f84393069551', function(req, res) {
+    query = req.body;
+
+    db.perspective.find(function(err, data) {
+        if (err) res.send('Error!');
+        else {
+            res.send(data)
+        }
+    });
+
+})
+
+.post('/route560d4856d00d941c304c7254', function(req, res) {
+    query = req.body;
+
+    db.structure.find({
+        "structType": "position"
+    }, function(err, data) {
+        if (err) res.send('Error!');
+        else {
+            res.send(data)
+        }
+    });
+
+})
 
 
 //Log on the console the 'init' of the server

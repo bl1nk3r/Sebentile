@@ -408,7 +408,174 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 /***********************************************************************************************************************************************
 *****************************************************FINANCE PERSPECTIVE CONTROLLER*************************************************************
 ************************************************************************************************************************************************/
-  	.controller('adminController',['$scope','$http','manageEmployeeData', function ($scope, $http, manageEmployeeData){
+   .controller('financePerspectiveController', function ($scope, $rootScope, $http) {
+		
+	//$scope.PF = $rootScope.PF;
+	//console.log($rootScope.PF);
+		
+	$scope.poorOptions = [{ label: '-Select metric-', value: 0},
+						  { label: '>15% budget variance', value: 15 },
+    				      { label: '>16% budget variance', value: 16 },
+  					      { label: '>17% budget variance', value: 17 },
+  					      { label: '>18% budget variance', value: 18 }
+  					     ];
+
+  	$scope.unsatOptions = [{ label: '-Select metric-', value: 0},
+				           { label: '>19% budget variance', value: 19 },
+    			           { label: '>20% budget variance', value: 20 },
+  				           { label: '>21% budget variance', value: 21 },
+  				           { label: '>22% budget variance', value: 22 }
+  				          ];
+
+  	$scope.targetOptions = [{ label: '-Select metric-', value: 0},
+						    { label: '9% budget variance  ', value: 9 },
+    				        { label: '10% budget variance ', value: 10 },
+  					        { label: '11% budget variance ', value: 11 }
+  					       ];
+
+  	$scope.exceedOptions = [{ label: '-Select metric-', value: 0},
+					        { label: '<5% budget variance ', value: 5 },
+    				        { label: '<6% budget variance ', value: 6 },
+  					        { label: '<7% budget variance ', value: 7 }
+  					       ];
+
+  	$scope.outstandOptions = [{ label: '-Select metric-', value: 0},
+						      { label: '0% budget variance', value: 00 },
+    				          { label: '1% budget variance', value: 16 }
+  					         ];
+
+  	$scope.monitorChange = function() {
+  		console.log($scope.poorOptions);
+  	}
+
+	$scope.submitFinanceObjective = function (PF) { 
+		
+		$scope.finObjError = [],
+		$scope.createObjectiveErrorMsgs = [],
+		$scope.hasCreateObjErrors = false;
+		$scope.hasFinKPAError = false;
+		$scope.hasFinKPIError = false;
+	
+		var generalErrorMsg = "Please ensure that all fields are filled!"
+			objDescriptionError = "The 'Key Performance Area' field is mandatory!",
+			objDSOError = "Please define the Key Performance Indicator!",
+			poorOptionsSelectError = "Select a minimum metric above!",
+			unsatOptionsSelectError = "Select an unsatisfactory metric above!",
+			targetOptionsSelectError = "Verfiy the 'Target Met' metric above!",
+			exceedOptionsSelectError = "Select an exceed metric above!",
+			outstandOptionsSelectError = "Select an outstanding metric above!",
+			poorOptionsDefError = "Define the poor metric above!",
+			unsatOptionsDefError = "Define the unsatisfactory metric above!",
+			targetOptionsDefError = "Define the 'Target Met' metric above!",
+			exceedOptionsDefError = "Define the exceed metric above!",
+			outstandOptionsDefError = "Define the outstanding metric above!";
+
+		if ($scope.financePerspectiveController.description == null) {
+
+			$scope.hasFinKPAError = true,
+			$scope.finObjError.push(objDescriptionError);
+		}
+		else if ($scope.financePerspectiveController.DSO == null) {
+
+			$scope.hasFinKPIError = true,
+			$scope.finObjError.push(objDSOError);
+		}
+		else if ($scope.poorOptions.value == 0) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(poorOptionsSelectError);
+		}
+		else if ($scope.unsatOptions.value == 0) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(unsatOptionsSelectError);
+		}
+		else if ($scope.targetOptions.value == 0) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(targetOptionsSelectError);
+		}
+		else if ($scope.exceedOptions.value == 0) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(exceedOptionsSelectError);
+		}
+		else if ($scope.outstandOptions.value == 0) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(outstandOptionsSelectError);
+		}
+		else if ($scope.financePerspectiveController.metricOneDef == null) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(poorOptionsDefError);
+		}
+		else if ($scope.financePerspectiveController.metricTwoDef == null) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(unsatOptionsDefError);
+		}
+		else if ($scope.financePerspectiveController.metricThreeDef == null) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(targetOptionsDefError);
+		}
+		else if ($scope.financePerspectiveController.metricFourDef == null) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(exceedOptionsDefError);
+		}
+		else if ($scope.financePerspectiveController.metricFiveDef == null) {
+
+			$scope.hasCreateObjErrors = true,
+			$scope.createObjectiveErrorMsgs.push(outstandOptionsDefError);
+		}
+		else {
+
+	    	$http.post("/financePerspectiveController", $scope.financePerspectiveController)
+	    	.success(function (resp){
+	    		//console.log(resp);
+	    		$scope.Objective = resp;
+	    		console.log($scope.Objective);
+	    		$('#successObjAlert1').slideDown();
+	    	});
+	    }
+    };	
+
+	$scope.renderFinancePerspective = function (response) {
+		$scope.financePerspective = response;
+	};
+
+	$scope.retrieveFinanceObjectives = function() {
+		$http.get("/retrieveFinanceObjectives")
+		.success(function (res, err) {
+			if (err) {console.log(err);}
+			console.log(res);
+		});
+		//.success($scope.renderFinancePerspective);
+	};
+
+
+	$scope.removeFinanceObjective = function (id) {
+		$http.delete("/financePerspectiveController" + id)
+		.success(function (response) {
+			$scope.retrieve();
+		});
+	};
+
+	//annyang environment (voice command functionality)
+	var commands = {
+		'create objective' : function() {
+			$scope.$apply();
+		}
+	}
+
+	annyang.addCommands(commands);
+	annyang.debug();
+	annyang.start();
+})
+
+	.controller('adminController',['$scope','$http','manageEmployeeData', function ($scope, $http, manageEmployeeData){
  	}]) // end adminController
 
 	// Brian
@@ -440,18 +607,8 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
    			};
    		};
 
-   		$scope.retrievePespectives = function() {
-			$http.post("/retrievePespectives").success(function (res, err) {
-				if (err) {console.log(err);}
-				$scope.perspectives = res;
-				console.log($scope.perspectives[1]);
-			});
-		};
-		
-		$scope.retrievePespectives();
-
    		// submit finace objectives : Brian
-		$scope.submitObjective = function () { 
+		$scope.submitFinanceObjective = function () { 
 
 			// define function variables
 			$scope.finObjError = [],
@@ -460,7 +617,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 			$scope.hasFinKPAError = false;
 			$scope.hasFinKPIError = false;
 
-			$scope.clearObjectivesErrors = function () {
+			$scope.clearFinObjectivesErrors = function () {
 				$scope.finObjError = [],
 				$scope.createObjectiveErrorMsgs = [],
 				$scope.hasCreateObjErrors = false;
@@ -471,6 +628,9 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 			if (Number($scope.finObjWeightSum) > Number($scope.financeObjective.finBrdCatWeighting)) {
 				console.log("Detailed weighting now exceeding broad category")
 			}
+
+			console.log("Sum weight is : ");
+			console.log($scope.finObjWeightSum);
 		
 			// define create finance objective errors
 			var generalErrorMsg = "Please ensure that all fields are filled!"
@@ -486,8 +646,6 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 				targetOptionsDefError = "Define the 'Target Met' metric above!",
 				exceedOptionsDefError = "Define the exceed metric above!",
 				outstandOptionsDefError = "Define the outstanding metric above!";
-
-			var $previousPesp = $scope.financeObjective.pespective;
 
 			// capture create finance objective errors
 			/*if ($scope.financeObjective.description == null) {
@@ -526,15 +684,13 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 				$scope.createObjectiveErrorMsgs.push(outstandOptionsDefError);
 
 			} else {*/
-		    	$http.post("/createObjective", $scope.financeObjective).success(function (resp){
+		    	$http.post("/createFinanceObjective", $scope.financeObjective).success(function (resp){
 		    		var returnFinObjective = resp;
 		    		$scope.financeObjective = {};
-		    		$scope.financeObjective.pespective = $previousPesp;
 		    		$scope.finObjWeightSum += Number(returnFinObjective.finDetailedWeighting);
 		    		$scope.financeObjective.finBrdCatWeighting = returnFinObjective.finBrdCatWeighting;
 		    		$scope.financeObjective.metrixType = returnFinObjective.metrixType;
 		    		$('#successObjAlert1').slideDown();
-		    		$scope.getUnactndObjectives();
 		    	});
 		    //}
 	    };
@@ -1109,11 +1265,6 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 	$scope.showSubErr = true;
 	$scope.showSubMsg = "There are no Approved Objectives to submit for now, Create Objectives. If this problem persists contact your IT Administrator.";
    	$scope.unactionedKPAs = [];
-<<<<<<< HEAD
-   	$scope.approvedKPAs = [];
-   	$scope.unapprovedKPAs = [];
-=======
->>>>>>> 346559063414214ccfb004794604f2a4d6e73e17
 
 	$scope.showSCardErr = false;
 	$scope.showSCardMsg = "Your Perfomance contract is not ready yet. There are no Approved Objectives to work on for now ... Please Contact your supervisor or try again later.";
@@ -1544,22 +1695,17 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 		})		
 	};//end master func
 
-<<<<<<< HEAD
-	// retrieve getUnactndObjectives : Brian
-    $scope.getUnactndObjectives = function () {
-=======
 	// retrieve Objectivez : Mlandvo
     $scope.getObjectivez = function () {
     	console.log("get objectives called");
->>>>>>> 346559063414214ccfb004794604f2a4d6e73e17
     	
-		$http.post("/getAllObjectives").success(function (res) {	
-			console.log(res);			
+		$http.post("/getAllObjectives").success(function (res) {				
+			//$scope.empObjectives = res;
+			//console.log(res);
+			console.log(res.length);
 			if(res.length > 0){
 				$scope.showSubErr = false;
 				$scope.unactionedKPAs = res;
-<<<<<<< HEAD
-=======
 				console.log($scope.unactionedKPAs);	
 				console.log("KPAs in array");
 						
@@ -1633,7 +1779,6 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 			if(res.length > 0){
 				$scope.showSubErr = false;
 				$scope.unactionedKPAs = res;
->>>>>>> 346559063414214ccfb004794604f2a4d6e73e17
 			} else if(res.length <= 0){
 				$scope.showSubErrUactd = true;
 			}	
@@ -1653,7 +1798,6 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
     	
 		$http.post("/getAllUnapprovedObjectives").success(function (res) {				
 
-			console.log(res);
 			if(res.length > 0){
 				for (var i = 0; i<res.length; i++) {
 					$scope.unapprovedKPAs.push(res[i]);
@@ -1737,59 +1881,6 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 		});	
 	}
 
-<<<<<<< HEAD
-	// remove objectives : Brian
-	$scope.submitObj = function (objId) {
-		var obj = {id:objId};
-		$http.post("/submitObj",obj).success(function (res) {				
-			if(res){
-				console.log(success);
-			} else {
-				console.log('error');
-			}
-		})
-		.error(function () {
-			console.log('There is an error');
-		});	
-	}
-
-
-	//By Mlandvo
-	$scope.submitKPAs = function (kpaID) {
-		console.log("submit function called");
-		//$scope.send = true;
-		var toBeSent = [];
-		var toBeDeleted = [];
-		var id = $scope.kpaID;
-
-		console.log("what the fuckkkkk");
-		console.log(id);
-		//console.log(Obj);
-		//console.log(typeof(id));
-		$http.post("/objectivesSubmitted_status_changed/" + id)
-				.success(function (res) {
-					//$('#successObjSubmit').slideDown();
-					console.log(res);
-					console.log("KPA uphanded");
-					$scope.getObjectivez();
-			})
-			.error(function (res) {
-				console.log(res);
-				});
-		}//end of function
-
-	$scope.delKPA = function (kpaID) {
-		console.log("Delete kpa function called");
-		var id = $scope.kpaID;
-		$http.post("/deleteKPA/" + id)
-			.success(function (response) {
-			console.log(response);
-			$scope.getObjectivez();
-		});
-
-	};
-=======
->>>>>>> 346559063414214ccfb004794604f2a4d6e73e17
 }])	
  
 /***********************************************************************************************************************************************
@@ -1871,11 +1962,13 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 
 				console.log("Pending objectives are as follows:")
 				$scope.empObjArray = res;
-				console.log($scope.empObjArray);
+				//console.log($scope.empObjArray);
+				console.log("PF is:::");
+				console.log(empPF);
 
-				$scope.specificEmpFinObjs = [];
-				$scope.specificEmpCustObjs = [];
-				$scope.specificEmpIntObjs = [];
+				$scope.specificEmpFinObjs = []
+				$scope.specificEmpCustObjs = []
+				$scope.specificEmpIntObjs = []
 				$scope.specificEmpLearnObjs = [];
 
 				
@@ -1884,21 +1977,21 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 					//console.log($scope.empObjArray.length);
 					if (empPF == $scope.empObjArray[i].PFNum) {
 
-						if ($scope.empObjArray[i].perspective == "finance"){
-							$scope.specificEmpFinObjs.push($scope.empObjArray[i]);
+						if ($scope.empObjArray[i].perspective = "finance"){
+							$scope.specificEmpFinObjs[i] = $scope.empObjArray[i];
 						}
-						 if ($scope.empObjArray[i].perspective == "customer"){
-							$scope.specificEmpCustObjs.push($scope.empObjArray[i]);
+						 if ($scope.empObjArray[i].perspective = "customer"){
+							$scope.specificEmpCustObjs[i] = $scope.empObjArray[i];
 							//console.log("So now Cust :");
 							//console.log($scope.specificEmpCustObjs[i].description);
 						} 
-						if ($scope.empObjArray[i].perspective == "internal"){
-							$scope.specificEmpIntObjs.push($scope.empObjArray[i]);
+						if ($scope.empObjArray[i].perspective = "internal"){
+							$scope.specificEmpIntObjs[i] = $scope.empObjArray[i];
 							//console.log("So now Int:");
 							//console.log($scope.specificEmpIntObjs[i].description);
 						}
-						if ($scope.empObjArray[i].perspective =="learn"){
-							$scope.specificEmpLearnObjs.push($scope.empObjArray[i]);
+						if ($scope.empObjArray[i].perspective = "learning"){
+							$scope.specificEmpLearnObjs[i] = $scope.empObjArray[i];
 							//console.log("So now Learn:");
 							//console.log($scope.specificEmpLearnObjs[i].description);
 						}
@@ -1979,31 +2072,14 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
    		}
 
    		pendingObjectives.getPending()
-	   		.success(function (res) {
-	   			$scope.empKPAVal = res.length;
-	   		});
-
-	   	// by Brian
-   		approvedObjectives.getApproved()
-			.success(function (res) {
-				$scope.empApprovedVal = res.length;
-			});
-
-		// By Brian
-		$scope.supObjAction = function (id, action,comment) {
-			console.log(id);
-			console.log(action);
-			var item = {objId:id, action:action, comment:comment};
-			$http.post("/supObjAction", item).success (function (resp){
-				console.log(resp);
-			});
-		}
+   		.success(function (res) {
+   			$scope.empKPAVal = res.length;
+   		});
 
    		$scope.retrieveApproved = function (empPF, empName) {
 			approvedObjectives.getApproved()
 			.success(function (res) {
 				
-					$scope.empApprovedVal = res.length;
 					$scope.empAlias = {PF: empPF, Name: empName};
 					console.log($scope.empAlias);
 					console.log(res);
@@ -2120,8 +2196,7 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 
    .controller('supEmpObjsCtrl', ['pendingObjectives', '$scope', function (pendingObjectives, $scope) {
 
-
-		$scope.retrieveEmpObjs = function (empPF, empName) {
+   		$scope.retrieveEmpObjs = function (empPF, empName) {
 			//console.log(empPF);
 			//console.log(empName)
 			//$scope.empAlias = {};
@@ -2180,9 +2255,235 @@ var bsc = angular.module('BSCIMS', ['ngRoute']);
 				console.log("Buzzer sound!!!");
 			});
 		}
-
-
 		/* SELF EVAlUATION CONTROLLER*/
 
 
-   }]);
+   }])
+
+ .controller('ctrl560cfdc514d04f8439306951', ['$scope', '$http', function($scope, $http) {
+     $scope.initCompIcon = 'glyphicon glyphicon-tower';
+     $scope.initCompStructType = 'company';
+     $scope.initCompParObjId = '0';
+     $scope.listOfPos = null;
+
+     $scope.myTree = [];
+
+     $scope.structType = [{
+         disp: "Division",
+         val: "division"
+     }, {
+         disp: "Department",
+         val: "department"
+     }, {
+         disp: "Section",
+         val: "section"
+     }, {
+         disp: "Subsection",
+         val: "subsection"
+     }, {
+         disp: "Position",
+         val: "position"
+     }];
+
+     //$("#obj560cf73114d04f843930692a").hide();
+
+     setTimeout(function(){
+        $('#tree').treeview({
+          data: $scope.myTree //$scope.getTree()
+        });
+     },1500);
+
+     $scope.func560d4856d00d941c304c7254 = function() {
+         $http.post('/route560d4856d00d941c304c7254').success(function(resp) {
+             $scope.listOfPos = resp;
+             console.log(resp);
+         });
+
+     }
+
+     $scope.getPerspectives = function() {
+         $http.post('/getPerspectives').success(function(resp) {
+             $scope.listOfPersp = resp;
+             console.log(resp);
+         });
+
+     }
+     
+     //Get all perspectives
+     $scope.getPerspectives();
+
+     $scope.getPositions = function() {
+         $http.post('/getPositions').success(function(resp) {
+             $scope.listOfPos = resp;
+             console.log(resp);
+         });
+
+     }
+     
+     //Get all positions
+     $scope.getPositions();
+
+     $scope.func560d4856d00d941c304c7254();
+
+
+     $scope.$on('begin560d000d14d04f84393069550', function(event, data) {
+         $scope.func560d000d14d04f84393069550()
+     });
+
+     $scope.$on('end560d4062da6ba58814600b161', function(event, data) {
+         $scope.func560d4062da6ba58814600b162()
+     });
+
+     $scope.func560d000d14d04f84393069550 = function() {
+         $http.post('/route560d000d14d04f84393069550', {
+             name: $scope.structInitCompName,
+             icon: $scope.initCompIcon,
+             parentObjid: $scope.initCompParObjId,
+             structType: $scope.initCompStructType
+
+         }).success(function(resp) {
+             $scope.myTree = [];
+             $scope.func55df0ed0b2bc8bc76c51da16();
+             $scope.getPositions();
+             setTimeout(function(){
+                $('#tree').treeview({
+                  data: $scope.myTree //$scope.getTree()
+                });
+             },1000);
+             console.log(resp);
+             $scope.$broadcast('end560d000d14d04f84393069550', 'Composite');
+         });
+
+     }
+
+     $scope.func55df0ed0b2bc8bc76c51da16 = function() {
+         $http.post('/route55df0ed0b2bc8bc76c51da16').success(function(resp) {
+             $scope.structPar = resp;
+             console.log(resp);
+         });
+
+         $http.post('/getStructure').success(function(resp) {
+         	 $scope.myTree = [];
+             $scope.myTree.push(resp.nodeData);
+             console.log($scope.myTree);
+         });
+
+     }
+
+     $scope.func55df0ed0b2bc8bc76c51da16();
+
+     $scope.func55df11e094e05079749e0a04 = function() {
+         var structIcon = '';
+
+         if ($scope.structureType == "company") {
+             structIcon = "glyphicon glyphicon-tower"
+         } else if ($scope.structureType == "division") {
+             structIcon = "glyphicon glyphicon-tasks"
+         } else if ($scope.structureType == "department") {
+             structIcon = "glyphicon glyphicon-home"
+         } else if ($scope.structureType == "section") {
+             structIcon = "glyphicon glyphicon-file"
+         } else if ($scope.structureType == "subsection") {
+             structIcon = "glyphicon glyphicon-th"
+         } else if ($scope.structureType == "position") {
+             structIcon = "glyphicon glyphicon-link"
+         } else if ($scope.structureType == "employee") {
+             structIcon = "glyphicon glyphicon-user"
+         };
+
+         $http.post('/route55df11e094e05079749e0a04', {
+             parentObjid: $scope.parentObjid,
+             name: $scope.name,
+             structType: $scope.structureType,
+             structCompoAddBtn: $scope.structCompoAddBtn,
+             icon: structIcon
+         }).success(function(resp) {
+         	$scope.func55df0ed0b2bc8bc76c51da16();
+         	$scope.getPositions();
+             setTimeout(function(){
+                $('#tree').treeview({
+                  data: $scope.myTree //$scope.getTree()
+                });
+             },1000);
+             console.log(resp);
+         });
+
+     }
+
+     $scope.func560d4062da6ba58814600b162 = function() {
+
+         $scope.perspName = "";
+         console.log($scope.listOfPersp);
+
+     }
+
+     $scope.func560d4062da6ba58814600b16 = function() {
+
+         $scope.$broadcast('begin560d000d14d04f84393069550', 'Composite start');
+
+     }
+
+     $scope.$on('end560d000d14d04f84393069550', function(event, data) {
+         $scope.func560d000d14d04f84393069551()
+     });
+
+     $scope.$on('end560d4062da6ba58814600b160', function(event, data) {
+         $scope.func560d4062da6ba58814600b161()
+     });
+
+     $scope.func560d000d14d04f84393069551 = function() {
+         $http.post('/route560d000d14d04f84393069551').success(function(resp) {
+             $scope.structInitCompName = "";
+             $scope.$broadcast('end560d000d14d04f84393069551', 'Composite');
+         });
+
+     }
+
+     $scope.func560d4062da6ba58814600b161 = function() {
+         $http.post('/route560d4062da6ba58814600b161').success(function(resp) {
+             $scope.listOfPersp = resp;
+             $scope.$broadcast('end560d4062da6ba58814600b161', 'Composite');
+         });
+
+     }
+
+     $scope.saveNewPerspective = function() {
+         $http.post('/saveNewPerspective',{
+         	perspName:$scope.perspName
+         }).success(function(resp) {
+             $scope.perspName = "";
+             $scope.listOfPersp = resp;
+             console.log(resp);
+         });
+
+     }
+
+     $scope.saveNewEmployee = function() {
+         $http.post('/saveNewEmployee',{
+         	fname:$scope.newEmpFName,
+         	mname:$scope.newEmpMName,
+         	lname:$scope.newEmpLName,
+         	natid:$scope.newEmpNatId,
+         	empno:$scope.newEmpNum,
+         	empos:$scope.newEmpPos,
+         	empName: $scope.newEmpFName+" "+ $scope.newEmpLName,
+         	position: $scope.newEmpPos,
+         	PFNum: $scope.newEmpNum,
+         	userName: "sec"+$scope.newEmpNum,
+         	password: "admin",
+         	roles: ["employee"]
+         }).success(function(resp) {
+             $scope.newEmpFName = "";
+             $scope.newEmpMName = "";
+             $scope.newEmpLName = "";
+             $scope.newEmpNatId = "";
+             $scope.newEmpNum = "";
+             $scope.newEmpPos = "";
+
+             console.log(resp);
+         });
+
+     }
+
+
+ }]);

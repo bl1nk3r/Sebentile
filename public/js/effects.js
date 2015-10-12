@@ -13,8 +13,8 @@ $(document).ready(function(){
 	$('#successObjSubmit2').hide();	//hide the successObjAlert for now
 
 	//hide the financeForm when the page loads along with the perspectiveDiv
-	//$('#financeForm').hide();
-	//$('#financePerspDiv').hide();
+	$('#financeForm').hide();
+	$('#financePerspDiv').hide();
 
 	//hide the customerForm when the page loads along with the perspectiveDiv
 	$('#customerForm').hide();
