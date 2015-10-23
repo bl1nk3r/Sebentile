@@ -12,6 +12,7 @@
 		<link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 		<link href="/includes/css/bootstrap-glyphicons.css" rel="stylesheet">
 		<link href="/includes/css/styles.css" rel="stylesheet">	
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
 
 		<script type="text/javascript" src="/js/jquery.min.js"></script>
 		<script type="text/javascript" src="/js/highcharts.js"></script>
@@ -372,8 +373,54 @@
 						</div>				
 					</div><!--end tab content-->
 				</div><!--end panel body-->
+				<div class="feedback left">
+	      <div class="tooltips">
+	          <div class="btn-group dropup">
+	            <button type="button" class="btn btn-primary dropdown-toggle btn-circle1 btn-lg1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	              <i class="fa fa-bug fa-2x" title="Report Bug"></i>
+	            </button>
+	            <ul class="dropdown-menu dropdown-menu-right dropdown-menu-form">
+	              <li>
+	                <div class="report">
+	                  <h2 class="text-center">Report Bug</h2>
+	                  <form class="doo" method="post" action="report.php">
+	                    <div class="col-sm-12">
+	                      <textarea required name="comment" class="form-control" placeholder="Please tell us what bug or issue you've found, provide as much detail as possible."></textarea>
+	                      <input name="screenshot" type="hidden" class="screen-uri">
+	                      <span class="screenshot pull-right"><i class="fa fa-camera cam" title="Take Screenshot"></i></span>
+	                     </div>
+	                     <div class="col-sm-12 clearfix">
+	                      <button class="btn btn-primary btn-block">Submit Report</button>
+	                     </div>
+	                 </form>
+	                </div>
+	                <div class="loading text-center hideme">
+	                  <h2>Please wait...</h2>
+	                  <h2><i class="fa fa-refresh fa-spin"></i></h2>
+	                </div>
+	                <div class="reported text-center hideme">
+	                  <h2>Thank you!</h2>
+	                  <p>Your submission has been received, we will review it shortly.</p>
+	                   <div class="col-sm-12 clearfix">
+	                      <button class="btn btn-success btn-block do-close">Close</button>
+	                   </div>
+	                </div>
+	                <div class="failed text-center hideme">
+	                  <h2>Oh no!</h2>
+	                  <p>It looks like your submission was not sent.<br><br><a href="mailto:">Try contacting us by the old method.</a></p>
+	                   <div class="col-sm-12 clearfix">
+	                      <button class="btn btn-danger btn-block do-close">Close</button>
+	                   </div>
+	                </div>
+	              </li>
+	            </ul>
+	          </div>
+	      </div>
+	    </div>
 			</div><!-- end panel-->
+
 		</div> <!--end container-->
+		
 		<footer id="foot" style="position: fixed; bottom:0; left:0; height: 30px; width: 100%" >
 			<div class="container">
 				<div class="row">
@@ -396,5 +443,6 @@
 		<script type="text/javascript" src="/js/objData.js"></script>
 		<script type="text/javascript" src="/js/selfevalbtn.js"></script>
 		<script src="/includes/js/script.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 	</body>
 </html>
