@@ -1,184 +1,900 @@
-<div class="tab-pane fade in" id="employeeTab">	 
+<div class="tab-pane fade in" id="employeeTab" ng-controller="empRoleController">	 
 	<div class="panel panel-inverse">
-			<div class="panel-heading">
-				<h3 class="panel-title">Employee Quick Actions</h3>
-			</div>
-		<div class="container"> 
-			<div class="row-fluid">
-				<div class="col-sm-8">	
-					<div id="quickActionsBtnGroup" class="btn-group" role="group">
-						<a data-backdrop="static" data-keyboard="false" href="#createObjModal" role="button" class="btn btn-primary" data-toggle="modal" data-tooltip="true" data-placement="top" title="Click to create your Objectives"> 
-							<span class="glyphicon glyphicon-plus"></span>&nbsp;Create Objective (KPA)
-						</a> <!-- end Create an Objective button link -->
-						<!--CREATE OBJECTIVE MODAL-->
-						<a data-backdrop="static"  data-keyboard="false" ng-click="getObjectivez();" href="#submitObjModal" role="button"class="btn btn-primary" data-toggle="modal" data-tooltip="true" data-placement="top" title="Click to Submit your Objectives to your Supervisor"> 
-							<span class="glyphicon glyphicon-share-alt"></span>&nbsp;Submit Objective(s) 
-						</a> <!-- end Submit Objectives button link-->
-						<!--SUBMIT OBJECTIVE MODAL-->
-						<a data-backdrop="static" data-keyboard="false" href="#scorecardModal" ng-click="retrieveApproved();" role="button" class="btn btn-primary" data-toggle="modal" data-tooltip="true" data-placement="top" title="View your Perfomance Contract">
-							<span class="glyphicon glyphicon-book"></span>&nbsp;Perfomance Contract
-						</a> <!-- end Compile SC button link-->
-						<!--COMPILE SCORECARD MODAL-->
-						<!--SCORECARD MODAL-->
-						<a data-backdrop="static" data-keyboard="false" href="#evalModal" ng-click="getAllKPAs();" role="button" class="btn btn-primary" data-toggle="modal" data-tooltip="true" data-placement="top" title="Begin Self Evaluation">
-							<span class="glyphicon glyphicon-star"></span>&nbsp;Self Evaluation
-						</a> <!-- end Create an Objective button link -->
-						<br><br>
-						<div id="panelListGroupDiv" class="list-group" ng-controller="empPanelInfoCtrl">
-							<a href="#" class="list-group-item"> <span class="badge"> 0 </span><span class="glyphicon glyphicon-asterisk"> </span> Notifications </a>
-							<a href="#" class="list-group-item"> <span class="badge"> 3 </span><span class="glyphicon glyphicon-inbox"> </span> Emails </a>
-							<a href="#" class="list-group-item"> <span class="badge" ng-model="pendingVal"> {{pendingVal}} </span><span class="glyphicon glyphicon-repeat"> </span> Pending 
-							</a>
-							<a href="#" class="list-group-item"> <span class="badge"> 1 </span><span class="glyphicon glyphicon-ok-circle"> </span> Completed </a>
-							<a data-backdrop="static"  data-keyboard="false" ng-click="getUnaprdObjectives()" href="#unApprovedObjsModal" data-toggle="modal" data-tooltip="true" data-placement="top" role="button" class="list-group-item"> <span class="badge"> {{unapprovedVal}} </span><span class="glyphicon glyphicon-thumbs-down"> </span> Unapproved Objectives</a>
-							<a data-backdrop="static"  data-keyboard="false" ng-click="getAprdObjectives();" href="#approvedObjsModal" data-toggle="modal" data-tooltip="true" data-placement="top" role="button" class="list-group-item"> <span class="badge"> {{approvedVal}} </span><span class="glyphicon glyphicon-thumbs-up"> </span> Approved Objectives
-							</a>
-						</div> <!-- end panelListGroupDiv-->
-					</div> <!--end btn-group-->
-				</div>
-				<!-- By Mlandvo -->
-				<div class="panel with-nav-tabs panel-info col-sm-4">
-			            <div class="panel-heading">
-			            	<p class="panel-title"> <span class="glyphicon glyphicon-resize-small"> </span>Mini-Dashboard</p>
-			                <ul class="nav nav-tabs">	
-			                	<li class="active"> 
-			                		<a href="#crTab" data-toggle="tab"> 
-			                     		<span class = "glyphicon glyphicon-star-empty"></span> 
-			                     		Current Rating
-			                     	</a>
-			                     </li>
+		<div class="panel-heading">
+			<h3 class="panel-title">Employee Quick Actions</h3>
+		</div>
 
-			                   	<li>
-			                   		<a href="#orTab" data-toggle="tab"> 
-			                   			<span class = "glyphicon glyphicon-star"></span> 
-			                   			Overrall Rating
-			                   		</a>
-			                   	</li>
-			                </ul>
+		<div class="container container-fluid">
+
+          	<ul class="nav nav-pills nav-normal">
+             	<li class="dropdown">
+                	<a class="dropdown-toggle" data-toggle="dropdown" href="#">Objectives</a>
+                	<ul class="dropdown-menu">
+                   		<li><a href="#createObjective"  data-toggle="tab">New Objective</a></li>
+                   		<li><a href="#submitObjectives"  data-toggle="tab">Submit Objectives</a></li>
+                   		<li><a href="#approvedObjectives"  data-toggle="tab">Approved Objectives</a></li>
+                   		<li><a href="#unapprovedObjectives"  data-toggle="tab">Unaproved Objectives</a></li>
+                	</ul>
+             	</li>
+             	<li class="dropdown">
+                	<a class="dropdown-toggle" data-toggle="dropdown" href="#">View</a>
+                	<ul class="dropdown-menu">
+                   		<li><a href="#perfContract"  data-toggle="tab">Perfomance Contract</a></li>
+                   		<li><a href="#viewBSC"  data-toggle="tab">Scorecard</a></li>
+                	</ul>
+             	</li>
+             	<li class="dropdown">
+                	<a class="dropdown-toggle" data-toggle="dropdown" href="#" >Evaluation</a>
+                	<ul class="dropdown-menu">
+                   		<li><a href="#selfEval" data-toggle="tab" ng-click="getAllKPAs()">Self evaluation</a></li>
+                   		<!--
+                   		<li><a href="#supFeedBack"  data-toggle="tab">Supervisor feedback</a></li>-->
+                	</ul>
+             	</li>
+             	<li>
+                	<a data-toggle="tab" href="#empDashBoard">Mini-Dashboard</a>
+             	</li>
+          	</ul>
+
+          	<br />
+
+          	<div class="tab-content">
+				<!-- PANEL PANE -->
+				<div class="tab-pane fade container-fluid" id="createObjective">
+					<div class="row">
+						<div class="col-sm-8 col-sm-offset-2">
+							<div class="panel panel-primary">
+				              	<div class="panel-heading">
+				                 	<div class="panel-title">
+				                    	<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+							  			<h3 class="modal-title">Create Key Performance Area(s)</h3>
+				                	 </div>
+				              	</div>
+				              	<div class="panel-body container-fluid">
+				              		<div class="alert alert-info">
+						  				<button type="button" class="close" data-dismiss="alert">X</button>
+										<p>Select a perspective to create your KPA(s)</p>
+						  			</div><br>
+
+						  			<form class="form-horizontal">
+							  			<div class="form-group">
+											<label class="col-sm-3 control-label" for="pespective">Perspective</label>
+											<div class="col-sm-8">
+												<select id="objPerspDropdownMenu" class="form-control" role="menu" ng-model="objPerspDropdownMenu" ng-change="changeShowBCT()">
+													<option ng-selected="[Select]">--Select--</option>
+													<option value="financeSelect">Finance</option>
+													<option value="customerSelect">Customer & Stakeholders</option>
+													<option value="internalSelect">Internal Business Process</option>
+													<option value="learnSelect">Learning & Growth</option>
+												</select>
+											</div>
+										</div>
+									</form>
+
+									<div ng-if="showBCT">
+								
+										<form class="form-horizontal">
+											<div class="form-group">
+												<label class="col-sm-3 control-label" for="finBrdCatWeighting">Broad Category Weighting</label>
+												<div class="col-sm-6">
+													<input type="text"  placeholder="Enter Broad Category Weighting for objective..." ng-model="empObjective.finBrdCatWeighting" class="form-control" ng-disabled="gotFinBCW">
+												</div>
+												<div class="col-sm-2">
+													<button class="form-control btn-primary" ng-click="captureBrdCatWeighting(empObjective.finBrdCatWeighting)">{{BCWStat}}</button> 
+												</div>
+											</div>
+
+											<div class="form-group">
+												<label class="col-sm-3 control-label" for="finBrdCatWeighting">Detailed Weighting</label>
+												<div class="col-sm-8">
+													<input type="text" placeholder="Enter the Detailed Weighting for objective..." ng-model="empObjective.finDetailedWeighting" class="form-control">
+												</div>
+											</div>
+
+											<div class="form-group">
+												<label class="col-sm-3 control-label" for="financeObjDescription"> Objective (KPA) </label>
+												<div id="financeObjDivInput" class="col-sm-8">
+													<input id="financeObjDescr" class="form-control" placeholder="Enter the description of the finance objective..." ng-model="empObjective.description">
+												</div>
+											</div>
+
+											<div class="alert alert-danger alert-dismissable" ng-if="hasFinKPAError">
+												<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong><br>
+								        		<span ng-repeat='error in finObjError'>{{error}}<br></span>
+							   		 	 	</div> <!--end danger alert -->
+
+											
+											<div class="form-group">
+												<label class="col-sm-3 control-label" for="financeDSODescription">Desired Standard Output (KPI)</label>&nbsp;
+												<div id="financeDSODivInput" class="col-sm-8">
+													<textarea class="form-control" id="financeDSODescription" placeholder="Enter the Desired Standard Output..." type="text" rows="3" ng-model="empObjective.DSO"></textarea>
+												</div>
+											</div>
+
+											<div class="alert alert-danger alert-dismissable" ng-if="hasFinKPIError">
+												<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
+												<br>
+							        			<span ng-repeat='error in finObjError'>{{error}}
+							        				<br>
+							        			</span>
+						   		 	 	 	</div> <!--end danger alert -->
+
+						   		 	 	 	<div class="form-group">
+												<label class="col-sm-3 control-label">Metric</label>
+												<div class="col-sm-8">
+													<select id="objMatrixDropdownMenu" class="form-control" role="menu" ng-change="changeShowMatrix(empObjective.metrixType)" ng-model="empObjective.metrixType">
+														<option ng-selected="[Select]">--Select--</option>
+														<option value="percentage">Percentage</option>
+														<option value="time">Time</option>
+														<option value="number">Number</option>
+														<option value="text">Text</option>
+													</select>
+												</div>
+											</div>
+		
+											<div ng-if="showOtherMatrixTypes">
+												<h3>Performace Rating</h3><br>
+												<div class="form-group">
+													<label  class="col-sm-3 control-label">Poor : 1</label>
+													<div class="col-sm-7">
+														<input class="form-control" id="poorPerfField" placeholder="Lowest achievement..." type="text"  
+														ng-model="empObjective.metricOneDef">
+													</div>
+												</div>
+
+												<div class="form-group">
+													<label  class="col-sm-3 control-label">Unsatisfactory : 2</label>
+													<div class="col-sm-7">
+														<input class="form-control" id="unsatPerfField" placeholder="Next lowest achievement..." type="text" 
+														ng-model="empObjective.metricTwoDef">
+													</div>
+												</div>
+
+												<div class="form-group">
+													<label class="col-sm-3 control-label">Target Met : 3</label>
+													<div class="col-sm-7">
+														<input class="form-control" id="targetPerfField" placeholder="Expected goal..." type="text" 
+														ng-model="empObjective.metricThreeDef">
+													</div>
+												</div>
+
+												<div class="form-group">
+													<label  class="col-sm-3 control-label">Exceeding : 4</label>
+													<div class="col-sm-7">
+														<input class="form-control" id="exceedPerfField" placeholder="More than expected..." type="text" 
+													 	ng-model="empObjective.metricFourDef">
+													</div>
+												</div> 							
+
+												<div class="form-group">
+													<label  class="col-sm-3 control-label">Outstanding : 5</label>
+													<div class="col-sm-7">
+														<input class="form-control" id="outstandPerfField" placeholder="Way more than expected..." type="text" 
+														ng-model="empObjective.metricFiveDef">
+													</div>
+												</div>
+											</div>
+
+											<div ng-if="showTimeMatrix">
+												<h3>Performace Rating</h3><br>
+												<div class="form-group">
+													<label class="col-sm-3 control-label">Poor : 1</label>
+													<div class="col-sm-3">
+														From: <input class="form-control form_datetime" readonly id="pfRatingFrom" type="text" 
+														ng-model="empObjective.metricOneFrom">
+													</div>
+													<div class="col-sm-3">
+														To: <input class="form-control form_datetime" readonly id="pfRatingTo" type="text" 
+														ng-model="empObjective.metricOneTo">
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-sm-3 control-label">Unsatisfactory : 2</label>
+													<div class="col-sm-3">
+														From: <input class="form-control form_datetime" readonly id="pfRatingFrom" type="text" 
+														ng-model="empObjective.metricTwoFrom">
+													</div>
+													<div class="col-sm-3">
+														To: <input class="form-control form_datetime" readonly id="pfRatingTo" type="text" 
+														ng-model="empObjective.metricTwoTo">
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-sm-3 control-label">Target Met : 3</label>
+													<div class="col-sm-3">
+														From: <input class="form-control form_datetime" readonly id="pfRatingFrom" type="text" 
+														ng-model="empObjective.metricThreeFrom">
+													</div>
+													<div class="col-sm-3">
+														To: <input class="form-control form_datetime" readonly id="pfRatingTo" type="text" 
+														ng-model="empObjective.metricThreeTo">
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-sm-3 control-label">Exceeding : 4</label>
+													<div class="col-sm-3">
+														From: <input class="form-control form_datetime" readonly id="pfRatingFrom" type="text" 
+														ng-model="empObjective.metricFourFrom">
+													</div>
+													<div class="col-sm-3">
+														To: <input class="form-control form_datetime" readonly id="pfRatingTo" type="text" 
+														ng-model="empObjective.metricFourTo">
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-sm-3 control-label">Outstanding : 5</label>
+													<div class="col-sm-3">
+														From: <input class="form-control form_datetime" readonly id="pfRatingFrom" type="text" 
+														ng-model="empObjective.metricFiveFrom">
+													</div>
+													<div class="col-sm-3">
+														To: <input class="form-control form_datetime" readonly id="pfRatingTo" type="text" 
+														ng-model="empObjective.metricFiveTo">
+													</div>
+												</div>
+											</div>
+
+											<div class="form-group">
+												<div class="col-sm-3">
+													<button id="submitFinanceObjButton" class="btn btn-success" ng-click="createObjective()"><span class="glyphicon glyphicon-plus-sign"></span>&nbsp;Create</button>		
+												</div>
+											</div>
+
+											<div class="alert alert-danger alert-dismissable" ng-if="hasCreateObjErrors"><button type="button" class="close" 
+											data-dismiss="alert">&times;</button><strong>Error:</strong>
+												<br>
+							        			<span ng-repeat='error in createObjectiveErrorMsgs'>
+							        				{{error}}
+							        				<br>
+							        			</span>
+						   		 	 	 	</div> <!--end danger alert -->
+										</form> <!-- end FinanceForm-->
+									</div> <!--end FinancePersp div-->
+				              	</div>
+				            </div>
 			            </div>
-			            <div class="panel-body">
-			                <div class="tab-content">
-								<div class="tab-pane fade in active" id="crTab">
-									<div id="container-speed" style="width: 300px; height: 200px;"></div>
-									
-									
-								</div>
-								<div class="tab-pane fade in" id="orTab">
-									<div id="overral" style="width: 300px; height: 200px; margin: 0 auto"></div>
-									<!--
-									<div class="alert alert-danger">
-										<button type="button" class="close" data-dismiss="alert">X</button>
-										<p>No Data Found!</p>
-									</div>-->
+			        </div>
+	            </div>
+
+	            <div class="tab-pane fade" id="empDashBoard">
+	            	<div class="row">
+		          		<!-- By Mlandvo -->
+						<div class="panel with-nav-tabs panel-info col-sm-6 col-offset-3">
+				            <div class="panel-heading">
+				            	<p class="panel-title"> <span class="glyphicon glyphicon-resize-small"> </span>Mini-Dashboard</p>
+				                <ul class="nav nav-tabs">	
+				                	<li class="active"> 
+				                		<a href="#crTab" data-toggle="tab"> 
+				                     		<span class = "glyphicon glyphicon-star-empty"></span> 
+				                     		Current Rating
+				                     	</a>
+				                     </li>
+
+				                   	<li>
+				                   		<a href="#orTab" data-toggle="tab"> 
+				                   			<span class = "glyphicon glyphicon-star"></span> 
+				                   			Overrall Rating
+				                   		</a>
+				                   	</li>
+				                </ul>
+				            </div>
+				            <div class="panel-body">
+				                <div class="tab-content">
+									<div class="tab-pane fade in active" id="crTab">
+										<div id="container-speed" style="width: 300px; height: 200px;"></div>
+										
+										
+									</div>
+									<div class="tab-pane fade in" id="orTab">
+										<div id="overral" style="width: 300px; height: 200px; margin: 0 auto"></div>
+										<!--
+										<div class="alert alert-danger">
+											<button type="button" class="close" data-dismiss="alert">X</button>
+											<p>No Data Found!</p>
+										</div>-->
+									</div>
 								</div>
 							</div>
+							<!--
+							<div class="panel-footer">
+								<button class="btn  btn-small btn-primary" href="#"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;Export</button>
+							</div>-->
 						</div>
-						<!--
-						<div class="panel-footer">
-							<button class="btn  btn-small btn-primary" href="#"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;Export</button>
-						</div>-->
+					</div>
+	          	</div>
+
+	            <div class="tab-pane fade" id="viewEmpObjectives">
+	            	<div class="row">
+						<div class="col-sm-8 col-sm-offset-2">
+							<div class="panel panel-primary">
+				              	<div class="panel-heading">
+				                 	<div class="panel-title">
+				                    	<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+							  			<h3 class="modal-title">View Objectives - {{empName}} </h3>
+				                	 </div>
+				              	</div>
+				              	<div class="panel-body container-fluid">
+				              		<table class="table table-hover" id="employeesTable">
+										<thead>
+											<tr>
+												<th>DSO</th>
+												<th>Description</th>
+												<th>Pespective</th>
+												<th>Status</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr ng-repeat="emp in secEmployees">
+													
+											</tr>
+										</tbody>
+									</table>
+				              	</div>
+				            </div>
+				        </div>
+				    </div>
+	            </div>
+
+	            <div class="tab-pane fade" id="submitObjectives">
+	            	<div class="row">
+						<div class="col-sm-8 col-sm-offset-2">
+							<div class="panel panel-primary">
+				              	<div class="panel-heading">
+				                 	<div class="panel-title">
+				                    	<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+							  			<h3 class="modal-title">Created objectives</h3>
+				                	 </div>
+				              	</div>
+				              	<div class="panel-body container-fluid">
+				              	</div>
+				            </div>
+				        </div>
+				    </div>
+	            </div>
+
+	            <div class="tab-pane fade" id="approvedObjectives">
+	            	<div class="row">
+						<div class="col-sm-8 col-sm-offset-2">
+							<div class="panel panel-primary">
+				              	<div class="panel-heading">
+				                 	<div class="panel-title">
+				                    	<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+							  			<h3 class="modal-title">Approved Objectives</h3>
+				                	 </div>
+				              	</div>
+				              	<div class="panel-body container-fluid">
+				              		<div class="alert alert-info">
+							  			<button type="button" class="close" data-dismiss="alert">X</button>
+										<p>All employee approved objectives</p>
+							  		</div>
+									<form id="searchObj">
+										<input type="text" class="form-control pull-right" placeholder="Search objectives..." id="searchInput" ng-model="search.$">
+									</form> <!--end form search-->&nbsp;<hr>
+									<table class="table table-hover" style="width:100%">
+										<thead>
+											<tr>
+												<th>Perspective</th>
+											  	<th>Key Performance Area</th>
+											  	<th>Key Performance Indicator</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr ng-repeat="objective in approvedKPAs | orderBy: 'pespective' |filter: search |limitTo:10">
+												<td>{{objective.pespective}}</td>
+											  	<td>{{objective.description}}</td>
+											  	<td>{{objective.DSO}}</td>
+											</tr>
+										</tbody>
+										<tfoot>
+											<tr>
+												<th>Perspective</th>
+											  	<th>Key Performance Area</th>
+											  	<th>Key Performance Indicator</th>
+											</tr>
+										</tfoot>				  										
+									</table> <!-- end Finance Objectives Table-->	
+									<hr>
+				              	</div>
+				            </div>
+				        </div>
+				    </div>
+	            </div>
+
+	            <div class="tab-pane fade" id="unapprovedObjectives">
+	            	<div class="row">
+						<div class="col-sm-8 col-sm-offset-2">
+							<div class="panel panel-primary">
+				              	<div class="panel-heading">
+				                 	<div class="panel-title">
+				                    	<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+							  			<h3 class="modal-title">Unapproved Objectives</h3>
+				                	 </div>
+				              	</div>
+				              	<div class="panel-body container-fluid">
+				              	</div>
+				            </div>
+				        </div>
+				    </div>
+	            </div>
+
+	            <div class="tab-pane fade" id="perfContract">
+	            	<div class="row">
+						<div class="col-sm-12">
+							<div class="panel panel-primary">
+				              	<div class="panel-heading">
+				                 	<div class="panel-title">
+				                    	<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+							  			<h4>Employee Performance contract</h4>
+				                	 </div>
+				              	</div>
+				              	<div class="panel-body container-fluid">                	           
+								  	<table class="hlk" style="width: 100%;">
+										<tr>
+											<th class="hlk-wrek2"></th>
+											<th class="hlk-drop"  colspan="10">Perfomance Contract  : Key Perfomance Areas &amp; Key Perfomance Indicators</th>
+											<th class="hlk-drop" colspan="4">Appraisal Report / Outcome</th>
+										</tr>
+
+										<tr>
+											<td class="hlk-drop" ng-model="scorecardHeights" rowspan="{{scorecardHeights}}">BALANCED SCORE CARD FOR SWAZILAND ELECTRICITY COMPANY</td>
+											<td class="hlk-suit">Perspective</td>
+											<td class="hlk-kurasaki">Key Performance Area(KPA)</td>
+											<td class="hlk-kurasaki">Key Performance Indicator(KPI)</td>
+											<td class="hlk-kurasaki">Broad Category Weightings</td>
+											<td class="hlk-kurasaki">Detailed Weightings</td>
+											<td class="hlk-kurasaki">Poor performance - Rating of 1</td>
+											<td class="hlk-kurasaki">Unsatisfactory - Rating of 2</td>
+											<td class="hlk-kurasaki">Target met- rating of 3</td>
+											<td class="hlk-kurasaki">Exceeding : rating of 4</td>
+											<td class="hlk-kurasaki">Outstanding- Rating of 5</td>
+											<td class="hlk-kurasaki">Rating</td>
+											<td class="hlk-kurasaki">Weighted rating</td>
+											<td class="hlk-kurasaki">Score</td>
+										</tr>
+										
+										<tr ng-repeat="appFin in appFinArr">
+											<td class="hlk-nl5m"  rowspan="{{appFinArr.length}}" ng:hide="$index != 0">{{appFin.perspective}}</td>
+											<td class="hlk-me" >{{appFin.description}} </td>
+											<td class="hlk-me" >{{appFin.DSO}} </td>
+											<td class="hlk-suit" rowspan="{{appFinArr.length}}"  ng:hide="$index != 0">{{appFin.finBrdCatWeighting}}</td>
+											<td class="hlk-suit">{{appFin.finDetailedWeighting}}</td>
+											<td class="hlk-truk" > {{appFin.metricOneDef}} </td>
+											<td class="hlk-me" >   {{appFin.metricTwoDef}}</td>
+											<td class="hlk-nl5m" > {{appFin.metricThreeDef}}</td>
+											<td class="hlk-me" >   {{appFin.metricFourDef}}</td>
+											<td class="hlk-me" >   {{appFin.metricFiveDef}}</td>
+											<td class="hlk-me" >{{appFin.rating}}</td>
+											<td class="hlk-me" >{{appFin.weightedRating}}</td>
+											<td class="hlk-me" rowspan="{{appFinArr.length}}" ng:hide="$index != 0">{{appFin.score}}</td>
+										</tr>
+										
+										<tr ng-repeat="appCust in appCustArr">
+											<td class="hlk-nl5m"  rowspan="{{appCustArr.length}}" ng:hide="$index != 0">{{appCust.perspective}}</td>
+											<td class="hlk-me" >{{appCust.description}} </td>
+											<td class="hlk-me" >{{appCust.DSO}} </td>
+											<td class="hlk-suit" rowspan="{{appCustArr.length}}" ng:hide="$index != 0">{{appCust.custBrdCatWeighting}}</td>
+											<td class="hlk-suit">{{appCust.custDetailedWeighting}}</td>
+											<td class="hlk-truk" > {{appCust.metricOneDef}} </td>
+											<td class="hlk-me" >   {{appCust.metricTwoDef}}</td>
+											<td class="hlk-nl5m" > {{appCust.metricThreeDef}}</td>
+											<td class="hlk-me" >   {{appCust.metricFourDef}}</td>
+											<td class="hlk-me" >   {{appCust.metricFiveDef}}</td>
+											<td class="hlk-me" >   {{appCust.rating}}</td>
+											<td class="hlk-me" >{{appCust.weightedRating}}</td>
+											<td class="hlk-me"  rowspan="{{appCustArr.length}}" ng:hide="$index != 0">{{appCust.score}}</td>
+										</tr>
+										
+										<tr ng-repeat="appInt in appIntArr">
+											<td class="hlk-nl5m" rowspan="{{appIntArr.length}}" ng:hide="$index != 0">{{appInt.perspective}}</td>
+											<td class="hlk-me" >{{appInt.description}} </td>
+											<td class="hlk-me" >{{appInt.DSO}} </td>
+											<td class="hlk-suit" rowspan="{{appIntArr.length}}" ng:hide="$index != 0">{{appInt.intBrdCatWeighting}}
+											</td>
+											<td class="hlk-suit">{{appInt.finDetailedWeighting}}</td>
+											<td class="hlk-truk" > {{appInt.metricOneDef}} </td>
+											<td class="hlk-me" >   {{appInt.metricTwoDef}}</td>
+											<td class="hlk-nl5m" > {{appInt.metricThreeDef}}</td>
+											<td class="hlk-me" >   {{appInt.metricFourDef}}</td>
+											<td class="hlk-me" >   {{appInt.metricFiveDef}}</td>
+											<td class="hlk-me" >   {{appInt.rating}}</td>
+											<td class="hlk-me" >{{appInt.weightedRating}}</td>
+											<td class="hlk-me" rowspan="{{appIntArr.length}}" ng:hide="$index != 0">{{appInt.score}}</td>
+										</tr>
+										
+										<tr ng-repeat="appLearn in appLearnArr">
+											<td class="hlk-nl5m" rowspan="{{appLearnArr.length}}" ng:hide="$index != 0">{{appLearn.perspective}}</td>
+											<td class="hlk-me" >{{appLearn.decription}} </td>
+											<td class="hlk-me" >{{appLearn.DSO}} </td>
+											<td class="hlk-suit"  rowspan="{{appLearnArr.length}}" ng:hide="$index != 0">{{appLearn.intBrdCatWeighting}}</td>
+											<td class="hlk-suit">{{appLearn.finDetailedWeighting}}</td>
+											<td class="hlk-truk" > {{appLearn.metricOneDef}} </td>
+											<td class="hlk-me" >   {{appLearn.metricTwoDef}}</td>
+											<td class="hlk-nl5m" > {{appLearn.metricThreeDef}}</td>
+											<td class="hlk-me" >   {{appLearn.metricFourDef}}</td>
+											<td class="hlk-me" >   {{appLearn.metricFiveDef}}</td>
+											<td class="hlk-me" >   {{appLearn.rating}}</td>
+											<td class="hlk-me" >{{appLearn.weightedRating}}</td>
+											<td class="hlk-me" rowspan="{{appLearnArr.length}}" ng:hide="$index != 0">{{appLearn.score}}</td>
+										</tr>
+									</table>
+				              	</div>
+				            </div>
+				        </div>
+				    </div>
+	            </div>
+
+	            <div class="tab-pane fade" id="viewBSC">
+	            	<div class="row">
+						<div class="col-sm-12">
+							<div class="panel panel-primary">
+				              	<div class="panel-heading">
+				                 	<div class="panel-title">
+				                    	<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+							  			<h4 class="modal-title">Balanced Scorecard</h4>
+				                	 </div>
+				              	</div>
+				              	<div class="panel-body container-fluid">
+				              		<table class="hlk" style="width: 100%;">
+										<tr>
+											<th class="hlk-wrek2"></th>
+											<th class="hlk-drop"  colspan="10">Perfomance Contract  : Key Perfomance Areas &amp; Key Perfomance Indicators</th>
+											<th class="hlk-drop" colspan="4">Appraisal Report / Outcome</th>
+										</tr>
+
+										<tr>
+											<td class="hlk-drop" ng-model="scorecardHeights" rowspan="{{scorecardHeights}}">BALANCED SCORE CARD FOR SWAZILAND ELECTRICITY COMPANY</td>
+											<td class="hlk-suit">Perspective</td>
+											<td class="hlk-kurasaki">Key Performance Area(KPA)</td>
+											<td class="hlk-kurasaki">Key Performance Indicator(KPI)</td>
+											<td class="hlk-kurasaki">Broad Category Weightings</td>
+											<td class="hlk-kurasaki">Detailed Weightings</td>
+											<td class="hlk-kurasaki">Poor performance - Rating of 1</td>
+											<td class="hlk-kurasaki">Unsatisfactory - Rating of 2</td>
+											<td class="hlk-kurasaki">Target met- rating of 3</td>
+											<td class="hlk-kurasaki">Exceeding : rating of 4</td>
+											<td class="hlk-kurasaki">Outstanding- Rating of 5</td>
+											<td class="hlk-kurasaki">Rating</td>
+											<td class="hlk-kurasaki">Weighted rating</td>
+											<td class="hlk-kurasaki">Score</td>
+										</tr>
+										
+										<tr ng-repeat="appFin in appFinArr">
+											<td class="hlk-nl5m"  rowspan="{{appFinArr.length}}" ng:hide="$index != 0">{{appFin.perspective}}</td>
+											<td class="hlk-me" >{{appFin.description}} </td>
+											<td class="hlk-me" >{{appFin.DSO}} </td>
+											<td class="hlk-suit" rowspan="{{appFinArr.length}}"  ng:hide="$index != 0">{{appFin.finBrdCatWeighting}}</td>
+											<td class="hlk-suit">{{appFin.finDetailedWeighting}}</td>
+											<td class="hlk-truk" > {{appFin.metricOneDef}} </td>
+											<td class="hlk-me" >   {{appFin.metricTwoDef}}</td>
+											<td class="hlk-nl5m" > {{appFin.metricThreeDef}}</td>
+											<td class="hlk-me" >   {{appFin.metricFourDef}}</td>
+											<td class="hlk-me" >   {{appFin.metricFiveDef}}</td>
+											<td class="hlk-me" >{{appFin.rating}}</td>
+											<td class="hlk-me" >{{appFin.weightedRating}}</td>
+											<td class="hlk-me" rowspan="{{appFinArr.length}}" ng:hide="$index != 0">{{appFin.score}}</td>
+										</tr>
+										
+										<tr ng-repeat="appCust in appCustArr">
+											<td class="hlk-nl5m"  rowspan="{{appCustArr.length}}" ng:hide="$index != 0">{{appCust.perspective}}</td>
+											<td class="hlk-me" >{{appCust.description}} </td>
+											<td class="hlk-me" >{{appCust.DSO}} </td>
+											<td class="hlk-suit" rowspan="{{appCustArr.length}}" ng:hide="$index != 0">{{appCust.custBrdCatWeighting}}</td>
+											<td class="hlk-suit">{{appCust.custDetailedWeighting}}</td>
+											<td class="hlk-truk" > {{appCust.metricOneDef}} </td>
+											<td class="hlk-me" >   {{appCust.metricTwoDef}}</td>
+											<td class="hlk-nl5m" > {{appCust.metricThreeDef}}</td>
+											<td class="hlk-me" >   {{appCust.metricFourDef}}</td>
+											<td class="hlk-me" >   {{appCust.metricFiveDef}}</td>
+											<td class="hlk-me" >   {{appCust.rating}}</td>
+											<td class="hlk-me" >{{appCust.weightedRating}}</td>
+											<td class="hlk-me"  rowspan="{{appCustArr.length}}" ng:hide="$index != 0">{{appCust.score}}</td>
+										</tr>
+										
+										<tr ng-repeat="appInt in appIntArr">
+											<td class="hlk-nl5m" rowspan="{{appIntArr.length}}" ng:hide="$index != 0">{{appInt.perspective}}</td>
+											<td class="hlk-me" >{{appInt.description}} </td>
+											<td class="hlk-me" >{{appInt.DSO}} </td>
+											<td class="hlk-suit" rowspan="{{appIntArr.length}}" ng:hide="$index != 0">{{appInt.intBrdCatWeighting}}
+											</td>
+											<td class="hlk-suit">{{appInt.finDetailedWeighting}}</td>
+											<td class="hlk-truk" > {{appInt.metricOneDef}} </td>
+											<td class="hlk-me" >   {{appInt.metricTwoDef}}</td>
+											<td class="hlk-nl5m" > {{appInt.metricThreeDef}}</td>
+											<td class="hlk-me" >   {{appInt.metricFourDef}}</td>
+											<td class="hlk-me" >   {{appInt.metricFiveDef}}</td>
+											<td class="hlk-me" >   {{appInt.rating}}</td>
+											<td class="hlk-me" >{{appInt.weightedRating}}</td>
+											<td class="hlk-me" rowspan="{{appIntArr.length}}" ng:hide="$index != 0">{{appInt.score}}</td>
+										</tr>
+										
+										<tr ng-repeat="appLearn in appLearnArr">
+											<td class="hlk-nl5m" rowspan="{{appLearnArr.length}}" ng:hide="$index != 0">{{appLearn.perspective}}</td>
+											<td class="hlk-me" >{{appLearn.decription}} </td>
+											<td class="hlk-me" >{{appLearn.DSO}} </td>
+											<td class="hlk-suit"  rowspan="{{appLearnArr.length}}" ng:hide="$index != 0">{{appLearn.intBrdCatWeighting}}</td>
+											<td class="hlk-suit">{{appLearn.finDetailedWeighting}}</td>
+											<td class="hlk-truk" > {{appLearn.metricOneDef}} </td>
+											<td class="hlk-me" >   {{appLearn.metricTwoDef}}</td>
+											<td class="hlk-nl5m" > {{appLearn.metricThreeDef}}</td>
+											<td class="hlk-me" >   {{appLearn.metricFourDef}}</td>
+											<td class="hlk-me" >   {{appLearn.metricFiveDef}}</td>
+											<td class="hlk-me" >   {{appLearn.rating}}</td>
+											<td class="hlk-me" >{{appLearn.weightedRating}}</td>
+											<td class="hlk-me" rowspan="{{appLearnArr.length}}" ng:hide="$index != 0">{{appLearn.score}}</td>
+										</tr>
+									</table>
+				              	</div>
+				            </div>
+				        </div>
+				    </div>
+	            </div>
+
+	            <div class="tab-pane fade" id="selfEval">
+	            	<div class="row">
+						<div class="col-sm-12">
+							<div class="panel panel-primary">
+				              	<div class="panel-heading">
+				                 	<div class="panel-title">
+				                    	<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="20" height="20"  alt="Logo">&nbsp;
+							  			<h4 class="modal-title">Employee Self Evalution</h4>
+				                	 </div>
+				              	</div>
+				              	<div class="panel-body container-fluid">
+												<div ng-show="!showEvalErr" class="alert alert-danger alert-dismissable" >
+												  	<button type="button" class="close" data-dismiss="alert">X</button>
+												  	<strong>Oops!:</strong>
+													&nbsp;
+													<span ng-model='showEvalMsg' ng-show="!showEvalErr">
+													    {{showEvalMsg}}
+													    <br>
+													    <br>
+													    OR
+													    <p>
+													    	<button class="btn btn-primary" ng-click="getAllKPAs();">
+											  				<span class="glyphicon glyphicon-refresh"></span>
+											  				Refresh
+											  			</button>
+													    </p>
+													</span>
+												</div> 
+
+												<div ng-if="showEvalErr" class="panel">
+													<div class="alert alert-info">
+											  			<button type="button" class="close" data-dismiss="alert">X</button>
+														<p>Enter Rating per Perfomance indicator under each Perspective and Comment or Attach files (Maximum 10 e.g PDF,Spreadsheet,Word Document) to support your Rating
+														</p>
+											  		</div>
+													<div class="alert alert-danger alert-dismissable" ng-if="hasSelfEvalErrors">
+													  	<button type="button" class="close" data-dismiss="alert">&times;</button>
+													  	<strong>Error:</strong>
+														&nbsp;
+														<span ng-model='finSCErrorMsg'>
+														    {{selfEvalrrorMsg}}
+														    <br>
+														</span>
+													</div> 
+													<div ng-show="allk">
+														<table class="table table-hover" style="width:100%">
+															<caption>
+																<h4 style="color: #6699FF;">Objectives</h4>
+															</caption>
+															<thead>
+																<tr>
+																  	<th style="width:10%"><h6 style="color: #003366;">Key Performance Area</h6></th>
+																  	<th style="width:15%"><h6 style="color: #003366;">Key Performance Indicator</h6></th>
+																  	<!--<th style="width:5%"><h6 style="color: #003366;">Detailed Weightings</h6></th>-->
+																  	<th style="width:20%"><h6 style="color: #003366;">Attachment(s)(Optional)</h6></th>
+																  	<th style="width:20%"><h6 style="color: #003366;">Comment(s)</h6></th>
+																  	<th style="width:20%"><h6 style="color: #003366;">Rating</h6></th>				 	
+																</tr>
+															</thead>
+															<form>	  									
+																<tbody>
+																	<tr ng-repeat="appFin in allKP | orderBy: 'description' | filter: search | limitTo:10">
+																	  	<td>{{appFin.description | uppercase}}</td>
+																	  	<td>{{appFin.DSO}}</td>
+																	  	<!--
+																	  	<td style="width:10%">{{appFin.finDetailedWeighting}}</td>-->
+																	  	<td>
+																		  	<input id="files" ngf-select  ngf-multiple="true" ng-model="appFin.file" ngf-change="updateKPA(appFin);" type="file" multiple="false">
+																	    </td>
+																	  	<td>
+																	  		<textarea class="form-control" type="text" rows="3" ng-model="appFin.empComment" id="empComment" placeholder="(Optional)" ng-keyup="updateKPA(appFin);">
+																	  		</textarea>
+																	  	</td>
+																	  	<td width="100%">									
+																	    	<select class="form-control"  ng-model="appFin.value" ng-change="selfEvaluate();updateKPA(appFin);">
+										                                    	<option ng-selected="[Select]">-- Select Rating --</option>
+										                                    	<option value="{{appFin.metricOne.value}}">{{appFin.metricOne.value+" |"+appFin.metricOne.label}}</option>
+										                                    	<option value="{{appFin.metricTwo.value}}">{{appFin.metricTwo.value+" |"+appFin.metricTwo.label}}</option>
+										                                    	<option value="{{appFin.metricThree.value}}">{{appFin.metricThree.value+" |"+appFin.metricThree.label}}</option>
+										                                    	<option value="{{appFin.metricFour.value}}">{{appFin.metricFour.value+" |"+appFin.metricFour.label}}</option>
+										                                    	<option value="{{appFin.metricFive.value}}">{{appFin.metricFive.value+" |"+appFin.metricFive.label||appFin.metricFive.from+ to +appFin.metricFive.to}}</option>
+										                                  	</select>
+									      								</td>
+																	</tr>
+																</tbody>
+															</form>	
+														</table> 
+													</div>
+													<div class="alert alert-danger alert-dismissable" ng-show="hasFinSCErrors">
+													  	<button type="button" class="close" data-dismiss="alert">&times;</button>
+													  	<strong>Error:</strong>
+														&nbsp;
+														<span ng-model='finSCErrorMsg'>
+														    {{finSCErrorMsg}}
+														    <br>
+														</span>
+													</div> 
+													<!--
+													<div ng-show="!appCust">
+														<table class="table table-hover"  style="width:100%">
+															<caption><h3 style="color: #6699FF;">Customer Objectives</h3></caption>
+															<thead>
+																<tr>
+																  	<th style="width:10%"><h4 style="color: #003366;">Key Performance Area</h4></th>
+																  	<th style="width:15%"><h4 style="color: #003366;">Key Performance Indicator</h4></th>
+																  	<th style="width:5%"><h4 style="color: #003366;">Detailed Weightings</h4></th>
+																  	<th style="width:20%"><h4 style="color: #003366;">Attachment(s)(Optional)</h4></th>
+																  	<th style="width:20%"><h4 style="color: #003366;">Comment(s)</h4></th>
+																  	<th style="width:20%"><h4 style="color: #003366;">Rating</h4></th>							  	
+																</tr>
+															</thead>
+															<tbody>
+																<tr ng-repeat="appCust in appCustOb | orderBy: 'description' | filter: search | limitTo:10">
+																  	<td>{{appCust.description | uppercase}}</td>
+																  	<td>{{appCust.DSO}}</td>
+																  	<td>{{appCust.custDetailedWeighting}}</td>
+																  	<td>
+																  		<input id="kpiAttachment" type="file" multiple="true">
+																  	</td>
+																  	<td>
+																  		<textarea class="form-control" type="text"  rows="3" ng-model="appCust.empComment" id="empComment" placeholder="(Optional)" ng-keyup="captureComment(appCust);updateKPA(appCust);">
+																	  	</textarea>
+																  	</td>
+								      								<td width="100%">									
+																    	<select class="form-control"  ng-model="appCust.value" ng-change="selfEvaluate();updateKPA(appCust);">
+									                                    	<option ng-selected="[Select]">-- Select Rating --</option>
+									                                    	<option value="{{appCust.metricOne.value}}">{{appCust.metricOne.value+" |"+appCust.metricOne.label}}</option>
+									                                    	<option value="{{appCust.metricTwo.value}}">{{appCust.metricTwo.value+" |"+appCust.metricTwo.label}}</option>
+									                                    	<option value="{{appCust.metricThree.value}}">{{appCust.metricThree.value+" |"+appCust.metricThree.label}}</option>
+									                                    	<option value="{{appCust.metricFour.value}}">{{appCust.metricFour.value+" |"+appCust.metricFour.label}}</option>
+									                                    	<option value="{{appCust.metricFive.value}}">{{appCust.metricFive.value+" |"+appCust.metricFive.label}}</option>
+									                                  	</select>
+								      								</td>
+																</tr>
+															</tbody>
+														</table> 
+													</div>
+													<div class="alert alert-danger alert-dismissable" ng-show="hasCustSCErrors">
+													  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
+														&nbsp;
+														<span ng-model="custSCErrorMsg">
+														    {{custSCErrorMsg}}
+														    <br>
+														</span>
+													</div> 
+													<div ng-show="!appInt">
+														<table class="table table-hover" style="width:100%">
+															<caption><h3 style="color: #6699FF;">Internal Business Objectives</h3></caption>
+															<thead>
+																<tr>
+																  	<th style="width:10%"><h4 style="color: #003366;">Key Performance Area</h4></th>
+																  	<th style="width:15%"><h4 style="color: #003366;">Key Performance Indicator</h4></th>
+																  	<th style="width:5%"><h4 style="color: #003366;">Detailed Weightings</h4></th>
+																  	<th style="width:20%"><h4 style="color: #003366;">Attachment(s)(Optional)</h4></th>
+																  	<th style="width:20%"><h4 style="color: #003366;">Comment(s)</h4></th>
+																  	<th style="width:20%"><h4 style="color: #003366;">Rating</h4></th>							  	
+																</tr>
+															</thead>
+															<tbody>
+																<tr ng-repeat="appInt in appIntOb | orderBy: 'description' |filter: search |limitTo:10">
+																  	<td>{{appInt.description | uppercase}}</td>
+																  	<td>{{appInt.DSO}}</td>
+																  	<td width="20%">{{appInt.intDetailedWeighting}}</td>
+																  	<td>
+																	  	<input id="files" ngf-select  ngf-multiple="true" ng-model="appInt.file" ngf-change="updateKPA(appInt);" type="file" multiple="false">
+																    </td>
+																  	<td>
+																  		<textarea class="form-control" type="text" rows="3" ng-model="appInt.empComment" id="empComment" placeholder="(Optional)" ng-keyup="captureComment(appInt);updateKPA(appInt);">
+																  		</textarea>
+																  	</td>
+																  	<td width="100%">									
+																    	<select class="form-control"  ng-model="appInt.value" ng-change="selfEvaluate();updateKPA(appInt);">
+									                                    	<option ng-selected="[Select]">-- Select Rating --</option>
+									                                    	<option value="{{appInt.metricOne.value}}">{{appInt.metricOne.value+" |"+appInt.metricOne.label}}</option>
+									                                    	<option value="{{appInt.metricTwo.value}}">{{appInt.metricTwo.value+" |"+appInt.metricTwo.label}}</option>
+									                                    	<option value="{{appInt.metricThree.value}}">{{appInt.metricThree.value+" |"+appInt.metricThree.label}}</option>
+									                                    	<option value="{{appInt.metricFour.value}}">{{appInt.metricFour.value+" |"+appInt.metricFour.label}}</option>
+									                                    	<option value="{{appInt.metricFive.value}}">{{appInt.metricFive.value+" |"+appInt.metricFive.label}}</option>
+									                                  	</select>
+								      								</td>
+																</tr>
+															</tbody>
+														</table>
+													</div> 
+													<div class="alert alert-danger alert-dismissable" ng-if="hasIntSCErrors">
+													  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
+														&nbsp;
+														<span ng-model='intSCErrorMsg'>
+														    {{intSCErrorMsg}}
+														    <br>
+														</span>
+													</div> 
+													<div ng-show="!appLearn">
+														<table class="table table-hover"  style="width:100%">
+															<caption><h3 style="color: #6699FF;">Learning & Growth Objectives</h3></caption>
+															<thead>
+																<tr>
+																  	<th style="width:10%"><h4 style="color: #003366;">Key Performance Area</h4></th>
+																  	<th style="width:15%"><h4 style="color: #003366;">Key Performance Indicator</h4></th>
+																  	<th style="width:5%"><h4 style="color: #003366;">Detailed Weightings</h4></th>
+																  	<th style="width:20%"><h4 style="color: #003366;">Attachment(s)(Optional)</h4></th>
+																  	<th style="width:20%"><h4 style="color: #003366;">Comment(s)</h4></th>
+																  	<th style="width:20%"><h4 style="color: #003366;">Rating</h4></th>							  	
+																</tr>
+															</thead>
+															<tbody>
+																<tr ng-repeat="appLearn in appLearnOb | orderBy: 'description' |filter: search |limitTo:10">
+																  	<td>{{appLearn.description}}</td>
+																  	<td>{{appLearn.DSO}}</td>
+																  	<td width="20%">{{appLearn.learnDetailedWeighting}}</td>
+																  	<td>
+																	  	<input id="files" ngf-select  ngf-multiple="true" ng-model="appLearn.file" ngf-change="updateKPA(appLearn);" type="file" multiple="false">
+																    </td>
+																  	<td>
+																  		<textarea class="form-control" type="text" rows="3" ng-model="appLearn.empComment" id="empComment" placeholder="(Optional)" ng-keyup="captureComment(appLearn);updateKPA(appLearn);">
+																  		</textarea>
+																  	</td>
+																  	<td width="100%">									
+																    	<select class="form-control"  ng-model="appLearn.value" ng-change="selfEvaluate();updateKPA(appLearn);">
+									                                    	<option ng-selected="[Select]">-- Select Rating --</option>
+									                                    	<option value="{{appLearn.metricOne.value}}">{{appLearn.metricOne.value+" |"+appLearn.metricOne.label}}</option>
+									                                    	<option value="{{appLearn.metricTwo.value}}">{{appLearn.metricTwo.value+" |"+appLearn.metricTwo.label}}</option>
+									                                    	<option value="{{appLearn.metricThree.value}}">{{appLearn.metricThree.value+" |"+appLearn.metricThree.label}}</option>
+									                                    	<option value="{{appLearn.metricFour.value}}">{{appLearn.metricFour.value+" |"+appLearn.metricFour.label}}</option>
+									                                    	<option value="{{appLearn.metricFive.value}}">{{appLearn.metricFive.value+" |"+appLearn.metricFive.label}}</option>
+									                                  	</select>
+								      								</td>
+																</tr>
+															</tbody>			
+														</table> 
+													</div>
+													<div class="alert alert-danger alert-dismissable" ng-show="hasLearnSCErrors">
+													  	<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error:</strong>
+														&nbsp;
+														<span ng-model='learnSCErrorMsg'>
+														    {{learnSCErrorMsg}}
+														    <br>
+														</span>
+													</div> -->
+												</div>
+											</div>			
+								<div class="panel-footer">
+									<a  ng-click="selfEvaluate();getEvalKPAs();" type="button"  class="btn btn-primary"><span class="glyphicon glyphicon-chevron-right" > </span>Next</a>
+								</div>
+							</div>
+						</div>				       
+				    </div>
 				</div>
-				<!--
-				<div class="panel panel-primary col-sm-4">
-					<div class="panel-heading">			
-						<h4 class="panel-title"> <span class="glyphicon glyphicon-resize-small"> </span>Mini-Dash</h4>
-					</div>
-					<div class="panel-body">
-						<div class="btn-group ">
-							<button class="btn btn-info" href="#">Prev. Rating</button>
-							<button class="btn" href="#">Curr. Rating</button>
-							<button class="btn" href="#">Overrall Rating</button>
-						</div>
-						<div style="width: 300px; height: 200px; margin: 0 auto">
-							<div id="container-speed" style="width: 300px; height: 200px;"></div>
-						</div>
-					</div>
-					<div class="panel-footer">
-						<button class="btn  btn-small btn-danger" href="#"><span class="glyphicon glyphicon-remove"></span>&nbsp;Clear</button>
-						<button class="btn  btn-small btn-primary" href="#"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;Export</button>
-					</div>
-				</div>
-				-->
-			</div>
+
+	            <div class="tab-pane fade" id="supFeedBack">
+	            	<div class="row">
+						<div class="col-sm-8 col-sm-offset-2">
+							<div class="panel panel-primary">
+				              	<div class="panel-heading">
+				                 	<div class="panel-title">
+				                    	<img class="img-responsive" style="float:left;"  src="images/sebentile.png" width="40" height="40"  alt="Logo">&nbsp;
+							  			<h3 class="modal-title">Supervosor Evaluation Results</h3>
+				                	 </div>
+				              	</div>
+				              	<div class="panel-body container-fluid">
+				              	</div>
+				            </div>
+				        </div>
+				    </div>
+	            </div>
+	        </div>
 		</div>
-		<!--
-		<div class="container"> 
-			<div class="row-fluid">
-				<section>
-			        <div class="wizard">
-			            <div class="wizard-inner">
-			                <div class="connecting-line"></div>
-			                <ul class="nav nav-tabs" role="tablist">
-
-			                    <li role="presentation" class="active">
-			                        <a href="#step1" data-toggle="tab" aria-controls="step1" role="tab" title="Step 1">
-			                            <span class="round-tab">
-			                                <i class="glyphicon glyphicon-folder-open"></i>
-			                            </span>
-			                        </a>
-			                    </li>
-
-			                    <li role="presentation" class="disabled">
-			                        <a href="#step2" data-toggle="tab" aria-controls="step2" role="tab" title="Step 2">
-			                            <span class="round-tab">
-			                                <i class="glyphicon glyphicon-pencil"></i>
-			                            </span>
-			                        </a>
-			                    </li>
-			                    <li role="presentation" class="disabled">
-			                        <a href="#step3" data-toggle="tab" aria-controls="step3" role="tab" title="Step 3">
-			                            <span class="round-tab">
-			                                <i class="glyphicon glyphicon-picture"></i>
-			                            </span>
-			                        </a>
-			                    </li>
-
-			                    <li role="presentation" class="disabled">
-			                        <a href="#complete" data-toggle="tab" aria-controls="complete" role="tab" title="Complete">
-			                            <span class="round-tab">
-			                                <i class="glyphicon glyphicon-ok"></i>
-			                            </span>
-			                        </a>
-			                    </li>
-			                </ul>
-			            </div>
-
-			            <form role="form">
-			                <div class="tab-content">
-			                    <div class="tab-pane active" role="tabpanel" id="step1">
-			                        <h3>Step 1</h3>
-			                        <p>This is step 1</p>
-			                        <ul class="list-inline pull-right">
-			                            <li><button type="button" class="btn btn-primary next-step">Save and continue</button></li>
-			                        </ul>
-			                    </div>
-			                    <div class="tab-pane" role="tabpanel" id="step2">
-			                        <h3>Step 2</h3>
-			                        <p>This is step 2</p>
-			                        <ul class="list-inline pull-right">
-			                            <li><button type="button" class="btn btn-default prev-step">Previous</button></li>
-			                            <li><button type="button" class="btn btn-primary next-step">Save and continue</button></li>
-			                        </ul>
-			                    </div>
-			                    <div class="tab-pane" role="tabpanel" id="step3">
-			                        <h3>Step 3</h3>
-			                        <p>This is step 3</p>
-			                        <ul class="list-inline pull-right">
-			                            <li><button type="button" class="btn btn-default prev-step">Previous</button></li>
-			                            <li><button type="button" class="btn btn-default next-step">Skip</button></li>
-			                            <li><button type="button" class="btn btn-primary btn-info-full next-step">Save and continue</button></li>
-			                        </ul>
-			                    </div>
-			                    <div class="tab-pane" role="tabpanel" id="complete">
-			                        <h3>Complete</h3>
-			                        <p>You have successfully completed all steps.</p>
-			                    </div>
-			                    <div class="clearfix"></div>
-			                </div>
-			            </form>
-			        </div>
-			    </section>
-			</div>
-		</div>-->
 	</div>
 </div> <!-- end of employee tab -->

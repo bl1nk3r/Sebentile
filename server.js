@@ -1,43 +1,31 @@
-/**************************************************************************************************************************************
-*****************************************NODE.JS Server Source-code********************************************************************
-**************************************************************************************************************************************/
- 
-var http  = require ('http') 												//built in module provides HTTP server and client functionality
-   ,fs    = require ('fs')   												//built in fs module provides filesystem-related functionality
-   ,path  = require ('path') 												//built in path module provides filesystem path-related functionality
+var http  = require ('http') 											
+   ,fs    = require ('fs')   											
+   ,path  = require ('path') 												
    ,cache = {};	
-   			 												//cache object is where the contents of cached files are stored
  
-var express = require('express') 											//lightweight server framerwork
-   ,session = require('express-session')	 								//client session manager for handling logged in users
-   ,cookieParser = require('cookie-parser')									//module for parsing cookies
-   ,bodyParser = require('body-parser')  									//middleware for parsing strings to JSON objects
-   ,favicon = require('serve-favicon')										//module for handling the application's favicon
-   ,sendgrid = require('sendgrid')('bl1nk3r', 'SendGrid-api')	 		    //sendgrid api_user && api_key
+var express = require('express') 											
+   ,session = require('express-session')	 								
+   ,cookieParser = require('cookie-parser')									
+   ,bodyParser = require('body-parser')  									
+   ,favicon = require('serve-favicon')										
+   ,sendgrid = require('sendgrid')('bl1nk3r', 'SendGrid-api')	 		    
    ,mandrill = require('node-mandrill')('Mandrill-api')
    ,ejs      = require('ejs')
    ,flash    = require('connect-flash');
 
-//include access to the MongoDB driver for Node
 var mongojs = require("mongojs") 
-//localhost specified		
     ,host = "127.0.0.1"	
-//use the default port for Mongo server/client connections			
     ,port = "27017"				
-//init BSCIMS (database) and Objectives (collection)
     ,db = mongojs("sebentiledb", ["Objectives","Division","Transaction","Document","Employees", "Scorecard", "structure", "perspective"]);
 
-    //Custom Libs
 var boolStruct = require('./routes/boolstruct');
 
-//instantiate the server application 
+
 var bsc = express()
-//Direct the Express server to the 'public' folder containing static app files
    .use(express.static(__dirname + '/public'))
    .set('views', __dirname + '/public/views')
    .set('view engine', 'ejs')
  
-//Invoke all the extensions that Express will need to parse the app's body
    .use(bodyParser.urlencoded({ extended: false}))
    .use(bodyParser.json())
    .use(bodyParser.text())
@@ -45,13 +33,10 @@ var bsc = express()
    .use(cookieParser())
 
    .use(session({
-       //key: 'express.sid',
        secret: 'secret',
        maxAge: new Date(Date.now() + 3600000),
-       //store: new MongoStore({ db: 'bscims', collection: 'sessions' })
    }))
 
-	//server retrieval of login page
 	.get('/login', function (req, res){
    		var msg = {error: 'none'};
 
@@ -84,7 +69,6 @@ var bsc = express()
 
 	   		db.Employees.findOne(user, function (err, data) {
 	   			if (data) {
-	   				// create a formRoles array to hold roles chosen at login
 					if (req.body.empRole == 'on') {
 						formRoles.push('employee');
 					}
@@ -98,7 +82,6 @@ var bsc = express()
 						formRoles.push('admin');
 					}
 
-					// capture role errors : when no role was chosen or when a role where the user is not allowed was choosen
 					if (formRoles.length == 0) {
 						res.render('login', {error: 'Choose atleast one role!'});
 					} else if ((formRoles.indexOf('employee') !== -1) && (data.roles.indexOf('employee') == -1)) {
@@ -131,7 +114,6 @@ var bsc = express()
 	   				var msg = {error: 'Incorrect credentials, login again'};
 	   				res.render('login', msg);
 	   			}
-//COMMENT
 	   			for (var i = 0; i< currRoles.length; i++) {
 	   				console.log(currRoles[i]);
 	   			}
@@ -149,15 +131,10 @@ var bsc = express()
 
 	.post('/logout', function (req, res) {
 		req.session.destroy();
-		//req.session.userId = '';
 		res.redirect('/login');
-		console.log("***********************************************************logged out*********************************************");
 	})
 
 
-/**************************************************************************************************************************************
-******************************SERVER OPERATIONS FOR FINANCE PERSPECTIVES OBJECTIVES****************************************************
-**************************************************************************************************************************************/
     // Brian
     .post("/getAllObjectives", function (req, res) {
 		db.Objectives.find({status: "unactioned"}, function (err, docs) {
@@ -261,8 +238,6 @@ var bsc = express()
 			}
 		});
 	})
-
-	/* FOR SELF EVALUATION by Mlandvo*/
 	
 	//get all KPAs by Mlandvo
 	.post("/getKPAs", function (req, res) {
@@ -271,35 +246,15 @@ var bsc = express()
 			if (err || !data) {
 				console.log("No Approved KPA's found");
 			} else { 
-				console.log(data);
 				res.send(data);
 			
 			}
-			//onsole.log(res);
-			//console.log("say!");		
 		});
 	})
-	/*By Mlandvo
-	.post('/completeSelfEval', function (req, res) {
-        var kpa = req.body;
-        var id = String(kpa.id);
-        var rating = Number(kpa.rating);
-        console.log(id);
-        console.log(typeof kpa.weightedRating);
-        db.Objectives.update({_id:id},{$set: {status:kpa.status, empComment:kpa.empComment, rating:rating, weightedRating:kpa.weightedRating, score:kpa.score}}, {multi: false}, function (err, saved) {
-            if (err) {
-                res.send("An error occured");    
-            } else {
-            	console.log("KPA updated");
-                res.send("KPA successfully updated");
 
-            }
-        });
-    })*/
 	//by Mlandvo
     .post("/getEvalKPAs", function ( req, res) {
 	   		console.log("getting evaluated KPAs");
-	   		//var uname = req.body.loggedUserName;
 			db.Objectives.find({status: "evaluatedByEmp"}, function ( err, data) {
 				if ( err || !data) {
 					console.log("There is an error getting KPAs");
@@ -309,6 +264,7 @@ var bsc = express()
 				}	
 			});
 	})
+
 	// by Mlandvo
 	.put('/completeSelfEval/', function (req, res) {
 		var kpa = req.body;
@@ -318,11 +274,11 @@ var bsc = express()
 		db.Objectives.findAndModify({query:{_id: mongojs.ObjectId(id)},
 			update: {$set: {status:kpa.status, empComment:kpa.empComment, rating:rating, weightedRating:kpa.weightedRating, score:kpa.score}},
 			new: true}, function (err, data) {
-				console.log("Rating saved");
 				res.send("Evaluationn completed for current KPA");
 			});
 		
 	})
+
 	//By Mlandvo
 	.post('/file-upload/', function (req, res, next) {
     	console.log(req.body);
@@ -347,22 +303,13 @@ var bsc = express()
         });
 	})
 
-
-
-//********************************
-
-
 	.post("/getUnapprovedObjectives", function ( req, res) {
-	   		//console.log("Beginning of route");
 			db.Objectives.find({status: "approved"}, function (err, docs) {
 				if (err) {
 					console.log("There is an error");
 				} else { 
 					res.json(docs);
-					//console.log(docs);
 				}
-				//onsole.log(res);
-				//console.log("say!");		
 			});
 	})
 
@@ -389,7 +336,6 @@ var bsc = express()
 
 	.post("/getLoggedInEmp", function (req, res) {
 		res.send(req.session.loggdUser);
-		//console.log(req.session[req.session.userId]);
 	})
 
 	.post("/getEmpObjectives", function (req, res) {
@@ -400,7 +346,6 @@ var bsc = express()
                 res.send("No objectives found");
             } else {
                 res.send(doc);
-                //console.log(doc);
             }
 		});
 	})
@@ -420,7 +365,7 @@ var bsc = express()
 	})
 
 	// create finance objective : by Brian
-    .post("/createFinanceObjective", function (req, res) {
+    .post("/createEmpObjective", function (req, res) {
 		
 		var finObjective = req.body;
 		var matrixType = req.body.metrixType;
